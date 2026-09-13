@@ -199,12 +199,12 @@ there than shipping-grade contrast. Fix them if any of those directions is ever 
 ## Returns live on the settlement page
 
 Settling is one act: at the end of a shift the courier hands the branch back both the cash they
-collected **and** the orders they could not deliver. `_ReturnsSection`
-(`features/settlement/`) lists the pending returns under the collections and raises the same
-confirmation sheet the standalone returns page raises — `showReturnsHandoverSheet`, the public
-wrapper over failure_states' private one, so the two entry points cannot drift. The dedicated
-`ReturnsListScreen` (`/returns`, DevGallery) still exists for anyone who wants only that half; it is
-no longer linked from the tab bar.
+collected **and** the orders they could not deliver — the returns are listed inside their batches
+on the settlement. **The «تسليم المرتجعات للفرع» CTA was removed from the settlement page on the
+courier's ask (13 Sep 2026)**: handing the parcels over is confirmed at the branch, not by a
+button here. `_ReturnsSection` now only shows the green handed-over note once
+`returnsHandedOver` is true. The standalone `ReturnsListScreen` (`/returns`, DevGallery) keeps
+the full flow (`showReturnsHandoverSheet`, failure_states) for anyone who needs it.
 
 ## Shared widgets (`lib/widgets/`) — reuse across screens
 
@@ -503,8 +503,7 @@ day in orders (dispatched · delivered · returned), because the cash card answe
 cashier reconciles that against "out of what". The page: status pill in the header (no button), the cash card —
 a warm near-black gradient (`cashCardTop`→`cashCardBottom`, Figma board), no icon tile, one 28-bold
 right-aligned figure, red over the limit — `_BatchesSection` (collapsible per batch, all folded by
-default, title with no hint text), the plain centered returns handover button (physically handing
-parcels back is still the courier's act), the locked note, then `_HistorySection` — chevron-less
+default, title with no hint text), the locked note, then `_HistorySection` — chevron-less
 rows that push `SettlementDayScreen(day)` read-only. The settled
 view is the designed confirmation plus the batches and the history.
 

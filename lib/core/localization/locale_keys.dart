@@ -609,7 +609,6 @@ abstract final class LocaleKeys {
       'settlement_batch_cash_orders';
   static const String settlementBatchReturns = 'settlement_batch_returns';
   static const String settlementReturnPill = 'settlement_return_pill';
-  static const String settlementHandReturns = 'settlement_hand_returns';
   static const String settlementHistoryTitle = 'settlement_history_title';
   static const String settlementHistoryMeta = 'settlement_history_meta';
   static const String settlementYesterday = 'settlement_yesterday';

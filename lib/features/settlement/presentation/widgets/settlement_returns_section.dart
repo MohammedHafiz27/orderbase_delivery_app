@@ -1,75 +1,22 @@
 part of '../imports/settlement_imports.dart';
 
-/// The returns handover — the parcels are listed inside their batches above;
-/// this is the courier's one act about them: confirming they were physically
-/// handed to the branch. Physically handing parcels back is the courier's act
-/// even though settling the money is the branch's, so the button stays in the
-/// app. Once handed over, a note says so; otherwise the section is silent.
+/// The returns on the settlement page — the parcels are listed inside their
+/// batches above, and that is all now: the «تسليم المرتجعات للفرع» CTA was
+/// **removed on the courier's ask** (13 Sep 2026) — handing the parcels over
+/// is confirmed at the branch, not by a button here (the standalone
+/// `/returns` page keeps the flow for anyone who needs it). Once the returns
+/// are handed over, the green note still says so; otherwise the section is
+/// silent.
 class _ReturnsSection extends StatelessWidget {
   const _ReturnsSection();
 
   @override
   Widget build(BuildContext context) {
     final shift = ShiftController.instance;
-    final returns = shift.pendingReturns;
-    if (returns.isEmpty && !shift.returnsHandedOver) {
-      return const SizedBox.shrink();
-    }
-    if (returns.isEmpty) {
+    if (shift.pendingReturns.isEmpty && shift.returnsHandedOver) {
       return const _ReturnsHandedNote().paddingOnly(top: AppPadding.pH12);
     }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        12.szH,
-        _HandReturnsButton(
-          count: returns.length,
-          pieces: shift.returnPieces,
-          branch: shift.returnsBranch,
-        ),
-      ],
-    );
-  }
-}
-
-/// The action that hands the whole batch back — same confirmation sheet the
-/// standalone returns page raises, so the two entry points cannot drift.
-class _HandReturnsButton extends StatelessWidget {
-  const _HandReturnsButton({
-    required this.count,
-    required this.pieces,
-    required this.branch,
-  });
-
-  final int count;
-  final int pieces;
-  final String branch;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: AppSize.sH52,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppCircular.r15),
-        border: Border.all(color: AppColors.borderDefault),
-      ),
-      // The label alone, centered — the Figma frame dropped the glyph and the
-      // counts: the batches above already enumerate the returns, and the
-      // confirmation sheet restates them before anything is handed over.
-      child: Text(
-        LocaleKeys.settlementHandReturns.tr(),
-        style: const TextStyle().setMainTextColor.s14.semiBold,
-      ),
-    ).onClick(
-      onTap: () => showReturnsHandoverSheet(
-        context,
-        count: count,
-        pieces: pieces,
-        branch: branch,
-      ),
-    );
+    return const SizedBox.shrink();
   }
 }
 

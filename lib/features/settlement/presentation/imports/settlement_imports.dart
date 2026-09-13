@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import '../../../../app/shift_controller.dart';
 import '../../../../config/res/config_imports.dart';
 import '../../../../data/order.dart';
-import '../../../failure_states/presentation/imports/failure_states_imports.dart';
 import '../../../../theme/shadows.dart';
 import '../../../../widgets/app_header.dart';
 import '../../../../widgets/batch_id.dart';
