@@ -53,9 +53,10 @@ class QueueViewController {
         ...ShiftController.instance.pendingOrders,
       ];
 
-  /// The day as batch groups, in the order the tab lists them: batches
-  /// waiting at the branch first (they need an action), then the ones in
-  /// hand, newest first. Each group carries only the rows that survive the
+  /// The day as batch groups, in the order the tab lists them: the batches
+  /// **with the courier** first (they are the work in hand), then the ones
+  /// waiting at the branch, then the completed ones — which read as the day's
+  /// history at the bottom. Each group carries only the rows that survive the
   /// active filter; a group with none is dropped, so «تم التسليم» shows only
   /// the batches that have a delivered order.
   List<QueueBatchGroup> get batchGroups {
@@ -78,13 +79,7 @@ class QueueViewController {
       QueueFilter.exceptions =>
         o.status == OrderStatus.failed || o.status == OrderStatus.postponed,
     };
-    final groups = <QueueBatchGroup>[
-      for (final b in shift.pendingBatches)
-        QueueBatchGroup(
-          batch: b,
-          pending: true,
-          rows: b.orders.where(keep).toList(),
-        ),
+    final carried = [
       for (final b in shift.carriedBatches.reversed)
         QueueBatchGroup(
           batch: b,
@@ -92,6 +87,16 @@ class QueueViewController {
           rows: shift.ordersOfBatch(b.id).where(keep).toList(),
           liveOrders: shift.ordersOfBatch(b.id),
         ),
+    ];
+    final groups = <QueueBatchGroup>[
+      ...carried.where((g) => !g.complete),
+      for (final b in shift.pendingBatches)
+        QueueBatchGroup(
+          batch: b,
+          pending: true,
+          rows: b.orders.where(keep).toList(),
+        ),
+      ...carried.where((g) => g.complete),
     ];
     return groups.where((g) => g.rows.isNotEmpty).toList();
   }
@@ -320,6 +325,10 @@ class QueueBatchGroup {
   /// Every order closed — nothing left to do in it.
   bool get complete =>
       !pending && live.every((o) => o.status != OrderStatus.transit);
+
+  /// Physically with the courier and still being delivered — the «معك»
+  /// section, which the tab lists first and keeps open.
+  bool get inHand => !pending && !complete;
 
   /// Cash still due across the batch's open orders.
   int get cashDue => live

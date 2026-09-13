@@ -2,11 +2,11 @@ part of '../imports/queue_imports.dart';
 
 /// The Orders tab's browse list: the day as batch sections.
 ///
-/// It took the batches page as its skeleton — a courier can be holding several
-/// batches at once, and a batch stays visibly one thing rather than dissolving
-/// into a flat list — and the queue's filters as its head. Batches waiting at
-/// the branch come first, since they need an action; the ones in hand follow,
-/// newest first; a completed batch folds itself away.
+/// Frameless — the sections sit straight on the page (no cards, no sheets;
+/// the flat-list rule), separated by hairlines. The order is the day itself:
+/// the batches **with the courier** first (kept open — that is the work in
+/// hand), then the ones waiting at the branch, then the completed ones at the
+/// bottom, styled like the settlement's history rows.
 class _QueueBatchList extends StatelessWidget {
   const _QueueBatchList({required this.groups, required this.vc});
   final List<QueueBatchGroup> groups;
@@ -17,10 +17,6 @@ class _QueueBatchList extends StatelessWidget {
     // A filter is narrowing the list: the courier has already said what they
     // want to see, so the rows should not be a tap away.
     final filtering = vc.filter.value != QueueFilter.all;
-    // One card per batch, 12 apart. A batch carries its own state and its own
-    // confirm button, so a shared sheet blurred where one ended and the next
-    // began.
-    //
     // Plain content, not a scrollable: the page is one CustomScrollView now,
     // and a day is three batches deep, so there is nothing here to lazily
     // build — only a nested scroll to avoid.
@@ -28,7 +24,14 @@ class _QueueBatchList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final (i, group) in groups.indexed) ...[
-          if (i > 0) 12.szH,
+          if (i > 0)
+            // borderDefault, not surfaceSubtle: this rule separates batches
+            // on the warm page ground, one step firmer than the row rules.
+            const Divider(
+              height: 1,
+              thickness: 1,
+              color: AppColors.borderDefault,
+            ),
           _QueueBatchSection(
             // The filter is part of the key: changing it rebuilds the section
             // so the expansion below is re-evaluated instead of keeping the
@@ -36,11 +39,10 @@ class _QueueBatchList extends StatelessWidget {
             key: ValueKey('${group.batch.id}-$filtering'),
             group: group,
             vc: vc,
-            // Closed by default: the unfiltered list answers "what rounds do I
-            // have" first, and the courier opens the one they want. Under a
-            // filter that question is already answered — they asked for these
-            // specific orders — so the batch opens on what is left.
-            initiallyExpanded: filtering,
+            // The batch with the courier is always open — it is the work in
+            // hand. The others arrive closed, unless a filter has already
+            // said which orders the courier wants to see.
+            initiallyExpanded: filtering || group.inHand,
           ),
         ],
       ],
@@ -53,11 +55,10 @@ class _QueueBatchList extends StatelessWidget {
   }
 }
 
-/// One batch as a collapsible **card**: its ID and state, a line sizing it up
-/// (orders · remaining · cash · km · return time), then its orders as flat
-/// rows. A batch still at the branch closes with its own carry button, so
-/// carrying happens where the batch is. Each batch is its own card, and every
-/// one arrives closed.
+/// One batch as a collapsible frameless section: its header row, then its
+/// orders as flat rows divided by subtle hairlines. A batch still at the
+/// branch closes with its own carry button, so carrying happens where the
+/// batch is. A completed batch reads like a settlement-history row.
 class _QueueBatchSection extends StatefulWidget {
   const _QueueBatchSection({
     super.key,
@@ -94,45 +95,41 @@ class _QueueBatchSectionState extends State<_QueueBatchSection> {
     final g = widget.group;
     final rows = [...g.rows]..sort((a, b) => a.num.compareTo(b.num));
     final reduced = AppMotion.reduced(context);
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppCircular.r16),
-        border: Border.all(color: AppColors.borderCard),
-        boxShadow: AppShadows.card,
-      ),
-      // Clips the collapsing body to the rounded corners.
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
+    // No card: the section sits straight on the page. A completed batch
+    // wears the settlement history's quiet two-line header instead of the
+    // live one.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (g.complete)
+          _QueuePastBatchHeader(group: g, open: _open, onTap: _toggle)
+        else
           _QueueBatchHeader(group: g, open: _open, onTap: _toggle),
-          ClipRect(
-            child: AnimatedAlign(
-              alignment: AlignmentDirectional.topCenter,
-              heightFactor: _open ? 1 : 0,
-              duration: reduced ? Duration.zero : AppMotion.fill,
-              curve: AppMotion.ease,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (final order in rows)
-                    _QueueBatchRow(
-                      order: order,
-                      pending: g.pending,
-                      last: order == rows.last && !g.pending,
-                      onTap: () => widget.vc.openOrder(context, order),
-                    ),
-                  if (g.pending)
-                    _CarryBatchButton(count: g.batch.count, onTap: _carry),
-                ],
-              ),
+        ClipRect(
+          child: AnimatedAlign(
+            alignment: AlignmentDirectional.topCenter,
+            heightFactor: _open ? 1 : 0,
+            duration: reduced ? Duration.zero : AppMotion.fill,
+            curve: AppMotion.ease,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final order in rows)
+                  _QueueBatchRow(
+                    order: order,
+                    pending: g.pending,
+                    last: order == rows.last && !g.pending,
+                    onTap: () => widget.vc.openOrder(context, order),
+                  ),
+                if (g.pending)
+                  _CarryBatchButton(count: g.batch.count, onTap: _carry),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -161,10 +158,6 @@ class _QueueBatchHeader extends StatelessWidget {
           'cash': formatThousands(b.codTotal),
         },
       );
-    } else if (group.complete) {
-      meta = LocaleKeys.queueBatchMetaComplete.tr(
-        namedArgs: {'count': englishDigits(b.count)},
-      );
     } else {
       meta = LocaleKeys.queueBatchMetaCarried.tr(
         namedArgs: {
@@ -179,7 +172,8 @@ class _QueueBatchHeader extends StatelessWidget {
       label: b.id,
       // One line, justified — the ID and its state at the reading start, the
       // sizing meta at the far end beside the disclosure chevron (the design
-      // frame's header).
+      // frame's header). Frameless: the row owns no fill, only its padding
+      // (the list supplies the page gutters).
       child:
           Row(
             children: [
@@ -220,10 +214,67 @@ class _QueueBatchHeader extends StatelessWidget {
                 ),
               ),
             ],
-          ).paddingSymmetric(
-            horizontal: AppPadding.pW16,
-            vertical: AppPadding.pH16,
-          ),
+          ).paddingSymmetric(vertical: AppPadding.pH16),
+    ).onClick(onTap: onTap);
+  }
+}
+
+/// A completed batch's header — the day's history, styled like the
+/// settlement's past-days rows: the ID and a quiet meta line, the «مكتملة»
+/// pill as the row's end, no chevron. Tapping still expands the section to
+/// its closed rows.
+class _QueuePastBatchHeader extends StatelessWidget {
+  const _QueuePastBatchHeader({
+    required this.group,
+    required this.open,
+    required this.onTap,
+  });
+
+  final QueueBatchGroup group;
+  final bool open;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final b = group.batch;
+    return Semantics(
+      button: true,
+      expanded: open,
+      label: b.id,
+      child:
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      b.id,
+                      textDirection: TextDirection.ltr,
+                      style: const TextStyle()
+                          .setMainTextColor
+                          .s14
+                          .semiBold
+                          .tabular,
+                    ),
+                    4.szH,
+                    Text(
+                      LocaleKeys.queueBatchMetaComplete.tr(
+                        namedArgs: {'count': englishDigits(b.count)},
+                      ),
+                      style: const TextStyle()
+                          .setSecondaryColor
+                          .s12
+                          .regular
+                          .tabular,
+                    ),
+                  ],
+                ),
+              ),
+              8.szW,
+              _BatchStatePill(group: group),
+            ],
+          ).paddingSymmetric(vertical: AppPadding.pH12),
     ).onClick(onTap: onTap);
   }
 }
@@ -302,12 +353,7 @@ class _CarryBatchButton extends StatelessWidget {
                 ),
               ],
             ),
-          ).paddingOnlyDirectional(
-            start: AppPadding.pW16,
-            end: AppPadding.pW16,
-            top: AppPadding.pH12,
-            bottom: AppPadding.pH16,
-          ),
+          ).paddingOnly(top: AppPadding.pH12, bottom: AppPadding.pH16),
     ).onClick(onTap: onTap);
   }
 }

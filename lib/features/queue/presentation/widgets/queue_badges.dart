@@ -1,9 +1,10 @@
 part of '../imports/queue_imports.dart';
 
-/// Outcome pill for a closed order — colour + icon + label per [OrderStatus].
-/// Shown in place of the pay label once an order is done, so a dimmed card
-/// says *why* it's dimmed: delivered (green = success), failed (red = could
-/// not deliver), or postponed (amber).
+/// Outcome mark for a closed order — a small glyph and a coloured word, no
+/// pill behind them (the courier asked the statuses to take less room). The
+/// colour still says the outcome at a glance: delivered (green), failed
+/// (red), postponed (amber). Shown in place of the pay label once an order is
+/// done, so a dimmed row says *why* it's dimmed.
 class _StatusBadge extends StatelessWidget {
   const _StatusBadge({required this.status, this.returns});
   final OrderStatus status;
@@ -12,67 +13,45 @@ class _StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (status) {
-      OrderStatus.transit => _pill(
-        bg: AppColors.transitBg,
-        fg: AppColors.transitText,
+      OrderStatus.transit => _mark(
+        fg: AppColors.transitBg,
         text: LocaleKeys.statusTransit.tr(),
       ),
-      OrderStatus.postponed => _pill(
-        bg: AppColors.postponedBg,
+      OrderStatus.postponed => _mark(
         fg: AppColors.postponedText,
-        border: AppColors.postponedBorder,
         leading: AppAssets.svg.clock,
         text: LocaleKeys.statusPostponedReturns.tr(
           namedArgs: {'time': returns ?? ''},
         ),
       ),
-      OrderStatus.delivered => _pill(
-        bg: AppColors.deliveredBg,
+      OrderStatus.delivered => _mark(
         fg: AppColors.deliveredText,
-        border: AppColors.deliveredBorder,
         leading: AppAssets.svg.check,
         text: LocaleKeys.statusDelivered.tr(),
       ),
-      OrderStatus.failed => _pill(
-        bg: AppColors.failedBg,
+      OrderStatus.failed => _mark(
         fg: AppColors.failedText,
-        border: AppColors.failedBorder,
         leading: AppAssets.svg.fail,
         text: LocaleKeys.statusFailed.tr(),
       ),
     };
   }
 
-  Widget _pill({
-    required Color bg,
-    required Color fg,
-    Color? border,
-    String? leading,
-    required String text,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(
-          100,
-        ), // full pill (radii 4px-exempt)
-        border: border != null ? Border.all(color: border) : null,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (leading != null) ...[
-            IconWidget(
-              icon: leading,
-              color: fg,
-              height: AppSize.sH10,
-              width: AppSize.sW10,
-            ),
-            4.szW,
-          ],
-          Text(text, style: const TextStyle().setColor(fg).s12.semiBold),
+  Widget _mark({required Color fg, String? leading, required String text}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (leading != null) ...[
+          IconWidget(
+            icon: leading,
+            color: fg,
+            height: AppSize.sH12,
+            width: AppSize.sW12,
+          ),
+          4.szW,
         ],
-      ).paddingSymmetric(horizontal: AppPadding.pW8, vertical: AppPadding.pH4),
+        Text(text, style: const TextStyle().setColor(fg).s12.semiBold),
+      ],
     );
   }
 }

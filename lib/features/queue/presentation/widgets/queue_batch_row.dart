@@ -2,10 +2,10 @@ part of '../imports/queue_imports.dart';
 
 /// One order inside a batch section — the batch row, one step richer than the
 /// pickup version: number and cash pill (or the outcome badge once closed),
-/// name · area · pieces, and the promised time while the order is still out.
-/// Flat inside its batch card: no fill of its own, a [AppColors.surfaceSubtle]
-/// hairline between rows, indented under the batch header so the rows read as
-/// its children. Tapping opens the order.
+/// name · area · pieces, and — while the order is still out — the expected
+/// arrival and the leg distance, each behind its own glyph. Frameless: no
+/// fill, no container, a subtle hairline between rows. Tapping opens the
+/// order.
 class _QueueBatchRow extends StatelessWidget {
   const _QueueBatchRow({
     required this.order,
@@ -42,8 +42,6 @@ class _QueueBatchRow extends StatelessWidget {
             : const Border(bottom: BorderSide(color: AppColors.surfaceSubtle)),
       ),
       padding: EdgeInsetsDirectional.only(
-        start: AppPadding.pW16,
-        end: AppPadding.pW16,
         top: AppPadding.pH12,
         bottom: AppPadding.pH12,
       ),
@@ -75,11 +73,25 @@ class _QueueBatchRow extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: const TextStyle().setSecondaryColor.s12.regular,
           ),
-          if (isTransit && !pending && order.due != null) ...[
-            4.szH,
-            Text(
-              LocaleKeys.promisedAt.tr(namedArgs: {'time': order.due!}),
-              style: const TextStyle().setTertiaryColor.s12.regular,
+          if (isTransit && !pending && (order.due != null || order.dist != null)) ...[
+            6.szH,
+            // The two trip facts, each behind its own glyph: when the order
+            // is expected at the door («الوصول المتوقع» — ETA, in Arabic),
+            // and how far its leg runs.
+            Row(
+              children: [
+                if (order.due != null) ...[
+                  _RowTripFact(
+                    icon: AppAssets.svg.clock,
+                    text: LocaleKeys.queueEta.tr(
+                      namedArgs: {'time': order.due!},
+                    ),
+                  ),
+                  if (order.dist != null) 16.szW,
+                ],
+                if (order.dist != null)
+                  _RowTripFact(icon: AppAssets.svg.nav, text: order.dist!),
+              ],
             ),
           ],
         ],
@@ -88,6 +100,34 @@ class _QueueBatchRow extends StatelessWidget {
     final tappable = row.onClick(onTap: onTap);
     // Closed orders are de-emphasised — the badge says why.
     return isTransit ? tappable : Opacity(opacity: 0.6, child: tappable);
+  }
+}
+
+/// One trip fact on a batch row — a small glyph, then the figure. The glyph
+/// is what tells the ETA from the distance at a glance.
+class _RowTripFact extends StatelessWidget {
+  const _RowTripFact({required this.icon, required this.text});
+  final String icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconWidget(
+          icon: icon,
+          color: AppColors.textTertiary,
+          height: AppSize.sH14,
+          width: AppSize.sW14,
+        ),
+        4.szW,
+        Text(
+          text,
+          style: const TextStyle().setTertiaryColor.s12.regular.tabular,
+        ),
+      ],
+    );
   }
 }
 
