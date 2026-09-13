@@ -11,9 +11,6 @@
   "notif_new_count": "{n} new",
   "notif_mark_all_read": "Mark all read",
   "notif_previous": "Previous alerts",
-  "notif_hero_title": "New batch assigned {id}",
-  "notif_hero_body": "The batch has {count} orders ready for pickup from {branch}. Total to collect EGP {cash}.",
-  "notif_hero_cta": "View batch details",
   "notif_minutes_ago": "{n} min ago",
   "notif_empty_title": "You're all caught up",
   "notif_empty_sub": "No new notifications right now.",
@@ -409,7 +406,7 @@
   "settlement_cashier_default": "Islam Mahmoud",
   "settlement_back": "Back",
   "settlement_title": "End-of-day settlement",
-  "settlement_subtitle": "{date} · {branch}",
+  "settlement_subtitle": "{date}",
   "settlement_not_settled": "Not settled",
   "settlement_settle_cta": "Settle collections",
   "settlement_collections_title": "Today's collections",
@@ -502,5 +499,10 @@
   "queue_exceptions_returns": "{count} returns",
   "queue_exceptions_postponed": "{count} postponed",
   "queue_exceptions_view": "View",
-  "queue_filter_exceptions": "Not completed"
+  "queue_filter_exceptions": "Not completed",
+  "tab_home": "Home",
+  "tab_orders": "Orders",
+  "tab_settlement": "Settlement",
+  "tab_profile": "Account",
+  "queue_eta": "ETA {time}"
 }
