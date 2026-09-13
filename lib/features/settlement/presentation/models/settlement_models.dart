@@ -193,35 +193,46 @@ SettlementData get sampleSettlement => SettlementData(
 );
 
 /// Live settlement snapshot built from today's shift, batch by batch: each
-/// carried batch's delivered cash orders (order value vs cash collected) and
-/// the parcels it sends back; a batch still at the branch is listed as pending.
+/// batch's delivered cash orders (order value vs cash collected) and the
+/// parcels it sends back.
+///
+/// Today lists only what the day has actually produced: the batches already
+/// **closed**, and the batch still being delivered ONLY once a COD order in
+/// it has been handed off (it has a cash line). A batch waiting at the branch
+/// — or even one in hand with nothing collected yet — has produced nothing to
+/// reconcile, so it does not appear here at all.
 /// Status follows the courier: open while delivering, awaiting once they are
 /// expected at the branch, settled when the cashier has taken the cash.
 SettlementData get shiftSettlement {
   final shift = ShiftController.instance;
-  final batches = <SettlementBatch>[
-    for (final b in shift.carriedBatches.reversed)
+  final batches = <SettlementBatch>[];
+  for (final b in shift.carriedBatches.reversed) {
+    final orders = shift.ordersOfBatch(b.id);
+    final closed = orders.every((o) => o.status != OrderStatus.transit);
+    final lines = [
+      for (final o in orders)
+        if (o.status == OrderStatus.delivered &&
+            !o.prepaid &&
+            (o.collected ?? o.cod ?? 0) > 0)
+          SettlementLine(
+            num: o.num,
+            name: o.name,
+            order: o.cod ?? 0,
+            paid: o.collected ?? o.cod ?? 0,
+          ),
+    ];
+    // A batch earns its row by being finished, or by having produced cash.
+    if (!closed && lines.isEmpty) continue;
+    batches.add(
       SettlementBatch(
         id: b.id,
         orderCount: b.count,
-        deliveredCount: shift
-            .ordersOfBatch(b.id)
+        deliveredCount: orders
             .where((o) => o.status == OrderStatus.delivered)
             .length,
-        lines: [
-          for (final o in shift.ordersOfBatch(b.id))
-            if (o.status == OrderStatus.delivered &&
-                !o.prepaid &&
-                (o.collected ?? o.cod ?? 0) > 0)
-              SettlementLine(
-                num: o.num,
-                name: o.name,
-                order: o.cod ?? 0,
-                paid: o.collected ?? o.cod ?? 0,
-              ),
-        ],
+        lines: lines,
         returns: [
-          for (final o in shift.ordersOfBatch(b.id))
+          for (final o in orders)
             if (o.status == OrderStatus.failed)
               SettlementReturn(
                 num: o.num,
@@ -231,9 +242,8 @@ SettlementData get shiftSettlement {
               ),
         ],
       ),
-    for (final b in shift.pendingBatches)
-      SettlementBatch(id: b.id, orderCount: b.count, pending: true),
-  ];
+    );
+  }
   final receipt = shift.settlement;
   return SettlementData(
     date: DateTime.now(),

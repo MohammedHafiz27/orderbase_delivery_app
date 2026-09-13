@@ -127,11 +127,13 @@ class _SettlementBackBar extends StatelessWidget {
   }
 }
 
-/// The day's identity — «date · branch» and the status pill — as the first
-/// thing in the scroll, not a bar above it. It states a fact about the day
-/// rather than offering a control, so it has no claim on the viewport of a
-/// page that is a long reconciliation list. It draws no band of its own and
-/// carries no side padding: it lives inside the scroll view's own gutters.
+/// The day's identity — the date and the status pill — as the first thing in
+/// the scroll, not a bar above it. The branch is gone from this line: Home
+/// already states it, and repeating it here said nothing new. It states a
+/// fact about the day rather than offering a control, so it has no claim on
+/// the viewport of a page that is a long reconciliation list. It draws no
+/// band of its own and carries no side padding: it lives inside the scroll
+/// view's own gutters.
 class _SettlementHeader extends StatelessWidget {
   const _SettlementHeader({required this.data});
 
@@ -145,7 +147,7 @@ class _SettlementHeader extends StatelessWidget {
         Expanded(
           child: Text(
             LocaleKeys.settlementSubtitle.tr(
-              namedArgs: {'date': data.dateLabel, 'branch': data.branch},
+              namedArgs: {'date': data.dateLabel},
             ),
             style: const TextStyle().setMainTextColor.s14.semiBold,
           ),
