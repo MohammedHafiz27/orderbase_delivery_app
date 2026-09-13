@@ -792,9 +792,14 @@ shell (and the *Tab bar lab*). **Add a gallery entry for each new screen.**
 
 - **Flutter SDK:** `~/development/flutter` (stable). Add to PATH:
   `export PATH="$HOME/development/flutter/bin:$PATH"`.
-- **iOS Simulator — WORKING (preferred verification path).** Xcode 26.6 is installed and selected
-  system-wide (`sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`); license /
-  first-launch already accepted. iOS 26.5 runtime + iPhone 17 simulators are available.
+- **iOS Simulator — headless-only builds WORK (preferred verification path).** As of 13 Sep 2026
+  the `/Applications/Xcode.app` on this Mac is an **incomplete Xcode 27.0 beta** (3.6 GB of ~18 —
+  an interrupted `.xip` extraction that replaced the full 26.6): the toolchain and platform SDKs
+  are there, so `flutter build ios --simulator` and every `xcrun simctl` verb work, but
+  **`Simulator.app` does not exist anywhere on the disk** (no `Contents/Developer/Applications/`)
+  and the desktop app's simulator panel cannot attach. Screenshot with
+  `xcrun simctl io booted screenshot` until Ahmed reinstalls a full Xcode; the iOS 26.5 + 27.0
+  runtimes and the iPhone 17 devices live outside the bundle and are intact.
   - **No CocoaPods needed.** The only iOS plugin is `path_provider_foundation` (transitive via
     `google_fonts`, `native_build: false`) — Flutter builds without a Podfile. Don't chase
     CocoaPods install unless a future plugin with native code forces it.
