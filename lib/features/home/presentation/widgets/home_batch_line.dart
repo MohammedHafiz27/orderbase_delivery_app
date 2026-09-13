@@ -16,7 +16,7 @@ String homeReturnText(String returnEta) => LocaleKeys.homeReturnLine
 
 /// The hero's first line — the batch and how its trip ends.
 ///
-/// Leading: «B #7877 · الطلب 5 من 8». Beneath it the trip row — two facts, each
+/// Leading: «T #7877 · الطلب 5 من 8». Beneath it the trip row — two facts, each
 /// behind its own glyph: 🕐 «عودة للفرع ~5:40 م» and ➤ «34 كم», with a small ⓘ
 /// on the distance. Tapping ⓘ floats a tooltip above it explaining what the two
 /// figures mean: the time is the ride back to the branch after the last order,
@@ -88,7 +88,7 @@ class _HomeBatchLine extends StatelessWidget {
             style: quiet,
             children: [
               // The ID is Latin + digits: isolate it so the RTL line does not
-              // re-order «B #7877» around the hash.
+              // re-order «T #7877» around the hash.
               TextSpan(
                 text: batch.id,
                 style: const TextStyle().setMainTextColor.s14.bold.tabular.road(

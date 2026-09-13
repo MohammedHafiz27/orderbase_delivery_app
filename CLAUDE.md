@@ -333,9 +333,9 @@ previous one:
 Each dispatch raises the mid-flight sheet, files a notification, and lights the Orders badge. The
 sheet arrives with `AppHaptics.attention()` — two heavy knocks plus the system alert sound — because it
 is the one event of the day the courier did not cause; a silent sheet is missed on a bike.
-`demoDayBatches` (`lib/data/order.dart`) is the plan: `B #7877` (five orders, all `transit` via
-`Order.asFresh()` — a fresh day must not open with a batch already half closed), then `B #7878` and
-`B #7879`. The app's own seeded launch state counts as batch 1 against that plan, so a launched
+`demoDayBatches` (`lib/data/order.dart`) is the plan: `T #7877` (five orders, all `transit` via
+`Order.asFresh()` — a fresh day must not open with a batch already half closed), then `T #7878` and
+`T #7879`. The app's own seeded launch state counts as batch 1 against that plan, so a launched
 session and a restarted one both total three.
 
 «بدء يوم جديد (تجريبي)» (settled card / Account tab) calls `restart()`: the shift empties, and the
@@ -347,7 +347,7 @@ branch dashboard exists.
 
 ## Shift model (`lib/app/shift_controller.dart`)
 
-- **Batches carry the branch's ID** — `OrderBatch.id` is «B #7877» — and every surface shows it:
+- **Batches carry the branch's ID** — `OrderBatch.id` is «T #7877» — and every surface shows it:
   the hero's batch line, Orders sections, settlement sections, the dispatch sheet.
 - `CourierStatus { idle, onRoute, returning, settled }` is the one value Home, the header and the
   settlement read. `returning` = everything in hand closed and cash/returns not yet taken.

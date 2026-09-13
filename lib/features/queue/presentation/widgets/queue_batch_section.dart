@@ -90,10 +90,18 @@ class _QueueBatchSectionState extends State<_QueueBatchSection> {
     widget.vc.carryBatch(widget.group.batch.id);
   }
 
+  /// Ongoing orders lead; anything closed (delivered, failed, postponed)
+  /// sinks below them — a done order above an open one read as a wrong
+  /// arrangement. Stable by number within each half.
+  static int _rowRank(OrderStatus s) => s == OrderStatus.transit ? 0 : 1;
+
   @override
   Widget build(BuildContext context) {
     final g = widget.group;
-    final rows = [...g.rows]..sort((a, b) => a.num.compareTo(b.num));
+    final rows = [...g.rows]..sort((a, b) {
+      final r = _rowRank(a.status).compareTo(_rowRank(b.status));
+      return r != 0 ? r : a.num.compareTo(b.num);
+    });
     final reduced = AppMotion.reduced(context);
     // No card: the section sits straight on the page. A completed batch
     // wears the settlement history's quiet two-line header instead of the

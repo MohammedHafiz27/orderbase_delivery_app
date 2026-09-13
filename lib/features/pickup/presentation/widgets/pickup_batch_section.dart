@@ -113,7 +113,7 @@ class _PickupBatchHeader extends StatelessWidget {
       child:
           Row(
             children: [
-              // The ID as the branch prints it — «B #7877».
+              // The ID as the branch prints it — «T #7877».
               Text(
                 batch.id,
                 textDirection: TextDirection.ltr,
