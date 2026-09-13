@@ -8,7 +8,6 @@ library;
 
 import 'package:flutter/material.dart';
 
-import '../../../../app/road_mode.dart';
 import '../../../../config/res/config_imports.dart';
 import '../../../../core/session/auth_session.dart';
 import '../../../../core/session/courier.dart';
@@ -24,5 +23,4 @@ part '../view/profile_screen.dart';
 // Widgets (private to the feature)
 part '../widgets/profile_identity.dart';
 part '../widgets/profile_row.dart';
-part '../widgets/profile_switch_row.dart';
 part '../widgets/profile_nav_material_row.dart';

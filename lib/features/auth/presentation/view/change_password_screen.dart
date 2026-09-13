@@ -27,14 +27,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     context,
   ).push(MaterialPageRoute<void>(builder: (_) => const ForgotPasswordScreen()));
 
-  /// Ends the in-memory session and pops back to the app root, which
-  /// reactively shows the login screen again ([AuthGate] listens to
-  /// [AuthSession]).
-  void _logout() {
-    AuthSession.instance.logOut();
-    Navigator.of(context).popUntil((r) => r.isFirst);
-  }
-
   @override
   Widget build(BuildContext context) {
     return _AuthScaffold(
@@ -95,10 +87,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               1.5,
             ),
           ),
-          24.szH,
-          Center(
-            child: _AuthLink(label: LocaleKeys.authLogout.tr(), onTap: _logout),
-          ),
+          // No sign-out here: signing out lives in ONE place, the profile
+          // tab, so the courier never wonders which of two doors is real.
         ],
       ),
       footer: AnimatedBuilder(

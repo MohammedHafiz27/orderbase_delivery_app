@@ -16,7 +16,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../config/res/config_imports.dart';
-import '../../../../core/session/auth_session.dart';
 import '../../../../core/session/courier.dart';
 import '../../../../theme/shadows.dart';
 import '../../../../widgets/home_indicator.dart';
