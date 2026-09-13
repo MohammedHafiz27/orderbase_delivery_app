@@ -146,7 +146,7 @@ class Order {
 class OrderBatch {
   const OrderBatch({required this.id, required this.orders});
 
-  /// The batch's identity as the branch prints it — «T #7877». Shown on the
+  /// The batch's identity as the branch prints it — «ت #7877». Shown on the
   /// hero, the Orders tab and the settlement, so the courier and the cashier
   /// are always talking about the same thing.
   final String id;
@@ -178,9 +178,9 @@ class OrderBatch {
 /// hold several batches in one day. Announced by the dispatch sheet and waits in
 /// [ShiftController.pendingPickup] until it is carried from the branch.
 /// The batch the day opens with — already in hand, partly delivered.
-const String sampleBatchOneId = 'T #7877';
-const String sampleBatchTwoId = 'T #7878';
-const String sampleBatchThreeId = 'T #7879';
+const String sampleBatchOneId = 'ت #7877';
+const String sampleBatchTwoId = 'ت #7878';
+const String sampleBatchThreeId = 'ت #7879';
 
 final List<Order> sampleBatchTwo = [
   const Order(

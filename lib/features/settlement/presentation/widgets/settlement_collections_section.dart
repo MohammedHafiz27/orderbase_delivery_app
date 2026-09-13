@@ -121,7 +121,8 @@ class _SettlementBatchSectionState extends State<_SettlementBatchSection> {
                 children: [
                   Text(
                     b.id,
-                    textDirection: TextDirection.ltr,
+                    // «ت #7877» reads RTL now that the letter is Arabic.
+                    textDirection: TextDirection.rtl,
                     style:
                         (muted
                                 ? const TextStyle().setSecondaryColor

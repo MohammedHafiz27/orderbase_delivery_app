@@ -187,7 +187,8 @@ class _QueueBatchHeader extends StatelessWidget {
             children: [
               Text(
                 b.id,
-                textDirection: TextDirection.ltr,
+                // «ت #7877» reads RTL now that the letter is Arabic.
+                textDirection: TextDirection.rtl,
                 style: const TextStyle().setMainTextColor.s14.bold.tabular,
               ),
               8.szW,
@@ -258,7 +259,8 @@ class _QueuePastBatchHeader extends StatelessWidget {
                   children: [
                     Text(
                       b.id,
-                      textDirection: TextDirection.ltr,
+                      // «ت #7877» reads RTL now that the letter is Arabic.
+                      textDirection: TextDirection.rtl,
                       style: const TextStyle()
                           .setMainTextColor
                           .s14
