@@ -72,18 +72,14 @@ class _HomeNextStopCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── 1. the stop counter ──
-              // «الطلب 5 من 8» — the one batch fact the hero keeps, quiet,
-              // directly above the destination it counts toward.
+              // ── 1. the lead-in ──
+              // «الطلب التالي» — what this card IS, quiet, directly above the
+              // destination (the courier asked the 5-of-8 counter to go).
               Text(
-                LocaleKeys.homeStopCount.tr(
-                  namedArgs: {
-                    'current': englishDigits(shift.currentStopNumber),
-                    'total': englishDigits(shift.totalStops),
-                  },
+                LocaleKeys.homeNextStop.tr(),
+                style: const TextStyle().setSecondaryColor.s14.medium.road(
+                  road,
                 ),
-                style: const TextStyle().setSecondaryColor.s14.medium.tabular
-                    .road(road),
               ),
               4.szH,
               // ── 2. the destination ──
