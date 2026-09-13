@@ -430,10 +430,10 @@ branch dashboard exists.
   hero slot shows (the copies inside the state-card bodies were removed). Those orders are not
   in the bag, so it is a reason to turn around now. **It carries no return-time figure** — the
   courier asked for the time to go; the row itself is the message.
-- **The idle card never contradicts the collect row**: with a batch waiting it swaps its copy to
-  «تشغيلة جديدة في انتظارك / جاهزة للاستلام في الفرع» (`home_idle_ready_*`) instead of claiming no
-  batch was assigned, and its merchant·branch line is gone — the page's branch line already says it
-  (both the courier's catch, 13 Sep 2026).
+- **The idle card is glyph + ONE line** («لم تُسند لك تشغيلة بعد», or «تشغيلة جديدة في انتظارك»
+  once a batch is waiting — `home_idle_ready_title`) so it never contradicts the collect row. The
+  merchant·branch line and the explanatory body text were removed on the courier's ask
+  (13 Sep 2026); the amber row above carries the instruction.
 - **`_HomeStateCard`** replaces the hero when there is nothing to deliver: *idle* (no batch yet),
   *returning* («ارجع للفرع» — no time pill any more; what to hand over, map pinned on the branch,
   call the branch), *settled* (who took the cash and when).
