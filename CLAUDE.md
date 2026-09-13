@@ -151,6 +151,18 @@ Arabic-first, right-to-left. Every screen wraps its body in `Directionality(text
 `google_fonts`). Screens rely on `SafeArea` for the top inset; the OS status bar (real device /
 simulator) is the only one shown — the app no longer draws its own `9:41` row.
 
+**Numerals are English (Western) everywhere** — the courier's call, ending the Eastern/Western
+mix. `englishDigits()` in `lib/data/order.dart` is the one funnel (it *normalizes* stray Eastern
+digits, never produces them); never add Eastern-digit literals to code, data or the jsons. The
+only Eastern-digit tables left are the keyboard normalizers (search, auth code) and
+`englishDigits` itself.
+
+**The currency word is «جنيه»** (never «جم», which survives only as *grams* on item weights), and
+it renders to the **left** of the figure — in RTL flow that happens naturally («1,250 جنيه»);
+money set LTR must switch to RTL or reorder its spans (see the cash card, the stat cell).
+
+**The batch is a «تشغيلة»** in every string (تشغيلات in the plural) — never «جولة» or «دفعة».
+
 ---
 
 ## Contrast
@@ -202,19 +214,21 @@ no longer linked from the tab bar.
   (**nullable** — the notifications page highlights nothing). Built to iOS 26's own numbers and
   manners — see *The tab bar* below. It **watches `ShiftController` itself**: the Orders red dot
   is the standing "a batch is waiting" signal now that the header chip is gone, and a batch can
-  land while the courier sits on a tab that would never otherwise rebuild.
+  land while the courier sits on a tab that would never otherwise rebuild. **Its labels drop the
+  definite article** (`tab_*` keys: «رئيسية · طلبات · تسوية · حساب»); the page headers keep the
+  «ال» form (`nav_*`).
 - `HomeIndicator` — the home-indicator pill on a white strip (used directly by screens with no tab
   bar, e.g. Pickup).
-- `MapView` — real `FlutterMap` + OSM raster tiles + red pin (Home strip and Order-detail map both
+- `MapView` — real `FlutterMap` + OSM raster tiles (Home strip and Order-detail map both
   use it; pure Dart, no native plugin, so the iOS build stays CocoaPods-free). **A still preview by
   default** (`interactive: false`): it never pans or zooms, and the map layer is wrapped in an
-  `IgnorePointer` so it can't fight the surrounding scroll or swallow the Home hero's tap. Navigation
-  is the Google-Maps badge's job, and that badge stays live either way. Carries the
-  **open-in-Google-Maps badge**: pass `destinationLabel` so Maps opens on the address rather than a
-  bare coordinate; `pinColor` swaps the brand-red pin for ink when the map points at the courier's
-  own branch. The badge draws `assets/brand/google_maps.svg` through `SvgPicture` directly —
-  it is a multi-colour brand mark, so it must NOT go through `IconWidget`, which recolours the
-  monochrome icon set via a `srcIn` filter.
+  `IgnorePointer` so it can't fight the surrounding scroll or swallow the Home hero's tap. **The
+  whole strip opens Google Maps on tap** (no corner badge any more); the centre pin is **Google's
+  own mark** (`assets/brand/google_maps.svg`, drawn through `SvgPicture` directly — a multi-colour
+  brand logo must NOT go through `IconWidget`, which recolours the monochrome icon set via a
+  `srcIn` filter) with the «افتح خرائط جوجل» label directly under it. Pass `destinationLabel` so
+  Maps opens on the address rather than a bare coordinate. The old breathing halo is gone (a disc
+  behind the teardrop showed through), so a resting map renders zero frames.
 - Opening a URL goes through `ExternalLinks` (`lib/core/live_activity/external_links.dart`), which
   rides the Live Activity method channel's `openUrl` rather than adding `url_launcher` — that
   plugin would put native code back into the iOS build.
@@ -297,7 +311,7 @@ The real entry point — `AuthGate` hands to `AppShell` once signed in. An `Inde
   screen's buttons pop the whole flow back via `popUntil((r) => r.isFirst)`.
 - Screens forward `BottomNav.onTap` up through an `onSelectTab` callback; the shell owns the
   selected `NavTab`. `OrderDetailScreen` takes `onFinishToNext` / `onFinishToHome` / `onSelectTab`.
-- The shell owns the **`ShiftSimulator`** (below) and raises the mid-flight «دفعة جديدة في الفرع»
+- The shell owns the **`ShiftSimulator`** (below) and raises the mid-flight «تشغيلة جديدة في الفرع»
   sheet whenever `ShiftController.takeAnnouncement()` hands it a batch.
 
 ## The day is simulated (`lib/app/shift_simulator.dart`)
@@ -350,11 +364,13 @@ branch dashboard exists.
 
 ## Home (`features/home/`)
 
-- **Hero hierarchy** (`_HomeNextStopCard`): batch line («B #7877 · الطلب ٥ من ٨» + «عودة للفرع
-  ~٥:٤٠ م · ٣٤ كم» ⓘ) → **destination bold** → map strip → one meta row (customer · number ·
-  note badge · cash pill) + promised time → two actions (deliver, call). Per-stop ETA/distance and
-  the origin→destination bar are gone (`kShowRouteLeg = false` keeps the leg widget;
-  `kShowStopSegments` the older segment bar).
+- **The hero is self-contained** (`_HomeNextStopCard`): «الطلب 5 من 8» quiet at the top →
+  **destination bold** → map strip (tap = Google Maps) → one meta row (customer · number ·
+  note badge · cash pill) → **two actions INSIDE the card** (deliver, call — `_HomeStopActions`).
+  The old trip row ABOVE the banner (batch ID · distance · ⓘ) was removed entirely — the stop
+  counter is the one batch fact the hero keeps. Per-stop ETA/distance and the origin→destination
+  bar remain gone (`kShowRouteLeg = false` keeps the leg widget; `kShowStopSegments` the older
+  segment bar).
 - **The address is two classes, not four.** Area and street share ONE line at one weight and size
   (`«زهراء مدينة نصر · شارع بن عبدالعزيز»`, 18/bold) because they are one fact; the door
   (`Order.addrDetail` — «عمارة ٤٢٩٠ · الدور ٥ · شقة ٥٢») sits under it at 14/regular. Setting the
@@ -374,21 +390,21 @@ branch dashboard exists.
   `CrossAxisAlignment.stretch` beside the cash pill, so the two are exactly the same height and
   read as a matched pair. A circle next to a pill read as two unrelated things sharing a row.
 - **A batch waiting mid-route says so under the hero.** `_PendingBatchRow` («ارجع للفرع لاستلام
-  دفعة جديدة» + id · orders · cash) renders under the hero while `status == onRoute &&
-  hasPendingBatch`, as well as inside the status card. Those orders are not in the bag, so it is a
-  reason to turn around now, not only when everything is closed.
-- **`_HomeStatRow`** — one four-cell strip under the hero (in progress · delivered · failed · cash)
-  so hero and numbers fit without a scroll. The cash cell goes red over the limit.
+  تشغيلة جديدة») renders under the hero while `status == onRoute && hasPendingBatch`, as well as
+  inside the status card. Those orders are not in the bag, so it is a reason to turn around now,
+  not only when everything is closed. **It carries no return-time figure** — the courier asked for
+  the time to go; the row itself is the message.
+- **`_HomeStatRow`** — one strip under the hero, **cash first**: cash in hand (widest cell, slate,
+  reading start) · in progress · delivered. The failed cell was dropped — failures zero out the
+  moment returns are handed to the branch, so as a day-metric it lied; the cash is what the
+  courier is answerable for. The cash cell goes red over the limit.
 - **`_HomeStateCard`** replaces the hero when there is nothing to deliver: *idle* (no batch yet),
-  *returning* («ارجع للفرع» + a «متوقَّع ~٦:١٦ م» pill, what to hand over, map pinned on the branch
-  in ink, call the branch), *settled* (who took the cash and when). A pending batch adds the amber
+  *returning* («ارجع للفرع» — no time pill any more; what to hand over, map pinned on the branch,
+  call the branch), *settled* (who took the cash and when). A pending batch adds the amber
   collect row to any of them. `HomeScreen(preview: HomePreview.x)` pins one for the DevGallery.
-- **Say each fact once.** The returning card used to print the return estimate three times (header
-  lead, the batch line's trip row, its own pill) and the branch twice. Now the **time appears only
-  in the card's pill** — the header's returning lead is «متوقَّع في الفرع» with no figure, and
-  `_HomeBatchLine(showTrip: false)` drops the trip row once the batch is closed. The branch name
-  and the reason for going were deleted outright: the map *is* the branch and the hand-over chips
-  *are* the reason.
+- **The return estimate is not printed on Home at all now** — the returning card's «متوقَّع ~»
+  pill and the on-route «عودة للفرع ~5:40» line were both removed on the courier's ask; the
+  header's returning lead stays «متوقَّع في الفرع» with no figure.
 - **One money figure on Home.** The stat strip shows `cashInHand` — the same number the header
   states — not `collectedEgp`. The two diverge the moment the branch settles a batch, and two
   different totals on one screen read as a bug whichever one you trust. The day's gross lives on
@@ -398,28 +414,37 @@ branch dashboard exists.
 
 ## Orders tab = batches (`features/queue/`)
 
-One tab, grouped by batch, the queue's search + filters on top. `QueueViewController.batchGroups`
-returns `QueueBatchGroup`s — batches **waiting at the branch first** (they need an action), then the
-ones in hand newest first — each holding only the rows that survive the active filter; an empty
-group is dropped. `_QueueBatchSection` is the collapsible card; its header is ONE justified line
-(Figma board): ID + state pill «في الفرع» / «معك» / «مكتملة» at the reading start, the sizing meta
-(«٣ طلبات · 1,620 جم») + chevron at the far end. A waiting batch closes with its own
-«تأكيد استلام الجولة» button → `showCarryBatchSheet` (pickup feature, public) → `carryBatch`.
-`_QueueBatchRow` is the row — number at the reading start, the cash pill / outcome badge pushed to
-the far end of the same line (Figma board), then name · area · pieces, then a plain «الموعد …» line
-(no clock glyph). The postponed filter keeps its rich cards. The old order card with the merchant thumbnail is
-gone; `_MerchantThumb` survives only on the postponed card.
+One tab, grouped by batch (a batch is a **تشغيلة** in every string), the queue's search + filters
+on top. `QueueViewController.batchGroups` returns `QueueBatchGroup`s in the courier's own order:
+the batches **with them first** («معك» — the work in hand, listed open), then the ones waiting at
+the branch («في الفرع»), then the **completed ones at the bottom** — each holding only the rows
+that survive the active filter; an empty group is dropped. `_QueueBatchSection` is **frameless**
+(no card, no sheet — the flat-list rule): sections divided by a `borderDefault` hairline, rows by
+`surfaceSubtle`, expansion/collapse kept. The «معك» section arrives expanded; the others closed
+(a filter opens everything it matched). A live header is ONE justified line: ID + state pill at
+the reading start, the sizing meta («3 طلبات · 1,620 جنيه») + chevron at the far end. A
+**completed batch** wears `_QueuePastBatchHeader` — the settlement history's quiet two-line shape
+(ID over meta, «مكتملة» pill as the row's end, no chevron), still expandable. A waiting batch
+closes with its own «تأكيد استلام التشغيلة» button → `showCarryBatchSheet` (pickup feature,
+public) → `carryBatch`. `_QueueBatchRow` is the row — number at the reading start, the cash pill /
+outcome mark at the far end, then name · area · pieces, then the trip facts each behind a glyph:
+🕐 «الوصول المتوقع 2:45 م» (`queue_eta`) and ➤ the leg's km (`Order.dist`). Outcome marks are
+**minimal** — a small glyph + coloured word, no pill container (`_StatusBadge`). The postponed
+filter keeps its rich cards; `_MerchantThumb` survives only there.
 
 `PickupScreen` (`/pickup`, DevGallery) is the standalone "carry everything waiting" page; the
 dispatch sheet (`showPickupDispatchSheet(batch:, branch:)`) names the batch and offers «عرض
-الدفعة في الطلبات» / «لاحقًا».
+التشغيلة في الطلبات» / «لاحقًا».
 
 ## Settlement (`features/settlement/`)
 
 `SettlementData` is a **day**: `date`, `branch`, `batches` (`SettlementBatch` = cash lines +
-returns, or `pending`), `status` (`open` → `awaiting` once the courier is expected at the branch →
-`settled`), `cashierName`, `settledAt`. `shiftSettlement` builds today's live; `sampleSettlementHistory`
-seeds the last seven days. `_DayTotals` sits under the cash card on every settlement view — the
+returns), `status` (`open` → `awaiting` once the courier is expected at the branch →
+`settled`), `cashierName`, `settledAt`. `shiftSettlement` builds today's live — and **lists only
+what the day has produced**: closed batches always, the batch still being delivered only once a
+COD order in it was handed off (its first cash line), and a batch waiting at the branch never (no
+«upcoming» row on a reconciliation page). The sub-head is **the date alone** — the branch already
+lives on Home. `sampleSettlementHistory` seeds the last seven days. `_DayTotals` sits under the cash card on every settlement view — the
 day in orders (dispatched · delivered · returned), because the cash card answers "how much" and a
 cashier reconciles that against "out of what". The page: status pill in the header (no button), the cash card —
 a warm near-black gradient (`cashCardTop`→`cashCardBottom`, Figma board), no icon tile, one 28-bold
@@ -546,24 +571,15 @@ bar (Files on the iOS 26.5 iPhone 17 Pro simulator, pixel-scanned) and the user'
   bar over dark cards, colour bands and rows; autoplay scrolls and walks the tabs on a 1.5s timer
   and steps the tier once per 12s loop — the way to watch (and screenshot) it without a finger.
 
-## Road mode (`lib/app/road_mode.dart`)
+## Road mode (`lib/app/road_mode.dart`) — DORMANT
 
-«وضع الطريق» — for sun on the screen and gloves on the grips. `RoadMode.instance.on` grows only the
-surfaces the courier uses **while moving**: the Home hero and stat strip, the order detail's sticky
-deliver bar, and the result actions. Lists stay as they are (Orders and settlement are read standing
-still). What changes, all on the 4px scale: type one step up via `TextStyleEx.road(bool)`
-(12→14, 14→16, 16→20, 20→24 — chain it **last**), buttons 52/56→64 and the result secondary 48→56,
-the hero map 120→96 to pay for it, stat labels `textSecondary`→`textTertiary` (they **stay 12** — four cells
-across 328pt cannot fit «في الطريق» at 14), and the hero/strip
-outline becomes a 2px `borderDefault`. No new colours.
-
-Two switches on the Account tab (`_RoadModeGroup`): the mode itself, and «تشغيل تلقائي على
-الطريق» (**both off by default** — the courier opts in) — phones give apps no ambient-light reading,
-so when auto is on the mode follows the day: it
-flips on when `CourierStatus` *transitions* to `onRoute` and off when it leaves. Only transitions
-move it, so a manual flip mid-route holds until the next route event, and the switch always shows
-`on` itself so the hero and the switch never disagree. In-memory only (no preferences plugin — it
-would put native code back into the iOS build).
+«وضع الطريق» was **removed from the profile menu on the courier's ask** (`_RoadModeGroup` /
+`profile_switch_row.dart` deleted), and with both switches gone the mode can never turn on. The
+plumbing is left in place, dormant: `RoadMode.instance.on` still grows the moving surfaces (Home
+hero + stat strip, the detail's sticky bar, the result actions — type one step up via
+`TextStyleEx.road(bool)` chained **last**, taller buttons, a 2px outline), and the auto
+follow-the-route logic still exists. Reviving the setting is one widget away; until then treat
+`.road(...)` chains as inert.
 
 ## Unified header (`lib/widgets/app_header.dart`)
 
@@ -638,7 +654,7 @@ calling `_select` — throwaway, `flutter run -d <sim>` streams the lines.
 Line 1: **the branch alone** — «فرع مدينة نصر» (`ShiftController.branchName`; assigned per day).
 The merchant logo and name were dropped: the merchant never changes, and this bar exists to carry
 live facts. Line 2 follows `CourierStatus`: «٤ طلبات متبقية» / «متوقَّع في الفرع ~٥:٤٠ م» / «تمت
-تسوية اليوم» / «لا دفعات بعد», then «معك 1,250 جم» — red with an alert glyph over the limit. That
+تسوية اليوم» / «لا تشغيلات بعد», then «معك 1,250 جنيه» — red with an alert glyph over the limit. That
 is all: the amber "batch waiting" chip was removed as a second signal for what the Orders tab badge
 and Home's collect row already say, and returns in custody live on Home and the settlement.
 `notificationsActive` inverts the bell.
@@ -713,7 +729,7 @@ search results, the postponed list, and the batch sections.
 the same thing twice — an amount can only mean cash on delivery. The queue row, the hero pill and the
 batch rows all follow this; prepaid keeps its «مدفوع مقدمًا» label, since it has no figure.
 
-**Copy rule:** an order is never a "stop" or a "destination". It is **الطلب ٥ من ٨**
+**Copy rule:** an order is never a "stop" or a "destination". It is **الطلب 5 من 8**
 (`home_stop_count`), in `ar.json`, `en.json` *and* `OrderbaseTheme.stopLabel` on the Swift side.
 
 ## DevGallery (`lib/dev/dev_gallery.dart`)
