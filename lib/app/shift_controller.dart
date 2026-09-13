@@ -137,6 +137,26 @@ class ShiftController extends ChangeNotifier {
     return CourierStatus.idle;
   }
 
+  /// The batch in hand is finished — every order in it closed. First half of
+  /// the carry gate below.
+  bool get completedCurrentBatch => inProgress == 0;
+
+  /// Whether the courier is physically at the branch.
+  ///
+  /// TODO(flutter-dev): replace with a real geofence — compare the device's
+  /// live GPS against the branch's pin ([branchAddress] has no coordinates
+  /// yet; add them alongside it) within a small radius. There is no location
+  /// plumbing in the demo, so this optimistically assumes a courier with
+  /// nothing left to deliver has ridden back.
+  bool get isAtBranch => status != CourierStatus.onRoute;
+
+  /// The Orders tab's carry-confirm gate: the branch hands over the next batch
+  /// only when one is waiting AND the previous batch is completely closed AND
+  /// the courier is standing in the branch. Until all three hold, the batch
+  /// section shows without its «تأكيد استلام التشغيلة» button.
+  bool get canCarryPendingBatch =>
+      hasPendingBatch && completedCurrentBatch && isAtBranch;
+
   /// True once the branch has settled the day (until a new batch is carried).
   bool get settled => _settlement != null && status != CourierStatus.onRoute;
   SettlementReceipt? get settlement => _settlement;

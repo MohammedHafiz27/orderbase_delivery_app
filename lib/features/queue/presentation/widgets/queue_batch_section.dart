@@ -131,7 +131,12 @@ class _QueueBatchSectionState extends State<_QueueBatchSection> {
                     last: order == rows.last && !g.pending,
                     onTap: () => widget.vc.openOrder(context, order),
                   ),
-                if (g.pending)
+                // The carry confirm appears only once the branch would
+                // actually hand the batch over: the previous batch is done
+                // AND the courier is standing in the branch — see
+                // [ShiftController.canCarryPendingBatch] (the location half
+                // is a stub until real geofencing lands).
+                if (g.pending && ShiftController.instance.canCarryPendingBatch)
                   _CarryBatchButton(count: g.batch.count, onTap: _carry),
               ],
             ),
@@ -185,12 +190,7 @@ class _QueueBatchHeader extends StatelessWidget {
       child:
           Row(
             children: [
-              Text(
-                b.id,
-                // «ت #7877» reads RTL now that the letter is Arabic.
-                textDirection: TextDirection.rtl,
-                style: const TextStyle().setMainTextColor.s14.bold.tabular,
-              ),
+              BatchIdLabel(id: b.id),
               8.szW,
               _BatchStatePill(group: group),
               8.szW,
@@ -257,16 +257,8 @@ class _QueuePastBatchHeader extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      b.id,
-                      // «ت #7877» reads RTL now that the letter is Arabic.
-                      textDirection: TextDirection.rtl,
-                      style: const TextStyle()
-                          .setMainTextColor
-                          .s14
-                          .semiBold
-                          .tabular,
-                    ),
+                    // The shared quiet-weight, red-underlined batch mark.
+                    Row(children: [BatchIdLabel(id: b.id)]),
                     4.szH,
                     Text(
                       LocaleKeys.queueBatchMetaComplete.tr(

@@ -15,6 +15,7 @@ import '../../../../data/order.dart';
 import '../../../failure_states/presentation/imports/failure_states_imports.dart';
 import '../../../../theme/shadows.dart';
 import '../../../../widgets/app_header.dart';
+import '../../../../widgets/batch_id.dart';
 import '../../../../widgets/bottom_nav.dart';
 import '../../../../widgets/header_back_button.dart';
 import '../../../../widgets/home_indicator.dart';

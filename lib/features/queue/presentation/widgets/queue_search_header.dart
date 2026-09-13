@@ -56,7 +56,8 @@ class _SearchField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: AppSize.sH48,
+      // 46 — every input field in the app sits at 46px (the courier's ask).
+      height: AppSize.sH46,
       decoration: BoxDecoration(
         color: AppColors.surfaceMuted,
         borderRadius: BorderRadius.circular(AppCircular.r14),

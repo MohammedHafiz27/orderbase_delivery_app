@@ -1,38 +1,18 @@
 part of '../imports/queue_imports.dart';
 
-/// Browse sub-head (1b/1d): the "date · N orders" heading, and — only on a day
-/// that actually went wrong — the exception row. Placed in the page body,
-/// directly beneath the unified [AppHeader] (search lives in that header).
-/// Sits on the page ground (no bar/border).
+/// Browse sub-head (1b/1d) — now only the breathing room under the unified
+/// [AppHeader] (search lives in that header). Sits on the page ground.
 ///
-/// The filter chips that used to sit here are gone: they restated counts the
-/// batch headers already carry one row below, and the fourth chip was clipped
-/// off the screen edge. Filters themselves live on (Home's KPI cells still
-/// drive them, and [_FilterResultsBar] clears them) — only the row went.
+/// The filter chips that used to sit here are long gone, and the exceptions
+/// row followed them (the courier's ask): the batch sections one row below
+/// already carry every outcome, so the row restated what the list shows.
+/// The filter machinery itself stays dormant behind [_FilterResultsBar].
 class _QueueBrowseHeader extends StatelessWidget {
   const _QueueBrowseHeader({required this.vc});
   final QueueViewController vc;
 
   @override
-  Widget build(BuildContext context) {
-    return ValueListenableBuilder<QueueFilter>(
-      valueListenable: vc.filter,
-      // Hidden once the courier is already looking at the exceptions — the
-      // filter bar says so, and the row would offer a trip to where they are.
-      builder: (_, filter, _) {
-        final show = vc.hasExceptions && filter != QueueFilter.exceptions;
-        if (!show) return 8.szH;
-        return _QueueExceptionsRow(
-          returns: vc.returnedCount,
-          postponed: vc.postponedCount,
-          onView: vc.showExceptions,
-        ).paddingOnlyDirectional(
-          start: AppPadding.pW20,
-          end: AppPadding.pW20,
-        ).paddingOnly(top: AppPadding.pH16, bottom: AppPadding.pH8);
-      },
-    );
-  }
+  Widget build(BuildContext context) => 8.szH;
 }
 
 /// Reused square icon button (search / back) — white tile + hairline border,

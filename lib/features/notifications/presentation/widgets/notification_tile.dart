@@ -85,14 +85,15 @@ class _NotificationTile extends StatelessWidget {
 }
 
 /// The notification message at medium weight, with only its figures —
-/// order numbers, batch IDs («ت #7877»), amounts — stepped up to semibold.
+/// order numbers, batch IDs («تشغيلة #7877»), amounts — stepped up to
+/// semibold.
 class _EmphasizedTitle extends StatelessWidget {
   const _EmphasizedTitle({required this.text});
   final String text;
 
-  /// A run that reads as a figure: an optional «ت #» / «#» prefix, then
+  /// A run that reads as a figure: an optional «تشغيلة #» / «#» prefix, then
   /// digits with their thousands separators or clock colons.
-  static final RegExp _figure = RegExp(r'(?:ت\s?#\s?|#)?\d[\d,.:]*');
+  static final RegExp _figure = RegExp(r'(?:تشغيلة\s?#\s?|#)?\d[\d,.:]*');
 
   @override
   Widget build(BuildContext context) {

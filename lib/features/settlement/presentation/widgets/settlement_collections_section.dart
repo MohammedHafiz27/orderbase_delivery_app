@@ -119,18 +119,7 @@ class _SettlementBatchSectionState extends State<_SettlementBatchSection> {
           child:
               Row(
                 children: [
-                  Text(
-                    b.id,
-                    // «ت #7877» reads RTL now that the letter is Arabic.
-                    textDirection: TextDirection.rtl,
-                    style:
-                        (muted
-                                ? const TextStyle().setSecondaryColor
-                                : const TextStyle().setMainTextColor)
-                            .s14
-                            .bold
-                            .tabular,
-                  ),
+                  BatchIdLabel(id: b.id, muted: muted),
                   if (b.pending) ...[
                     8.szW,
                     Container(
