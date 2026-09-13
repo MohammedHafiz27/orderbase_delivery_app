@@ -659,13 +659,17 @@ is all: the amber "batch waiting" chip was removed as a second signal for what t
 and Home's collect row already say, and returns in custody live on Home and the settlement.
 `notificationsActive` inverts the bell.
 
-## Live Activity / Dynamic Island (iOS, optional)
+## Live Activity / Dynamic Island (iOS, optional) — currently DETACHED
 
 The current stop mirrored onto the Dynamic Island and the Lock Screen — stop
-counter, customer, area, COD due, and a call button. **Not built, not wired, and
-not required**: the fleet carries a lot of older iPhones, so every entry point
-degrades to a silent no-op on Android, on the web build, on iOS < 16.1, and when
-the courier has Live Activities switched off in Settings.
+counter, customer, area, COD due, and a call button. **Detached on the
+courier's ask (13 Sep 2026) but fully kept**: `LiveActivityBridge.enabled`
+(one const in `live_activity_bridge.dart`) is `false`, which makes `attach()`
+only end any leftover activity and `setPhase()` a no-op — flip it to `true`
+and the whole feature returns. The method channel stays live either way
+(`dial` / `openUrl` serve the call buttons and the maps hand-off). Every entry
+point still degrades to a silent no-op on Android, on the web build, on
+iOS < 16.1, and when the courier has Live Activities switched off in Settings.
 
 | Piece | Where |
 |---|---|

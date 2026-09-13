@@ -23,6 +23,14 @@ class LiveActivityBridge {
   LiveActivityBridge._();
   static final LiveActivityBridge instance = LiveActivityBridge._();
 
+  /// Master switch. **false = the Dynamic Island / Lock Screen next-order
+  /// card is detached** (the courier's ask, 13 Sep 2026) — nothing is deleted,
+  /// flip this back to `true` and the whole feature returns: the mirroring,
+  /// the phases, the island deep links. While off, [attach] only ends any
+  /// activity a previous build left showing, and the method channel keeps
+  /// serving `dial` / `openUrl` (the call buttons and the maps hand-off).
+  static const bool enabled = false;
+
   static const MethodChannel _links = MethodChannel('orderbase/deep_links');
 
   bool _attached = false;
@@ -68,6 +76,12 @@ class LiveActivityBridge {
   void attach() {
     if (_attached) return;
     _attached = true;
+    if (!enabled) {
+      // Detached: never start or update an activity, only clear one a
+      // previous (enabled) build may have left on the island / Lock Screen.
+      unawaited(LiveActivityService.instance.end());
+      return;
+    }
     _links.setMethodCallHandler(_onLink);
     ShiftController.instance.addListener(_scheduleSync);
     unawaited(_bootstrap());
@@ -84,6 +98,7 @@ class LiveActivityBridge {
   /// Moves the island to a different moment of the SAME stop (e.g. the COD
   /// sheet opening). Resets to [DeliveryPhase.enRoute] on the next stop.
   Future<void> setPhase(DeliveryPhase phase) async {
+    if (!enabled) return;
     if (_phase == phase) return;
     _phase = phase;
     await _sync();
