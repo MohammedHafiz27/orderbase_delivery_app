@@ -149,6 +149,12 @@ class OrderBatch {
   /// The batch's identity as the branch prints it — «تشغيلة #7877». Shown on the
   /// hero, the Orders tab and the settlement, so the courier and the cashier
   /// are always talking about the same thing.
+  ///
+  /// The literals carry an LRM (U+200E) before the «#»: after an Arabic word
+  /// the bidi algorithm turns the digits into an Arabic-number run and throws
+  /// the «#» to the number's other side («7877‎#» instead of «#7877»).
+  /// The mark pins «#7877» as one LTR token, matching how the order numbers
+  /// render in the Orders rows — the courier's ask.
   final String id;
   final List<Order> orders;
 
@@ -178,9 +184,9 @@ class OrderBatch {
 /// hold several batches in one day. Announced by the dispatch sheet and waits in
 /// [ShiftController.pendingPickup] until it is carried from the branch.
 /// The batch the day opens with — already in hand, partly delivered.
-const String sampleBatchOneId = 'تشغيلة #7877';
-const String sampleBatchTwoId = 'تشغيلة #7878';
-const String sampleBatchThreeId = 'تشغيلة #7879';
+const String sampleBatchOneId = 'تشغيلة \u200E#7877';
+const String sampleBatchTwoId = 'تشغيلة \u200E#7878';
+const String sampleBatchThreeId = 'تشغيلة \u200E#7879';
 
 final List<Order> sampleBatchTwo = [
   const Order(

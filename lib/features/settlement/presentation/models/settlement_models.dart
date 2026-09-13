@@ -288,7 +288,7 @@ List<SettlementData> get sampleSettlementHistory {
       1,
       const [
         SettlementBatch(
-          id: 'تشغيلة #7871',
+          id: 'تشغيلة \u200E#7871',
           orderCount: 6,
           deliveredCount: 5,
           lines: [
@@ -321,7 +321,7 @@ List<SettlementData> get sampleSettlementHistory {
           ],
         ),
         SettlementBatch(
-          id: 'تشغيلة #7873',
+          id: 'تشغيلة \u200E#7873',
           orderCount: 3,
           deliveredCount: 3,
           lines: [
@@ -339,7 +339,7 @@ List<SettlementData> get sampleSettlementHistory {
     ),
     day(2, const [
       SettlementBatch(
-        id: 'تشغيلة #7864',
+        id: 'تشغيلة \u200E#7864',
         orderCount: 7,
         deliveredCount: 6,
         lines: [
@@ -368,7 +368,7 @@ List<SettlementData> get sampleSettlementHistory {
       3,
       const [
         SettlementBatch(
-          id: 'تشغيلة #7852',
+          id: 'تشغيلة \u200E#7852',
           orderCount: 5,
           deliveredCount: 4,
           lines: [
@@ -387,7 +387,7 @@ List<SettlementData> get sampleSettlementHistory {
           ],
         ),
         SettlementBatch(
-          id: 'تشغيلة #7855',
+          id: 'تشغيلة \u200E#7855',
           orderCount: 4,
           deliveredCount: 3,
           lines: [
@@ -414,7 +414,7 @@ List<SettlementData> get sampleSettlementHistory {
           ],
         ),
         SettlementBatch(
-          id: 'تشغيلة #7858',
+          id: 'تشغيلة \u200E#7858',
           orderCount: 2,
           deliveredCount: 2,
           lines: [],
@@ -425,7 +425,7 @@ List<SettlementData> get sampleSettlementHistory {
     ),
     day(4, const [
       SettlementBatch(
-        id: 'تشغيلة #7840',
+        id: 'تشغيلة \u200E#7840',
         orderCount: 6,
         deliveredCount: 5,
         lines: [
@@ -452,7 +452,7 @@ List<SettlementData> get sampleSettlementHistory {
     ]),
     day(5, const [
       SettlementBatch(
-        id: 'تشغيلة #7831',
+        id: 'تشغيلة \u200E#7831',
         orderCount: 8,
         deliveredCount: 7,
         lines: [
@@ -480,7 +480,7 @@ List<SettlementData> get sampleSettlementHistory {
     ], hour: 22),
     day(6, const [
       SettlementBatch(
-        id: 'تشغيلة #7822',
+        id: 'تشغيلة \u200E#7822',
         orderCount: 4,
         deliveredCount: 4,
         lines: [
@@ -501,7 +501,7 @@ List<SettlementData> get sampleSettlementHistory {
     ]),
     day(7, const [
       SettlementBatch(
-        id: 'تشغيلة #7810',
+        id: 'تشغيلة \u200E#7810',
         orderCount: 5,
         deliveredCount: 5,
         lines: [

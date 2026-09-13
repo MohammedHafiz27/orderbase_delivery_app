@@ -92,8 +92,11 @@ class _EmphasizedTitle extends StatelessWidget {
   final String text;
 
   /// A run that reads as a figure: an optional «تشغيلة #» / «#» prefix, then
-  /// digits with their thousands separators or clock colons.
-  static final RegExp _figure = RegExp(r'(?:تشغيلة\s?#\s?|#)?\d[\d,.:]*');
+  /// digits with their thousands separators or clock colons. The batch ids
+  /// carry an LRM before the «#» (see [OrderBatch.id]) — tolerated here.
+  static final RegExp _figure = RegExp(
+    r'(?:تشغيلة\s?\u200E?#\s?|\u200E?#)?\d[\d,.:]*',
+  );
 
   @override
   Widget build(BuildContext context) {

@@ -90,8 +90,9 @@ class _ProfileIdentity extends StatelessWidget {
   }
 }
 
-/// The avatar as a button: the photo (or initials) with a small ink camera
-/// badge on its lower corner saying "this is changeable".
+/// The avatar as a button: the photo (or initials) with a small ink pen
+/// badge on its lower corner saying "this is editable" (the courier's pick —
+/// Figma `edit-02`).
 class _AvatarButton extends StatelessWidget {
   const _AvatarButton({required this.bytes, required this.onTap});
   final Uint8List? bytes;
@@ -127,7 +128,7 @@ class _AvatarButton extends StatelessWidget {
                     gaplessPlayback: true,
                   ),
           ),
-          // The camera badge sits at the visual bottom-left of the avatar
+          // The pen badge sits at the visual bottom-left of the avatar
           // (bottom-end in RTL), ringed in surface so it reads over a photo.
           PositionedDirectional(
             bottom: -2,
@@ -142,7 +143,7 @@ class _AvatarButton extends StatelessWidget {
                 border: Border.all(color: AppColors.surface, width: 2),
               ),
               child: IconWidget(
-                icon: AppAssets.svg.cam,
+                icon: AppAssets.svg.pen,
                 color: AppColors.surface,
                 height: AppSize.sH12,
                 width: AppSize.sW12,

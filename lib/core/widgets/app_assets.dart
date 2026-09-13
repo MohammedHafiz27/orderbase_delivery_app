@@ -28,6 +28,7 @@ class _AppSvgs {
   String get more => _icon('more');
   String get nav => _icon('nav');
   String get note => _icon('note');
+  String get pen => _icon('pen');
   String get orders => _icon('orders');
   String get phone => _icon('phone');
   String get pin => _icon('pin');

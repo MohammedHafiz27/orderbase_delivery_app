@@ -140,7 +140,12 @@ class _HomeNextStopCard extends StatelessWidget {
                           ),
                           const TextSpan(text: '  '),
                           TextSpan(
-                            text: order.num,
+                            // LRM: after the Arabic name, bidi would flip the
+                            // «#» to the digits' far side («89289#»); the mark
+                            // keeps «#89289» one LTR token, matching the
+                            // Orders rows. (The order's own num stays clean —
+                            // it is compared by deep links and search.)
+                            text: '\u200E${order.num}',
                             style: const TextStyle()
                                 .setSecondaryColor
                                 .s14
