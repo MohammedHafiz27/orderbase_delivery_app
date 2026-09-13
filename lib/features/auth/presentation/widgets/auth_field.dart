@@ -152,15 +152,12 @@ class _AuthFieldState extends State<_AuthField> {
                         isCollapsed: true,
                         border: InputBorder.none,
                         hintText: widget.hint,
-                        hintStyle: widget.compact
-                            ? const TextStyle()
-                                  .setColor(AppColors.chipCountMuted)
-                                  .s14
-                                  .regular
-                            : const TextStyle()
-                                  .setColor(AppColors.chipCountMuted)
-                                  .s16
-                                  .regular,
+                        // Placeholders sit at 14 everywhere (the courier's
+                        // pin), one step under the 16 typed text.
+                        hintStyle: const TextStyle()
+                            .setColor(AppColors.chipCountMuted)
+                            .s14
+                            .regular,
                       ),
                     ),
                   ),

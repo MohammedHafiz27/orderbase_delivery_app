@@ -84,9 +84,10 @@ class _SearchField extends StatelessWidget {
                 isCollapsed: true,
                 border: InputBorder.none,
                 hintText: LocaleKeys.searchHint.tr(),
+                // Placeholders sit at 14 everywhere (the courier's pin).
                 hintStyle: const TextStyle()
                     .setColor(AppColors.chipCountMuted)
-                    .s16
+                    .s14
                     .semiBold,
               ),
             ),
