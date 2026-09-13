@@ -12,21 +12,18 @@ part of '../imports/home_imports.dart';
 ///  * **settled** — the branch closed the day. Who took the cash and when, and
 ///    (dev only) a way to start the simulated day again.
 ///
-/// A batch waiting at the branch adds the amber «ارجع للفرع لاستلام تشغيلة»
-/// row to any of the three, since collecting it is then the next thing to do.
-/// That row also rides under the hero while the courier is still on route —
-/// see [HomeScreen].
+/// The amber «ارجع للفرع لاستلام تشغيلة» row no longer lives inside these
+/// bodies: it moved to the top of the page, grouped with the branch line
+/// above the hero slot (the courier's Figma) — see [HomeScreen].
 class _HomeStateCard extends StatelessWidget {
   const _HomeStateCard({
     required this.status,
     this.onCallBranch,
-    this.onOpenPendingBatch,
     this.onStartNewDay,
   });
 
   final CourierStatus status;
   final VoidCallback? onCallBranch;
-  final VoidCallback? onOpenPendingBatch;
   final VoidCallback? onStartNewDay;
 
   @override
@@ -44,17 +41,12 @@ class _HomeStateCard extends StatelessWidget {
         CourierStatus.returning => _ReturningBody(
           shift: shift,
           onCallBranch: onCallBranch,
-          onOpenPendingBatch: onOpenPendingBatch,
         ),
         CourierStatus.settled => _SettledBody(
           shift: shift,
-          onOpenPendingBatch: onOpenPendingBatch,
           onStartNewDay: onStartNewDay,
         ),
-        CourierStatus.idle || CourierStatus.onRoute => _IdleBody(
-          shift: shift,
-          onOpenPendingBatch: onOpenPendingBatch,
-        ),
+        CourierStatus.idle || CourierStatus.onRoute => _IdleBody(shift: shift),
       },
     );
   }
@@ -62,9 +54,8 @@ class _HomeStateCard extends StatelessWidget {
 
 /// Before the first batch: the branch, and that a batch will be announced.
 class _IdleBody extends StatelessWidget {
-  const _IdleBody({required this.shift, this.onOpenPendingBatch});
+  const _IdleBody({required this.shift});
   final ShiftController shift;
-  final VoidCallback? onOpenPendingBatch;
 
   @override
   Widget build(BuildContext context) {
@@ -91,10 +82,6 @@ class _IdleBody extends StatelessWidget {
             1.5,
           ),
         ),
-        if (shift.hasPendingBatch) ...[
-          16.szH,
-          _PendingBatchRow(onTap: onOpenPendingBatch),
-        ],
       ],
     ).paddingSymmetric(horizontal: AppPadding.pW20, vertical: AppPadding.pH32);
   }
@@ -102,14 +89,9 @@ class _IdleBody extends StatelessWidget {
 
 /// Everything in hand is closed: head back to the branch.
 class _ReturningBody extends StatelessWidget {
-  const _ReturningBody({
-    required this.shift,
-    this.onCallBranch,
-    this.onOpenPendingBatch,
-  });
+  const _ReturningBody({required this.shift, this.onCallBranch});
   final ShiftController shift;
   final VoidCallback? onCallBranch;
-  final VoidCallback? onOpenPendingBatch;
 
   @override
   Widget build(BuildContext context) {
@@ -193,11 +175,6 @@ class _ReturningBody extends StatelessWidget {
                 ),
               ],
             ),
-            if (shift.hasPendingBatch) ...[
-              12.szH,
-              // Already told to go back, so this row only names what is there.
-              _PendingBatchRow(onTap: onOpenPendingBatch, returning: true),
-            ],
             12.szH,
             _OutlineButton(
               icon: AppAssets.svg.phone,
@@ -218,13 +195,8 @@ class _ReturningBody extends StatelessWidget {
 
 /// The branch settled the day.
 class _SettledBody extends StatelessWidget {
-  const _SettledBody({
-    required this.shift,
-    this.onOpenPendingBatch,
-    this.onStartNewDay,
-  });
+  const _SettledBody({required this.shift, this.onStartNewDay});
   final ShiftController shift;
-  final VoidCallback? onOpenPendingBatch;
   final VoidCallback? onStartNewDay;
 
   @override
@@ -286,10 +258,6 @@ class _SettledBody extends StatelessWidget {
           textAlign: TextAlign.center,
           style: const TextStyle().setTertiaryColor.s12.semiBold,
         ),
-        if (shift.hasPendingBatch) ...[
-          16.szH,
-          _PendingBatchRow(onTap: onOpenPendingBatch),
-        ],
         if (onStartNewDay != null) ...[
           16.szH,
           _OutlineButton(
@@ -368,9 +336,9 @@ class _HandChip extends StatelessWidget {
 ///
 /// A batch dispatched mid-route is a reason to turn around *now*: the orders
 /// are not in the bag, and nothing else on Home would say so while the hero is
-/// busy with the stop in hand. So this row rides under the hero as well as
-/// inside the status card, and names what is waiting so the courier can judge
-/// whether it is worth the detour yet.
+/// busy with the stop in hand. The row lives at the top of the page, grouped
+/// with the branch line it points back to (the courier's Figma), whatever the
+/// hero slot is showing.
 class _PendingBatchRow extends StatelessWidget {
   const _PendingBatchRow({this.onTap, this.returning = false});
   final VoidCallback? onTap;

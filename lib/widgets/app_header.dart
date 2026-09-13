@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../app/road_mode.dart';
+import '../app/shift_controller.dart';
 import '../config/res/config_imports.dart';
+import '../data/order.dart';
 import 'header_blur.dart';
 import 'nav_bar_controller.dart';
 
@@ -33,6 +35,7 @@ class AppHeaderSliver extends StatelessWidget {
     required this.title,
     this.onSearch,
     this.onOpenNotifications,
+    this.onCashTap,
     this.notificationsBadge = true,
     this.notificationsActive = false,
     this.background = AppColors.background,
@@ -46,6 +49,10 @@ class AppHeaderSliver extends StatelessWidget {
 
   /// Opens (or, when [notificationsActive], closes) the notifications page.
   final VoidCallback? onOpenNotifications;
+
+  /// Opens the settlement when the cash chip is tapped (Home wires this to its
+  /// tab switch); null leaves the chip informational.
+  final VoidCallback? onCashTap;
 
   /// Shows the red dot on the bell.
   final bool notificationsBadge;
@@ -84,6 +91,7 @@ class AppHeaderSliver extends StatelessWidget {
         title: title,
         onSearch: onSearch,
         onOpenNotifications: onOpenNotifications,
+        onCashTap: onCashTap,
         notificationsBadge: notificationsBadge,
         notificationsActive: notificationsActive,
         background: background,
@@ -100,6 +108,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.title,
     required this.onSearch,
     required this.onOpenNotifications,
+    required this.onCashTap,
     required this.notificationsBadge,
     required this.notificationsActive,
     required this.background,
@@ -111,6 +120,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
   final String title;
   final VoidCallback? onSearch;
   final VoidCallback? onOpenNotifications;
+  final VoidCallback? onCashTap;
   final bool notificationsBadge;
   final bool notificationsActive;
   final Color background;
@@ -165,6 +175,9 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
           ),
         ),
         8.szW,
+        // The cash in hand rides the bar itself (the courier's ask): sticky
+        // beside the actions while the title keeps collapsing under it.
+        _HeaderCashChip(onTap: onCashTap),
         _HeaderActions(
           onSearch: onSearch,
           onOpenNotifications: onOpenNotifications,
@@ -238,7 +251,72 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
       notificationsBadge != old.notificationsBadge ||
       notificationsActive != old.notificationsActive ||
       (onSearch == null) != (old.onSearch == null) ||
+      (onCashTap == null) != (old.onCashTap == null) ||
       (onOpenNotifications == null) != (old.onOpenNotifications == null);
+}
+
+/// The cash the courier is carrying, pinned in the bar — a slate money chip
+/// («350 جنيه» + the wallet glyph) that stays put while the title collapses.
+/// Absent until the day has produced cash; red once over the branch's limit,
+/// the same alarm the figure raises everywhere else.
+class _HeaderCashChip extends StatelessWidget {
+  const _HeaderCashChip({this.onTap});
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: ShiftController.instance,
+      builder: (context, _) {
+        final shift = ShiftController.instance;
+        final cash = shift.cashInHand;
+        if (cash <= 0) return const SizedBox.shrink();
+        final over = shift.overCashLimit;
+        final chip = Semantics(
+          button: onTap != null,
+          label: LocaleKeys.headerCashInHand.tr(
+            namedArgs: {'amount': formatThousands(cash)},
+          ),
+          child: AnimatedContainer(
+            duration: AppMotion.stamp,
+            curve: AppMotion.ease,
+            height: AppSize.sH40,
+            decoration: BoxDecoration(
+              color: over ? AppColors.failedText : AppColors.paymentCardBg,
+              borderRadius: BorderRadius.circular(AppCircular.r12),
+            ),
+            padding: EdgeInsetsDirectional.symmetric(
+              horizontal: AppPadding.pW8,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconWidget(
+                  icon: AppAssets.svg.wallet,
+                  color: AppColors.surface,
+                  height: AppSize.sH18,
+                  width: AppSize.sW18,
+                ),
+                4.szW,
+                Text(
+                  LocaleKeys.amountEgp.tr(
+                    namedArgs: {'amount': formatThousands(cash)},
+                  ),
+                  style: const TextStyle().setWhite.s12.semiBold.tabular,
+                ),
+              ],
+            ),
+          ).onClick(onTap: onTap),
+        );
+        // The chip carries its own trailing gap so a cashless day leaves the
+        // actions exactly where they were.
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [chip, 12.szW],
+        );
+      },
+    );
+  }
 }
 
 /// The bell and the search tile, in that reading order — leading-left in RTL.
@@ -270,7 +348,9 @@ class _HeaderActions extends StatelessWidget {
             active: notificationsActive,
             onTap: onOpenNotifications!,
           ),
-          8.szW,
+          // Visually a 6pt gap: each 40pt tile centres in its 44pt tap floor,
+          // which already contributes 2pt a side.
+          2.szW,
         ],
         if (onSearch != null)
           _HeaderAction(
@@ -283,8 +363,9 @@ class _HeaderActions extends StatelessWidget {
   }
 }
 
-/// A 44pt white icon tile (hairline border, ink glyph) with an optional red
-/// notification dot — the shared header action look, at the tap-target floor.
+/// A 40pt white icon tile (hairline border, ink glyph) with an optional red
+/// notification dot — the shared header action look. The visual tile shrank
+/// to 40 (the courier's ask); an invisible 44pt floor keeps the tap target.
 /// [active] inverts it to ink-on-white → white-on-ink.
 class _HeaderAction extends StatelessWidget {
   const _HeaderAction({
@@ -306,8 +387,8 @@ class _HeaderAction extends StatelessWidget {
     final Widget tile = AnimatedContainer(
       duration: AppMotion.stamp,
       curve: AppMotion.ease,
-      width: AppSize.sW44,
-      height: AppSize.sH44,
+      width: AppSize.sW40,
+      height: AppSize.sH40,
       decoration: BoxDecoration(
         color: active ? AppColors.inkFill : AppColors.surface,
         borderRadius: BorderRadius.circular(AppCircular.r12),
@@ -324,36 +405,36 @@ class _HeaderAction extends StatelessWidget {
         ),
       ),
     );
+    final Widget dressed = badge
+        ? Stack(
+            clipBehavior: Clip.none,
+            children: [
+              tile,
+              Positioned(
+                top: 2.h,
+                right: 2.w,
+                child: Container(
+                  width: 8.w,
+                  height: 8.h,
+                  decoration: BoxDecoration(
+                    color: AppColors.brand,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.surface, width: 1.5),
+                  ),
+                ),
+              ),
+            ],
+          )
+        : tile;
     return Semantics(
       button: true,
       label: label,
       selected: active,
-      child:
-          (badge
-                  ? Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        tile,
-                        Positioned(
-                          top: 2.h,
-                          right: 2.w,
-                          child: Container(
-                            width: 8.w,
-                            height: 8.h,
-                            decoration: BoxDecoration(
-                              color: AppColors.brand,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: AppColors.surface,
-                                width: 1.5,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  : tile)
-              .onClick(onTap: onTap),
+      // The 40pt tile keeps a >=44pt tap area, like _SquareIconButton.
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minWidth: 44.w, minHeight: 44.h),
+        child: Center(child: dressed),
+      ).onClick(onTap: onTap),
     );
   }
 }

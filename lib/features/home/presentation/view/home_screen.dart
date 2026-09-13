@@ -4,12 +4,14 @@ part of '../imports/home_imports.dart';
 /// shift, which is what the app shell does.
 enum HomePreview { idle, returning, settled }
 
-/// Home / الرئيسية — the next order as a hero card, the day's four numbers
-/// directly beneath it. Reads the live [ShiftController] so the hero advances
-/// and the numbers update as stops close, and swaps the hero for a status card
-/// when there is nothing to deliver: before the first batch, once everything
-/// in hand is closed (expected back at the branch), and after the branch has
-/// settled the day.
+/// Home / الرئيسية — the branch line (branch · merchant) leading the page,
+/// the collect-the-new-batch row when one is waiting, then the next order as
+/// a hero card. The day's numbers left the page: the cash rides the app
+/// header's chip and the counts live on the Orders tab. Reads the live
+/// [ShiftController] so the hero advances as stops close, and swaps the hero
+/// for a status card when there is nothing to deliver: before the first
+/// batch, once everything in hand is closed (expected back at the branch),
+/// and after the branch has settled the day.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
@@ -18,7 +20,6 @@ class HomeScreen extends StatefulWidget {
     this.onDeliverOrder,
     this.onCallCustomer,
     this.onCallBranch,
-    this.onOpenOrdersFilter,
     this.onOpenSettlement,
     this.onOpenPendingBatch,
     this.onOpenNotifications,
@@ -51,11 +52,7 @@ class HomeScreen extends StatefulWidget {
   /// «اتصال بالفرع» on the expected-at-branch card.
   final VoidCallback? onCallBranch;
 
-  /// A KPI cell that maps to a slice of the Orders tab (in-progress /
-  /// delivered / failed) — switches to that tab with the filter preselected.
-  final void Function(QueueFilter)? onOpenOrdersFilter;
-
-  /// The cash cell → settlement.
+  /// The header's cash chip → settlement.
   final VoidCallback? onOpenSettlement;
 
   /// The status card's «تشغيلة جديدة في انتظارك» row → the Orders tab.
@@ -111,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 title: LocaleKeys.navHome.tr(),
                 onSearch: widget.onOpenSearch,
                 onOpenNotifications: widget.onOpenNotifications,
+                onCashTap: widget.onOpenSettlement,
               ),
               SliverToBoxAdapter(
                 child: AnimatedBuilder(
@@ -126,51 +124,45 @@ class _HomeScreenState extends State<HomeScreen> {
                     final hasStop =
                         status == CourierStatus.onRoute &&
                         shift.nextStop != null;
-                    // Built once, placed once — above the hero slot or below
-                    // it, never both. Absent entirely until a number moves.
-                    final stats = _HomeStatRow.hasAnyMetric(shift)
-                        ? _HomeStatRow(
-                            onOpenOrdersFilter: widget.onOpenOrdersFilter,
-                            onOpenSettlement: widget.onOpenSettlement,
-                          )
-                        : null;
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Which branch the courier is on today — it left the
-                        // header when the header became a page title, and it
-                        // belongs above the numbers it produced.
-                        _HomeBranchLine(branch: shift.branchName),
-                        12.szH,
-                        // The day's numbers lead the page, always —
-                        // the designer's call. They are still absent
-                        // until one of them moves off zero.
-                        if (stats != null) ...[stats, 20.szH],
-                        if (hasStop) ...[
-                          // The hero is self-contained now: the stop counter
-                          // sits inside it above the destination, and the
+                        // Which branch the courier is on today, and the
+                        // merchant it belongs to — it left the header when
+                        // the header became a page title. (The stat strip
+                        // that used to follow is gone: the cash now rides
+                        // the header itself, and the counts live on the
+                        // Orders tab.)
+                        _HomeBranchLine(
+                          branch: shift.branchName,
+                          merchant: Courier.merchantName,
+                        ),
+                        // A batch dispatched mid-route is a reason to turn
+                        // around now — those orders are not in the bag. The
+                        // row sits with the branch it points back to, above
+                        // the hero (the courier's Figma), whatever state the
+                        // hero slot is in.
+                        if (shift.hasPendingBatch) ...[
+                          12.szH,
+                          _PendingBatchRow(
+                            onTap: widget.onOpenPendingBatch,
+                            returning: status == CourierStatus.returning,
+                          ),
+                        ],
+                        20.szH,
+                        if (hasStop)
+                          // The hero is self-contained: the lead-in sits
+                          // inside it above the destination, and the
                           // deliver/call actions live inside the card too.
-                          // The old trip row above the banner is gone.
                           _HomeNextStopCard(
                             onViewOrder: widget.onOpenOrder,
                             onDeliver: widget.onDeliverOrder,
                             onCall: widget.onCallCustomer,
-                          ),
-                          // A batch dispatched mid-route is a reason to
-                          // turn around now — those orders are not in the
-                          // bag. The status card carries this row when the
-                          // hero is gone; on route it sits under the hero
-                          // instead of going unsaid. It carries no return
-                          // time — the row itself is the message.
-                          if (shift.hasPendingBatch) ...[
-                            20.szH,
-                            _PendingBatchRow(onTap: widget.onOpenPendingBatch),
-                          ],
-                        ] else
+                          )
+                        else
                           _HomeStateCard(
                             status: status,
                             onCallBranch: widget.onCallBranch,
-                            onOpenPendingBatch: widget.onOpenPendingBatch,
                             onStartNewDay: widget.onStartNewDay,
                           ),
                       ],

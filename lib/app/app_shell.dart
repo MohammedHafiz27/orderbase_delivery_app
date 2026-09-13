@@ -71,7 +71,6 @@ class _AppShellState extends State<AppShell> {
       onDeliverOrder: _deliverNextStop,
       onCallCustomer: _callNextStop,
       onCallBranch: _callBranch,
-      onOpenOrdersFilter: _openOrdersFilter,
       onOpenSettlement: _openSettlement,
       onOpenPendingBatch: _openPendingBatch,
       onOpenNotifications: _toggleNotifications,
@@ -222,13 +221,6 @@ class _AppShellState extends State<AppShell> {
     if (o != null) _openOrder(orderToFlow(o));
   }
 
-  /// A Home KPI cell → the Orders tab with that slice preselected.
-  void _openOrdersFilter(QueueFilter f) {
-    _ordersVc.closeSearch();
-    _ordersVc.selectFilter(f);
-    _select(NavTab.orders);
-  }
-
   /// The dispatch sheet's «عرض التشغيلة» and Home's «تشغيلة جديدة في انتظارك» row
   /// → the Orders tab, filters cleared so the waiting batch is at the top.
   void _openPendingBatch() {
@@ -237,7 +229,7 @@ class _AppShellState extends State<AppShell> {
     _select(NavTab.orders);
   }
 
-  /// Home "collected today" KPI → the Settlement tab.
+  /// The header's cash chip → the Settlement tab.
   void _openSettlement() => _select(NavTab.settlement);
 
   /// The unified header's search (from any tab) → the Orders tab, in search mode.
