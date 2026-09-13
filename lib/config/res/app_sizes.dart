@@ -25,6 +25,9 @@ abstract final class AppSize {
   static double get sH36 => 36.h;
   static double get sH40 => 40.h;
   static double get sH44 => 44.h;
+  // 46 breaks the 4px grid on purpose: the courier pinned every input field
+  // at exactly 46px.
+  static double get sH46 => 46.h;
   static double get sH48 => 48.h;
   static double get sH52 => 52.h;
   static double get sH66 => 66.h;

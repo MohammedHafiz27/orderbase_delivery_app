@@ -15,7 +15,8 @@ String _authGlyph(String name) => switch (name) {
 };
 
 /// The signature Orderbase input (DESIGN.md): a labeled field on a muted surface
-/// (#F4F3F0), 14px radius, 52px tall, a leading stroke glyph, and a **2px ink
+/// (#F4F3F0), 14px radius, 46px tall (the courier's ask — every input field in
+/// the app sits at 46), a leading stroke glyph, and a **2px ink
 /// border** with a brand-red cursor when active. Supports a password obscure +
 /// eye toggle, an optional trailing widget (e.g. a green match check), and an
 /// optional label-trailing link ("نسيتها؟"). Owns only its own focus/obscure
@@ -112,7 +113,7 @@ class _AuthFieldState extends State<_AuthField> {
             if (obscureText) textStyle = textStyle.copyWith(letterSpacing: 4);
 
             return Container(
-              height: AppSize.sH52,
+              height: AppSize.sH46,
               decoration: BoxDecoration(
                 color: AppColors.surfaceMuted,
                 borderRadius: BorderRadius.circular(AppCircular.r14),
