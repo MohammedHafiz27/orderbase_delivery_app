@@ -234,6 +234,24 @@ no longer linked from the tab bar.
   plugin would put native code back into the iOS build.
 - `StatusPill` — small status pill (background/foreground/border/icon).
 
+## Inputs are 46px
+
+Every input field sits at **exactly 46px** (the courier's pin, a deliberate break from the 4px
+grid — `AppSize.sH46` carries the note): the auth `_AuthField` (was 52) and the Orders search
+field (was 48). The OTP code boxes (56) and buttons are not inputs and keep their heights.
+
+## Profile photo — upload + review (`core/session/profile_photo.dart`)
+
+The courier can upload their own photo from the Account tab: the avatar (and its ink camera
+badge) opens the system photo picker. **An uploaded photo is pending review** — the amber
+«قيد المراجعة» pill shows beside the name and a snackbar tells the courier it will be accepted
+or declined; with no backend it stays pending (a `TODO(flutter-dev)` marks where the verdict
+lands). Plumbing: `ProfilePhoto` rides the **Live Activity method channel** (`pickPhoto` /
+`profilePhoto` in `ios/Runner/LiveActivityChannel.swift`) — PHPicker out-of-process (no
+permission prompt, no Info.plist key), downscaled to 512px JPEG persisted in documents, **bytes**
+handed back over the channel so Dart stays `dart:io`-free (the web build must keep compiling;
+web/Android are silent no-ops and keep the initials avatar).
+
 ## Icons (`assets/icons/` + `AppIcon` / `IconWidget`)
 
 `AppIcon(AppIconName.x, color:, size:)` / `IconWidget(icon: AppAssets.svg.x, color:)` render
@@ -333,9 +351,9 @@ previous one:
 Each dispatch raises the mid-flight sheet, files a notification, and lights the Orders badge. The
 sheet arrives with `AppHaptics.attention()` — two heavy knocks plus the system alert sound — because it
 is the one event of the day the courier did not cause; a silent sheet is missed on a bike.
-`demoDayBatches` (`lib/data/order.dart`) is the plan: `ت #7877` (five orders, all `transit` via
-`Order.asFresh()` — a fresh day must not open with a batch already half closed), then `ت #7878` and
-`ت #7879`. The app's own seeded launch state counts as batch 1 against that plan, so a launched
+`demoDayBatches` (`lib/data/order.dart`) is the plan: «تشغيلة #7877» (five orders, all `transit` via
+`Order.asFresh()` — a fresh day must not open with a batch already half closed), then «تشغيلة #7878» and
+«تشغيلة #7879». The app's own seeded launch state counts as batch 1 against that plan, so a launched
 session and a restarted one both total three.
 
 «بدء يوم جديد (تجريبي)» (settled card / Account tab) calls `restart()`: the shift empties, and the
@@ -347,7 +365,7 @@ branch dashboard exists.
 
 ## Shift model (`lib/app/shift_controller.dart`)
 
-- **Batches carry the branch's ID** — `OrderBatch.id` is «ت #7877» — and every surface shows it:
+- **Batches carry the branch's ID** — `OrderBatch.id` is «تشغيلة #7877» — and every surface shows it:
   the hero's batch line, Orders sections, settlement sections, the dispatch sheet.
 - `CourierStatus { idle, onRoute, returning, settled }` is the one value Home, the header and the
   settlement read. `returning` = everything in hand closed and cash/returns not yet taken.
@@ -363,6 +381,16 @@ branch dashboard exists.
   feeds the order detail, `fullAddress` the maps badge and search.
 
 ## Home (`features/home/`)
+
+- **The day's numbers left the page (13 Sep 2026, the courier's Figma).** The stat strip
+  (`home_stat_row.dart`) is deleted: the cash in hand became the **header cash chip** (see
+  *Unified header*) and the counts live on the Orders tab. `HomeScreen.onOpenOrdersFilter` went
+  with it; `onOpenSettlement` now feeds the chip's tap.
+- **The branch line carries the merchant** — «فرع مدينة نصر · Sale Sucre», the merchant a size
+  down at regular/secondary (`_HomeBranchLine(merchant:)`, from `Courier.merchantName`).
+- **The pending-batch row moved above the banner**: it renders directly under the branch line
+  (12 gap, then 20 to the hero) whatever the hero slot shows, and the copies inside the three
+  state-card bodies were removed — one row, one place.
 
 - **The hero is self-contained** (`_HomeNextStopCard`): «الطلب 5 من 8» quiet at the top →
   **destination bold** → map strip (tap = Google Maps) → one meta row (customer · number ·
@@ -389,38 +417,52 @@ branch dashboard exists.
 - **The note badge is a pill, not a dot.** It sits in an `IntrinsicHeight` row with
   `CrossAxisAlignment.stretch` beside the cash pill, so the two are exactly the same height and
   read as a matched pair. A circle next to a pill read as two unrelated things sharing a row.
-- **A batch waiting mid-route says so under the hero.** `_PendingBatchRow` («ارجع للفرع لاستلام
-  تشغيلة جديدة») renders under the hero while `status == onRoute && hasPendingBatch`, as well as
-  inside the status card. Those orders are not in the bag, so it is a reason to turn around now,
-  not only when everything is closed. **It carries no return-time figure** — the courier asked for
-  the time to go; the row itself is the message.
-- **`_HomeStatRow`** — one strip under the hero, **cash first**: cash in hand (widest cell, slate,
-  reading start) · in progress · delivered. The failed cell was dropped — failures zero out the
-  moment returns are handed to the branch, so as a day-metric it lied; the cash is what the
-  courier is answerable for. The cash cell goes red over the limit.
+- **A batch waiting says so at the top.** `_PendingBatchRow` («ارجع للفرع لاستلام تشغيلة جديدة»)
+  renders under the branch line, above the hero slot, whenever `hasPendingBatch` — whatever the
+  hero slot shows (the copies inside the state-card bodies were removed). Those orders are not
+  in the bag, so it is a reason to turn around now. **It carries no return-time figure** — the
+  courier asked for the time to go; the row itself is the message.
 - **`_HomeStateCard`** replaces the hero when there is nothing to deliver: *idle* (no batch yet),
   *returning* («ارجع للفرع» — no time pill any more; what to hand over, map pinned on the branch,
-  call the branch), *settled* (who took the cash and when). A pending batch adds the amber
-  collect row to any of them. `HomeScreen(preview: HomePreview.x)` pins one for the DevGallery.
+  call the branch), *settled* (who took the cash and when).
+  `HomeScreen(preview: HomePreview.x)` pins one for the DevGallery.
 - **The return estimate is not printed on Home at all now** — the returning card's «متوقَّع ~»
-  pill and the on-route «عودة للفرع ~5:40» line were both removed on the courier's ask; the
-  header's returning lead stays «متوقَّع في الفرع» with no figure.
-- **One money figure on Home.** The stat strip shows `cashInHand` — the same number the header
-  states — not `collectedEgp`. The two diverge the moment the branch settles a batch, and two
-  different totals on one screen read as a bug whichever one you trust. The day's gross lives on
-  the settlement page, which is what that page is for.
+  pill and the on-route «عودة للفرع ~5:40» line were both removed on the courier's ask.
+- **One money figure, and it lives in the header.** The chip shows `cashInHand` — never
+  `collectedEgp`; the two diverge the moment the branch settles a batch, and two different totals
+  on one screen read as a bug whichever one you trust. The day's gross lives on the settlement
+  page, which is what that page is for.
 - **One headline size.** Everything that occupies the hero slot's title — the destination on route
   and the idle / returning / settled titles — is `.s16.bold`.
 
+## Batch identity — «تشغيلة #7877»
+
+**The batch ID is spelled out now** (13 Sep 2026): `OrderBatch.id` is «تشغيلة #7877» (was «ت #7877»),
+across `demoDayBatches`, the settlement history and every template that interpolates `{id}`. On the
+Orders sections and the settlement it renders through **`BatchIdLabel`** (`lib/widgets/batch_id.dart`):
+14/**medium** — deliberately quieter than the bold order numbers — marked by a **thin `brand`-red
+rule underneath** instead of weight. The notifications' figure-emphasis regex
+(`notification_tile.dart`) matches the new prefix.
+
 ## Orders tab = batches (`features/queue/`)
+
+- **The in-hand section pill is «الحالية»** (was «معك») — `queue_batch_in_hand`.
+- **The exceptions row is gone** (`queue_exceptions_row.dart` deleted): the batch sections carry
+  every outcome one row below. The filter machinery is dormant — `_FilterResultsBar` still clears
+  a filter, but with the Home KPI cells gone nothing sets one.
+- **The carry-confirm button is gated**: `ShiftController.canCarryPendingBatch` = a batch is
+  waiting AND `completedCurrentBatch` (nothing in transit) AND `isAtBranch`. `isAtBranch` is a
+  **stub** (`status != onRoute`) with a `TODO(flutter-dev)` to swap in a real geofence; until all
+  three hold, a waiting batch's section shows with no «تأكيد استلام التشغيلة» button.
+
 
 One tab, grouped by batch (a batch is a **تشغيلة** in every string), the queue's search + filters
 on top. `QueueViewController.batchGroups` returns `QueueBatchGroup`s in the courier's own order:
-the batches **with them first** («معك» — the work in hand, listed open), then the ones waiting at
+the batches **with them first** («الحالية» — the work in hand, listed open), then the ones waiting at
 the branch («في الفرع»), then the **completed ones at the bottom** — each holding only the rows
 that survive the active filter; an empty group is dropped. `_QueueBatchSection` is **frameless**
 (no card, no sheet — the flat-list rule): sections divided by a `borderDefault` hairline, rows by
-`surfaceSubtle`, expansion/collapse kept. The «معك» section arrives expanded; the others closed
+`surfaceSubtle`, expansion/collapse kept. The «الحالية» section arrives expanded; the others closed
 (a filter opens everything it matched). A live header is ONE justified line: ID + state pill at
 the reading start, the sizing meta («3 طلبات · 1,620 جنيه») + chevron at the far end. A
 **completed batch** wears `_QueuePastBatchHeader` — the settlement history's quiet two-line shape
@@ -651,13 +693,15 @@ calling `_select` — throwaway, `flutter run -d <sim>` streams the lines.
 > `BackdropGroup` (shares one *filtered result*, so it only serves identical, non-overlapping
 > filters).
 
-Line 1: **the branch alone** — «فرع مدينة نصر» (`ShiftController.branchName`; assigned per day).
-The merchant logo and name were dropped: the merchant never changes, and this bar exists to carry
-live facts. Line 2 follows `CourierStatus`: «٤ طلبات متبقية» / «متوقَّع في الفرع ~٥:٤٠ م» / «تمت
-تسوية اليوم» / «لا تشغيلات بعد», then «معك 1,250 جنيه» — red with an alert glyph over the limit. That
-is all: the amber "batch waiting" chip was removed as a second signal for what the Orders tab badge
-and Home's collect row already say, and returns in custody live on Home and the settlement.
-`notificationsActive` inverts the bell.
+**The bar now carries the cash** (13 Sep 2026, the courier's Figma): `_HeaderCashChip` — a slate
+(`paymentCardBg`) 40pt pill, wallet glyph + «{cash} جنيه» in white 12/semibold — sits between the
+title and the actions, sticky while the title collapses. Hidden until `cashInHand > 0`; red
+(`failedText`) over the limit; `AppHeaderSliver.onCashTap` opens the settlement (Home wires its
+tab switch). The action tiles are **40pt** now (were 44) with an invisible 44pt tap floor.
+
+The branch/status lines the bar used to carry are long gone (the branch line lives on Home, now
+with the merchant beside it); the amber "batch waiting" chip likewise — the Orders tab badge and
+Home's collect row carry that signal. `notificationsActive` inverts the bell.
 
 ## Live Activity / Dynamic Island (iOS, optional) — currently DETACHED
 

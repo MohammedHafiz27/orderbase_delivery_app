@@ -113,10 +113,10 @@ class _PickupBatchHeader extends StatelessWidget {
       child:
           Row(
             children: [
-              // The ID as the branch prints it — «ت #7877».
+              // The ID as the branch prints it — «تشغيلة #7877».
               Text(
                 batch.id,
-                // «ت #7877» reads RTL now that the letter is Arabic.
+                // «تشغيلة #7877» reads RTL now that the letter is Arabic.
                 textDirection: TextDirection.rtl,
                 style: const TextStyle().setMainTextColor.s14.bold.tabular,
               ),
