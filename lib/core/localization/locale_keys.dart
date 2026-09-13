@@ -97,6 +97,9 @@ abstract final class LocaleKeys {
   static const String profileAccountPassword = 'profile_account_password';
   static const String profileDevScreens = 'profile_dev_screens';
   static const String profileMerchantNo = 'profile_merchant_no';
+  static const String profilePhotoChange = 'profile_photo_change';
+  static const String profilePhotoPending = 'profile_photo_pending';
+  static const String profilePhotoUploaded = 'profile_photo_uploaded';
   static const String profileRoadMode = 'profile_road_mode';
   static const String profileRoadModeDesc = 'profile_road_mode_desc';
   static const String profileRoadAuto = 'profile_road_auto';

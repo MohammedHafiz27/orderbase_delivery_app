@@ -1,5 +1,6 @@
 import Flutter
 import Foundation
+import PhotosUI
 import UIKit
 
 #if canImport(ActivityKit)
@@ -115,8 +116,60 @@ final class LiveActivityChannel: NSObject {
                 result(nil)
             }
 
+        case "pickPhoto":
+            pickPhoto(result: result)
+
+        case "profilePhoto":
+            // The stored profile photo's bytes, or nil when none was ever
+            // picked — how Dart restores the avatar after a relaunch without
+            // any dart:io (the web build must keep compiling).
+            let url = Self.profilePhotoURL
+            if let data = try? Data(contentsOf: url) {
+                result(FlutterStandardTypedData(bytes: data))
+            } else {
+                result(nil)
+            }
+
         default:
             result(FlutterMethodNotImplemented)
+        }
+    }
+
+    // MARK: - Profile photo picking
+
+    /// Where the courier's photo persists between launches.
+    static var profilePhotoURL: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("courier_photo.jpg")
+    }
+
+    /// The pending `pickPhoto` completion while the PHPicker sheet is up.
+    private var photoPickResult: FlutterResult?
+
+    /// Presents the out-of-process photo picker (no photo-library permission
+    /// or Info.plist key needed), stores a downscaled JPEG in documents, and
+    /// answers with its bytes — or nil when the courier cancels.
+    private func pickPhoto(result: @escaping FlutterResult) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { result(nil); return }
+            guard self.photoPickResult == nil,
+                  let root = UIApplication.shared.connectedScenes
+                      .compactMap({ $0 as? UIWindowScene })
+                      .flatMap({ $0.windows })
+                      .first(where: { $0.isKeyWindow })?
+                      .rootViewController else {
+                result(nil)
+                return
+            }
+            var config = PHPickerConfiguration()
+            config.filter = .images
+            config.selectionLimit = 1
+            let picker = PHPickerViewController(configuration: config)
+            picker.delegate = self
+            self.photoPickResult = result
+            var top = root
+            while let presented = top.presentedViewController { top = presented }
+            top.present(picker, animated: true)
         }
     }
 
@@ -231,6 +284,44 @@ final class LiveActivityChannel: NSObject {
         guard !cleaned.isEmpty, let url = URL(string: "tel://\(cleaned)") else { return }
         DispatchQueue.main.async {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
+    }
+}
+
+// MARK: - PHPicker delegate (profile photo)
+
+extension LiveActivityChannel: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        guard let completion = photoPickResult else { return }
+        photoPickResult = nil
+        guard let provider = results.first?.itemProvider,
+              provider.canLoadObject(ofClass: UIImage.self) else {
+            completion(nil)
+            return
+        }
+        provider.loadObject(ofClass: UIImage.self) { object, _ in
+            guard let image = object as? UIImage,
+                  let data = Self.scaledDown(image, maxDimension: 512)
+                      .jpegData(compressionQuality: 0.85) else {
+                DispatchQueue.main.async { completion(nil) }
+                return
+            }
+            // Best-effort persistence; the bytes still go back either way.
+            try? data.write(to: LiveActivityChannel.profilePhotoURL, options: .atomic)
+            DispatchQueue.main.async { completion(FlutterStandardTypedData(bytes: data)) }
+        }
+    }
+
+    /// Avatars have no use for a 12-megapixel photo — cap the long edge.
+    private static func scaledDown(_ image: UIImage, maxDimension: CGFloat) -> UIImage {
+        let size = image.size
+        let longEdge = max(size.width, size.height)
+        guard longEdge > maxDimension, longEdge > 0 else { return image }
+        let k = maxDimension / longEdge
+        let newSize = CGSize(width: size.width * k, height: size.height * k)
+        return UIGraphicsImageRenderer(size: newSize).image { _ in
+            image.draw(in: CGRect(origin: .zero, size: newSize))
         }
     }
 }

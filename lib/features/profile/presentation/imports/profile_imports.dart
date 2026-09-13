@@ -6,11 +6,14 @@
 /// person: their identity leads, and the account actions hang off it.
 library;
 
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 import '../../../../config/res/config_imports.dart';
 import '../../../../core/session/auth_session.dart';
 import '../../../../core/session/courier.dart';
+import '../../../../core/session/profile_photo.dart';
 import '../../../../dev/dev_gallery.dart';
 import '../../../auth/presentation/imports/auth_imports.dart';
 import '../../../../widgets/app_header.dart';
