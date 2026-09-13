@@ -63,7 +63,6 @@ class _HomeFlatNextStop extends StatelessWidget {
           height: 104.h, // mockup 104px
           borderRadius: AppCircular.r16,
           pinDiameter: 32,
-          pinIconSize: 17,
         ),
         // info
         Column(

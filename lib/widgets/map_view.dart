@@ -7,19 +7,21 @@ import '../config/res/config_imports.dart';
 import '../core/live_activity/external_links.dart';
 import '../theme/shadows.dart';
 
-/// Interactive map with a centered red pin. Used both as the short strip inside
-/// the Home hero card and as the taller rounded map in the order detail.
+/// Map preview with the Google Maps pin at its centre and «افتح خرائط جوجل»
+/// directly under it. Used both as the short strip inside the Home hero card
+/// and as the taller rounded map in the order detail.
 ///
 /// Renders a real [FlutterMap] with OpenStreetMap raster tiles (pure-Dart, no
-/// native plugin — keeps the iOS build CocoaPods-free). The pin sits at the map
-/// centre.
+/// native plugin — keeps the iOS build CocoaPods-free).
 ///
 /// The map is a **still preview** by default ([interactive] off): it holds its
 /// frame on the order's address instead of panning under the courier's thumb.
 /// That matters twice over — a map that drags inside a scrolling card fights
 /// the scroll, and it would swallow the taps of the cards these strips sit in.
-/// Real navigation is the open-in-Google-Maps badge's job, and that badge stays
-/// live either way.
+/// Real navigation is Google Maps' job — and the **whole strip** is the way
+/// there: tapping anywhere on the map opens the destination in Google Maps,
+/// which is why the pin is Google's own mark with the label under it rather
+/// than a badge tucked in a corner.
 class MapView extends StatefulWidget {
   const MapView({
     super.key,
@@ -27,18 +29,12 @@ class MapView extends StatefulWidget {
     this.borderRadius = 0,
     this.showHairlines = false,
     this.pinDiameter = 36,
-    this.pinIconSize = 19,
     this.pinVerticalAlignment = 0,
     this.center,
     this.destinationLabel,
     this.showOpenInMaps = true,
     this.interactive = false,
-    this.pinColor = AppColors.brand,
   });
-
-  /// The pin's fill. Brand red for a customer's door; ink when the map points
-  /// at the courier's own branch (the expected-at-branch card).
-  final Color pinColor;
 
   final double height;
   final double borderRadius;
@@ -46,8 +42,9 @@ class MapView extends StatefulWidget {
   /// Draws top+bottom hairline borders instead of clipping to a radius
   /// (the Home strip look).
   final bool showHairlines;
+
+  /// Height of the Google pin mark at the map's centre.
   final double pinDiameter;
-  final double pinIconSize;
 
   /// -1 top … 0 center … 1 bottom, matching the mockups' slightly-above-center
   /// pin placement.
@@ -64,8 +61,8 @@ class MapView extends StatefulWidget {
   /// see the class doc.
   final bool interactive;
 
-  /// Shows the "open in Google Maps" badge. The map itself is a preview — real
-  /// turn-by-turn belongs to a maps app, and the badge is what says so.
+  /// Shows the «افتح خرائط جوجل» label under the pin and makes the whole map
+  /// open Google Maps on tap.
   final bool showOpenInMaps;
 
   static const LatLng _defaultCenter = LatLng(30.0444, 31.2357);
@@ -74,57 +71,27 @@ class MapView extends StatefulWidget {
   State<MapView> createState() => _MapViewState();
 }
 
-class _MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
-  /// The pin's breath — a few slow rings when a destination lands, then rest.
-  ///
-  /// It used to loop forever, and that was the tab bar's whole performance
-  /// story: the bar is a backdrop filter, and a backdrop must be re-rendered
-  /// every frame anything beneath it changes. A ring breathing at 60 fps
-  /// under the glass meant the shader (and, on the web, the blur) ran
-  /// continuously while the courier just looked at Home. Three breaths still
-  /// say "live fix"; a frozen page afterwards costs nothing.
-  late final AnimationController _pulse = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 1800),
-  );
-
-  static const int _breaths = 3;
-
+class _MapViewState extends State<MapView> {
+  // The old breathing halo is gone with the round pin: a disc behind
+  // Google's teardrop mark showed through its transparent regions, and the
+  // still map costs zero frames without it.
   bool _reduced = false;
-  bool _started = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Reduce Motion is a display setting, so re-evaluate whenever it changes:
-    // animate only when motion is allowed, otherwise sit on the static pin.
-    final reduced = AppMotion.reduced(context);
-    if (_started && reduced == _reduced) return;
-    _reduced = reduced;
-    _started = true;
-    _breathe();
+    // Reduce Motion is a display setting, so re-evaluate whenever it
+    // changes: it drives the tile fade-in.
+    _reduced = AppMotion.reduced(context);
   }
 
-  @override
-  void didUpdateWidget(MapView old) {
-    super.didUpdateWidget(old);
-    // A new destination gets a fresh fix.
-    if (old.center != widget.center) _breathe();
-  }
-
-  void _breathe() {
-    _pulse.stop();
-    _pulse.value = 0;
-    if (_reduced) return;
-    // The ring is invisible at both ends of a breath (under the pin at 0,
-    // faded out at 1), so wherever the loop leaves it the pin reads clean.
-    _pulse.repeat(count: _breaths);
-  }
-
-  @override
-  void dispose() {
-    _pulse.dispose();
-    super.dispose();
+  void _openMaps() {
+    final LatLng focus = widget.center ?? MapView._defaultCenter;
+    ExternalLinks.openInGoogleMaps(
+      lat: focus.latitude,
+      lng: focus.longitude,
+      label: widget.destinationLabel,
+    );
   }
 
   @override
@@ -133,7 +100,6 @@ class _MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
     final double borderRadius = widget.borderRadius;
     final bool showHairlines = widget.showHairlines;
     final double pinDiameter = widget.pinDiameter;
-    final double pinIconSize = widget.pinIconSize;
 
     Widget map = FlutterMap(
       options: MapOptions(
@@ -169,25 +135,15 @@ class _MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
     // is embedded in — the Home hero is tappable through this strip.
     if (!widget.interactive) map = IgnorePointer(child: map);
 
-    final Widget pin = Container(
-      width: pinDiameter,
+    // Google's own pin mark, drawn as-is: it is a multi-colour brand logo,
+    // so it deliberately bypasses IconWidget, which recolours the app's
+    // monochrome icon set through a srcIn filter.
+    final Widget pin = SvgPicture.asset(
+      'assets/brand/google_maps.svg',
       height: pinDiameter,
-      decoration: BoxDecoration(
-        color: widget.pinColor,
-        shape: BoxShape.circle,
-        boxShadow: AppShadows.pin,
-      ),
-      child: Center(
-        child: IconWidget(
-          icon: AppAssets.svg.pin,
-          color: AppColors.surface,
-          height: pinIconSize,
-          width: pinIconSize,
-        ),
-      ),
     );
 
-    return SizedBox(
+    final Widget body = SizedBox(
       height: widget.height,
       child: Stack(
         children: [
@@ -206,117 +162,47 @@ class _MapViewState extends State<MapView> with SingleTickerProviderStateMixin {
           ),
           Align(
             alignment: Alignment(0, widget.pinVerticalAlignment),
-            child: Stack(
-              alignment: Alignment.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Live-location halo: a soft brand ring that swells and fades
-                // out behind the pin. Sized off pinDiameter so it reads right on
-                // both the small Home strip and the taller detail map.
-                if (!_reduced)
-                  _PinPulse(pulse: _pulse, pinDiameter: pinDiameter),
                 pin,
+                if (widget.showOpenInMaps) ...[
+                  4.szH,
+                  // The hand-off label, under the pin it belongs to: the
+                  // whole map is the button, this is what says so.
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(AppCircular.r8),
+                      boxShadow: AppShadows.pin,
+                    ),
+                    padding: EdgeInsetsDirectional.symmetric(
+                      horizontal: AppPadding.pW8,
+                      vertical: AppPadding.pH4,
+                    ),
+                    child: Text(
+                      LocaleKeys.mapOpenInGoogle.tr(),
+                      style: const TextStyle().setMainTextColor.s12.semiBold,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
-          if (widget.showOpenInMaps)
-            Positioned(
-              bottom: AppPadding.pH8,
-              left: AppPadding.pW8,
-              child: _OpenInMapsBadge(
-                focus: focus,
-                label: widget.destinationLabel,
-              ),
-            ),
         ],
       ),
     );
-  }
-}
 
-/// The small "open in Google Maps" chip that sits on the map.
-///
-/// Deliberately quiet and corner-anchored: the map is a preview of where the
-/// order is, and this is the hand-off to an app that can actually navigate.
-class _OpenInMapsBadge extends StatelessWidget {
-  const _OpenInMapsBadge({required this.focus, this.label});
-
-  final LatLng focus;
-  final String? label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(AppCircular.r8),
-      elevation: 0,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppCircular.r8),
-        onTap: () => ExternalLinks.openInGoogleMaps(
-          lat: focus.latitude,
-          lng: focus.longitude,
-          label: label,
-        ),
-        child: Padding(
-          padding: EdgeInsetsDirectional.symmetric(
-            horizontal: AppPadding.pW8,
-            vertical: AppPadding.pH4,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // The real Google Maps mark, drawn as-is: it is a multi-colour
-              // brand logo, so it deliberately bypasses IconWidget, which
-              // recolours the app's monochrome icon set through a srcIn filter.
-              SvgPicture.asset(
-                'assets/brand/google_maps.svg',
-                height: AppSize.sH16,
-              ),
-              4.szW,
-              Text(
-                LocaleKeys.mapOpenInGoogle.tr(),
-                style: const TextStyle().setMainTextColor.s12.semiBold,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// The breathing ring drawn behind the pin: scales 1.0→1.8 and fades 0.35→0 on
-/// each loop of [pulse]. Purely decorative, never intercepts pointer events.
-class _PinPulse extends StatelessWidget {
-  const _PinPulse({required this.pulse, required this.pinDiameter});
-
-  final Animation<double> pulse;
-  final double pinDiameter;
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: AnimatedBuilder(
-        animation: pulse,
-        builder: (context, _) {
-          final double t = pulse.value;
-          final double scale = 1.0 + 0.8 * t; // 1.0 → 1.8
-          final double opacity = 0.35 * (1 - t); // 0.35 → 0
-          return Opacity(
-            opacity: opacity,
-            child: Transform.scale(
-              scale: scale,
-              child: Container(
-                width: pinDiameter,
-                height: pinDiameter,
-                decoration: const BoxDecoration(
-                  color: AppColors.brand,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
+    // The whole map opens Google Maps — a preview that IS the hand-off. Only
+    // when the map is a still (always, in the app); a pannable map keeps its
+    // gestures.
+    if (widget.showOpenInMaps && !widget.interactive) {
+      return Semantics(
+        button: true,
+        label: LocaleKeys.mapOpenInGoogle.tr(),
+        child: body.onClick(onTap: _openMaps),
+      );
+    }
+    return body;
   }
 }

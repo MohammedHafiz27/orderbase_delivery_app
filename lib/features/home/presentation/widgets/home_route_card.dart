@@ -94,7 +94,7 @@ class _HomeRouteCard extends StatelessWidget {
                   border: Border.all(color: AppColors.borderHeader),
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: MapView(height: 78.h, pinDiameter: 26, pinIconSize: 14),
+                child: MapView(height: 78.h, pinDiameter: 26),
               ),
               Expanded(
                 child: Column(

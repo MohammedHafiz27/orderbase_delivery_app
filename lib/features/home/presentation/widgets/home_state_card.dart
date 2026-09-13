@@ -153,13 +153,12 @@ class _ReturningBody extends StatelessWidget {
           right: AppPadding.pW20,
           bottom: AppPadding.pH12,
         ),
-        // The map points at the branch now, not a customer — the ink pin
-        // (rather than the brand red) says "yours", not "theirs".
+        // The map points at the branch now, not a customer. Like every map
+        // in the app, the whole strip opens Google Maps.
         MapView(
           height: AppSize.sH120,
           showHairlines: true,
           destinationLabel: shift.branchAddress,
-          pinColor: AppColors.inkFill,
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

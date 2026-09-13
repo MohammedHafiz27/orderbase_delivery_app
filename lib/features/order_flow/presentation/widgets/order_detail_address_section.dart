@@ -38,7 +38,6 @@ class _AddressSection extends StatelessWidget {
           height: AppSize.sH180,
           borderRadius: AppCircular.r16,
           pinDiameter: 34.w,
-          pinIconSize: 18.w,
           pinVerticalAlignment: -0.04,
           destinationLabel: address,
         ),
