@@ -61,6 +61,8 @@ class _SettlementOpenView extends StatelessWidget {
             title: LocaleKeys.navSettlement.tr(),
             onSearch: onOpenSearch,
             onOpenNotifications: onOpenNotifications,
+            // Already on the settlement — the cash chip stops being a button.
+            cashNavigates: false,
           ),
         SliverToBoxAdapter(child: body),
       ],

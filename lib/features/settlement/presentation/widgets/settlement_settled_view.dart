@@ -74,6 +74,8 @@ class _SettlementSettledView extends StatelessWidget {
             background: AppColors.surface,
             onSearch: onOpenSearch,
             onOpenNotifications: onOpenNotifications,
+            // Already on the settlement — the cash chip stops being a button.
+            cashNavigates: false,
           ),
         SliverToBoxAdapter(child: body),
       ],

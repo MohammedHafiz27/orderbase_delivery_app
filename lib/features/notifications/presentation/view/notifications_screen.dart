@@ -95,6 +95,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 onSearch: widget.onOpenSearch,
                 onOpenNotifications: widget.onClose,
                 notificationsActive: true,
+                // The cash chip switches to the Settlement tab.
+                onCashTap: widget.onSelectTab == null
+                    ? null
+                    : () => widget.onSelectTab!(NavTab.settlement),
               ),
               // No banner atop the feed: the dispatch already announces
               // itself as a sheet, a notification and the Orders badge — a

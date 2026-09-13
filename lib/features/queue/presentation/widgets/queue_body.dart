@@ -51,6 +51,11 @@ class _QueueBodyState extends State<_QueueBody> {
             title: LocaleKeys.navOrders.tr(),
             onSearch: vc.openSearch,
             onOpenNotifications: vc.onOpenNotifications,
+            // The cash chip switches to the Settlement tab (falls back to
+            // pushing the route when the page is standalone).
+            onCashTap: vc.onSelectTab == null
+                ? null
+                : () => vc.onSelectTab!(NavTab.settlement),
           ),
           SliverToBoxAdapter(child: _QueueBrowseHeader(vc: vc)),
           SliverToBoxAdapter(child: _QueueBrowseList(vc: vc)),

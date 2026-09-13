@@ -797,9 +797,14 @@ shell (and the *Tab bar lab*). **Add a gallery entry for each new screen.**
   an interrupted `.xip` extraction that replaced the full 26.6): the toolchain and platform SDKs
   are there, so `flutter build ios --simulator` and every `xcrun simctl` verb work, but
   **`Simulator.app` does not exist anywhere on the disk** (no `Contents/Developer/Applications/`)
-  and the desktop app's simulator panel cannot attach. Screenshot with
-  `xcrun simctl io booted screenshot` until Ahmed reinstalls a full Xcode; the iOS 26.5 + 27.0
-  runtimes and the iPhone 17 devices live outside the bundle and are intact.
+  (`DeviceHub.app` in `Contents/Applications` is Xcode 27's devices window). **The only
+  runtime is iOS 27.0 now** — 26.5 was deleted on Ahmed's ask (freed ~8 GB); the daily device is
+  the freshly created **iPhone 17 Pro on iOS 27, UDID `683D4CD5-46F3-4C6F-ABC9-99BA89CBFEAF`**.
+  The desktop app's simulator panel: `attach` + `tap` + `text` **work** (taps land accurately now
+  — the old warning about wrong tab-bar tap coordinates no longer applies), but the panel's video
+  streamer still crash-loops, so `control screenshot` fails and the user sees a blank panel —
+  screenshot with `xcrun simctl io booted screenshot` instead. If attach says "no booted
+  simulator" while simctl disagrees, `pkill -f claude-ios-sim` respawns the helper and fixes it.
   - **No CocoaPods needed.** The only iOS plugin is `path_provider_foundation` (transitive via
     `google_fonts`, `native_build: false`) — Flutter builds without a Podfile. Don't chase
     CocoaPods install unless a future plugin with native code forces it.

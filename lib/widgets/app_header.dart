@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 import '../app/road_mode.dart';
 import '../app/shift_controller.dart';
@@ -36,6 +37,7 @@ class AppHeaderSliver extends StatelessWidget {
     this.onSearch,
     this.onOpenNotifications,
     this.onCashTap,
+    this.cashNavigates = true,
     this.notificationsBadge = true,
     this.notificationsActive = false,
     this.background = AppColors.background,
@@ -50,9 +52,16 @@ class AppHeaderSliver extends StatelessWidget {
   /// Opens (or, when [notificationsActive], closes) the notifications page.
   final VoidCallback? onOpenNotifications;
 
-  /// Opens the settlement when the cash chip is tapped (Home wires this to its
-  /// tab switch); null leaves the chip informational.
+  /// Opens the settlement when the cash chip is tapped. The shell's tab pages
+  /// wire their tab switch here; when null the chip falls back to pushing the
+  /// `/settlement` route, so the cash opens the settlement **from any page**
+  /// (the courier's ask). See [cashNavigates] for the one opt-out.
   final VoidCallback? onCashTap;
+
+  /// False on the settlement's own header: tapping the cash to open the page
+  /// it is already on would push a second settlement. The chip still shows —
+  /// it just stops being a button there.
+  final bool cashNavigates;
 
   /// Shows the red dot on the bell.
   final bool notificationsBadge;
@@ -92,6 +101,7 @@ class AppHeaderSliver extends StatelessWidget {
         onSearch: onSearch,
         onOpenNotifications: onOpenNotifications,
         onCashTap: onCashTap,
+        cashNavigates: cashNavigates,
         notificationsBadge: notificationsBadge,
         notificationsActive: notificationsActive,
         background: background,
@@ -109,6 +119,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.onSearch,
     required this.onOpenNotifications,
     required this.onCashTap,
+    required this.cashNavigates,
     required this.notificationsBadge,
     required this.notificationsActive,
     required this.background,
@@ -121,6 +132,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
   final VoidCallback? onSearch;
   final VoidCallback? onOpenNotifications;
   final VoidCallback? onCashTap;
+  final bool cashNavigates;
   final bool notificationsBadge;
   final bool notificationsActive;
   final Color background;
@@ -177,7 +189,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
         8.szW,
         // The cash in hand rides the bar itself (the courier's ask): sticky
         // beside the actions while the title keeps collapsing under it.
-        _HeaderCashChip(onTap: onCashTap),
+        _HeaderCashChip(onTap: onCashTap, navigates: cashNavigates),
         _HeaderActions(
           onSearch: onSearch,
           onOpenNotifications: onOpenNotifications,
@@ -252,6 +264,7 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
       notificationsActive != old.notificationsActive ||
       (onSearch == null) != (old.onSearch == null) ||
       (onCashTap == null) != (old.onCashTap == null) ||
+      cashNavigates != old.cashNavigates ||
       (onOpenNotifications == null) != (old.onOpenNotifications == null);
 }
 
@@ -260,11 +273,20 @@ class _AppHeaderDelegate extends SliverPersistentHeaderDelegate {
 /// Absent until the day has produced cash; red once over the branch's limit,
 /// the same alarm the figure raises everywhere else.
 class _HeaderCashChip extends StatelessWidget {
-  const _HeaderCashChip({this.onTap});
+  const _HeaderCashChip({this.onTap, this.navigates = true});
   final VoidCallback? onTap;
+
+  /// False only on the settlement's own header (see
+  /// [AppHeaderSliver.cashNavigates]).
+  final bool navigates;
 
   @override
   Widget build(BuildContext context) {
+    // The chip opens the settlement from ANY page: a page inside the shell
+    // hands its tab switch in; everywhere else the route is pushed.
+    final VoidCallback? effectiveTap = navigates
+        ? (onTap ?? () => Modular.to.pushNamed('/settlement'))
+        : null;
     return AnimatedBuilder(
       animation: ShiftController.instance,
       builder: (context, _) {
@@ -273,7 +295,7 @@ class _HeaderCashChip extends StatelessWidget {
         if (cash <= 0) return const SizedBox.shrink();
         final over = shift.overCashLimit;
         final chip = Semantics(
-          button: onTap != null,
+          button: effectiveTap != null,
           label: LocaleKeys.headerCashInHand.tr(
             namedArgs: {'amount': formatThousands(cash)},
           ),
@@ -306,7 +328,7 @@ class _HeaderCashChip extends StatelessWidget {
                 ),
               ],
             ),
-          ).onClick(onTap: onTap),
+          ).onClick(onTap: effectiveTap),
         );
         // The chip carries its own trailing gap so a cashless day leaves the
         // actions exactly where they were.

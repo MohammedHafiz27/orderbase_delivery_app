@@ -60,6 +60,8 @@ class ProfileScreen extends StatelessWidget {
                 title: LocaleKeys.navProfile.tr(),
                 onSearch: onOpenSearch,
                 onOpenNotifications: onOpenNotifications,
+                // The cash chip switches to the Settlement tab.
+                onCashTap: () => onSelectTab(NavTab.settlement),
               ),
               SliverPadding(
                 padding: EdgeInsetsDirectional.only(
