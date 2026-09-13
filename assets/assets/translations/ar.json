@@ -483,7 +483,6 @@
   "settlement_batch_cash_orders": "{count} نقدي",
   "settlement_batch_returns": "{count} مرتجعات",
   "settlement_return_pill": "مرتجع",
-  "settlement_hand_returns": "تسليم المرتجعات للفرع",
   "settlement_history_title": "الأيام السابقة",
   "settlement_history_meta": "{cash} جنيه · {batches} تشغيلات · {orders} طلبات",
   "settlement_yesterday": "أمس",

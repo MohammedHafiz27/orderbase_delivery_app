@@ -483,7 +483,6 @@
   "settlement_batch_cash_orders": "{count} cash",
   "settlement_batch_returns": "{count} returns",
   "settlement_return_pill": "Return",
-  "settlement_hand_returns": "Hand returns to the branch",
   "settlement_history_title": "Previous days",
   "settlement_history_meta": "EGP {cash} · {batches} batches · {orders} orders",
   "settlement_yesterday": "Yesterday",
