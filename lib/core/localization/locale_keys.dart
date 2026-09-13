@@ -575,6 +575,8 @@ abstract final class LocaleKeys {
   static const String homeStatOverLimit = 'home_stat_over_limit';
   static const String homeIdleTitle = 'home_idle_title';
   static const String homeIdleBody = 'home_idle_body';
+  static const String homeIdleReadyTitle = 'home_idle_ready_title';
+  static const String homeIdleReadyBody = 'home_idle_ready_body';
   static const String homeReturnExpected = 'home_return_expected';
   static const String homeReturnTitle = 'home_return_title';
   static const String homeHandToBranch = 'home_hand_to_branch';

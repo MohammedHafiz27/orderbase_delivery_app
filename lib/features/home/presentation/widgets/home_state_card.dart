@@ -59,24 +59,25 @@ class _IdleBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // A batch waiting at the branch flips the card's whole message: «لم تُسند
+    // لك تشغيلة بعد» under the amber collect row was the page contradicting
+    // itself (the courier's catch). The merchant·branch line is gone too —
+    // the branch line at the top of the page already says it.
+    final waiting = shift.hasPendingBatch;
     return Column(
       children: [
         _StateGlyph(icon: AppAssets.svg.box),
         16.szH,
         Text(
-          LocaleKeys.homeIdleTitle.tr(),
+          (waiting ? LocaleKeys.homeIdleReadyTitle : LocaleKeys.homeIdleTitle)
+              .tr(),
           textAlign: TextAlign.center,
           style: const TextStyle().setMainTextColor.s16.bold,
         ),
         8.szH,
         Text(
-          '${Courier.merchantName} · ${shift.branchName}',
-          textAlign: TextAlign.center,
-          style: const TextStyle().setTertiaryColor.s14.semiBold,
-        ),
-        8.szH,
-        Text(
-          LocaleKeys.homeIdleBody.tr(),
+          (waiting ? LocaleKeys.homeIdleReadyBody : LocaleKeys.homeIdleBody)
+              .tr(),
           textAlign: TextAlign.center,
           style: const TextStyle().setSecondaryColor.s14.regular.withHeight(
             1.5,
