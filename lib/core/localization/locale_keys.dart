@@ -21,9 +21,6 @@ abstract final class LocaleKeys {
   static const String notifNewCount = 'notif_new_count';
   static const String notifMarkAllRead = 'notif_mark_all_read';
   static const String notifPrevious = 'notif_previous';
-  static const String notifHeroTitle = 'notif_hero_title';
-  static const String notifHeroBody = 'notif_hero_body';
-  static const String notifHeroCta = 'notif_hero_cta';
   static const String notifMinutesAgo = 'notif_minutes_ago';
   static const String notifEmptyTitle = 'notif_empty_title';
   static const String notifEmptySub = 'notif_empty_sub';

@@ -12,7 +12,6 @@ import '../../../../widgets/app_header.dart';
 import '../../../../widgets/bottom_nav.dart';
 import '../../../../widgets/header_back_button.dart';
 import '../../../../widgets/home_indicator.dart';
-import '../../../../theme/shadows.dart';
 
 // Models & sample data
 part '../controllers/notification_models.dart';

@@ -96,19 +96,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 onOpenNotifications: widget.onClose,
                 notificationsActive: true,
               ),
-              if (ShiftController.instance.hasPendingBatch)
-                SliverToBoxAdapter(
-                  child: _NotificationsHeroBanner(
-                    batch: ShiftController.instance.pendingBatches.first,
-                    branch: ShiftController.instance.branchName,
-                    onView: () => widget.onSelectTab?.call(NavTab.orders),
-                  ).paddingOnly(
-                    left: AppPadding.pW20,
-                    right: AppPadding.pW20,
-                    top: AppPadding.pH8,
-                    bottom: AppPadding.pH12,
-                  ),
-                ),
+              // No banner atop the feed: the dispatch already announces
+              // itself as a sheet, a notification and the Orders badge — a
+              // standing hero here was a fourth copy of the same fact.
               SliverToBoxAdapter(
                 child: _NotificationsListTitle(
                   onMarkAllRead: unread > 0
@@ -175,86 +165,6 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           ),
         );
       },
-    );
-  }
-}
-
-/// The batch-dispatched hero, pinned atop the feed while a batch waits at the
-/// branch: a dark slate gradient card with a red CTA into the Orders tab. It
-/// mirrors the dispatch sheet, but as a standing reminder rather than an
-/// interruption.
-class _NotificationsHeroBanner extends StatelessWidget {
-  const _NotificationsHeroBanner({
-    required this.batch,
-    required this.branch,
-    this.onView,
-  });
-  final OrderBatch batch;
-  final String branch;
-  final VoidCallback? onView;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.heroBannerTop, AppColors.heroBannerBottom],
-        ),
-        borderRadius: BorderRadius.circular(AppCircular.r24),
-        boxShadow: AppShadows.heroBanner,
-      ),
-      padding: EdgeInsets.all(AppPadding.pH20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            LocaleKeys.notifHeroTitle.tr(namedArgs: {'id': batch.id}),
-            style: const TextStyle().setWhite.s18.semiBold.withHeight(1.4),
-          ),
-          8.szH,
-          Text(
-            LocaleKeys.notifHeroBody.tr(
-              namedArgs: {
-                'count': englishDigits(batch.count),
-                'branch': branch,
-                'cash': formatThousands(batch.codTotal),
-              },
-            ),
-            style: const TextStyle()
-                .setColor(AppColors.heroBannerBody)
-                .s12
-                .regular
-                .withHeight(1.4),
-          ),
-          16.szH,
-          Container(
-            height: AppSize.sH40,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: AppColors.brand,
-              borderRadius: BorderRadius.circular(AppCircular.r12),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  LocaleKeys.notifHeroCta.tr(),
-                  style: const TextStyle().setWhite.s14.bold,
-                ),
-                8.szW,
-                IconWidget(
-                  icon: AppAssets.svg.chevronLeft,
-                  color: AppColors.surface,
-                  height: 14.h,
-                  width: 14.w,
-                ),
-              ],
-            ),
-          ).onClick(onTap: onView),
-        ],
-      ),
     );
   }
 }

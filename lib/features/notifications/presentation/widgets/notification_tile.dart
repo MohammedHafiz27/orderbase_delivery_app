@@ -1,9 +1,11 @@
 part of '../imports/notifications_imports.dart';
 
-/// A single notification card — a kind-tinted icon tile (leading, RTL right),
-/// the title + body stacked, and the relative time on the far side. Unread
-/// items stand out on a plain white card with a brand dot; already-read items
-/// recede onto a muted background. Tapping opens the referenced order.
+/// A single notification row — a kind-tinted icon tile (leading, RTL right),
+/// the message with the relative time beneath it, and the unread dot at the
+/// far end. The message sits at **medium** weight; only the figures inside it
+/// — order numbers, batch IDs, amounts — step up to semibold, so a feed of
+/// rows reads as prose with the facts standing out, not as a wall of bold.
+/// Tapping opens the referenced order.
 class _NotificationTile extends StatelessWidget {
   const _NotificationTile({
     required this.notification,
@@ -55,13 +57,7 @@ class _NotificationTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  n.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle().setMainTextColor.s14.semiBold
-                      .withHeight(1.35),
-                ),
+                _EmphasizedTitle(text: n.title),
                 4.szH,
                 Text(
                   n.time,
@@ -85,5 +81,38 @@ class _NotificationTile extends StatelessWidget {
         ],
       ),
     ).onClick(onTap: onTap);
+  }
+}
+
+/// The notification message at medium weight, with only its figures —
+/// order numbers, batch IDs («B #7877»), amounts — stepped up to semibold.
+class _EmphasizedTitle extends StatelessWidget {
+  const _EmphasizedTitle({required this.text});
+  final String text;
+
+  /// A run that reads as a figure: an optional «B #» / «#» prefix, then
+  /// digits with their thousands separators or clock colons.
+  static final RegExp _figure = RegExp(r'(?:B\s?#\s?|#)?\d[\d,.:]*');
+
+  @override
+  Widget build(BuildContext context) {
+    final base = const TextStyle().setMainTextColor.s14.medium.withHeight(
+      1.35,
+    );
+    final strong = const TextStyle().setMainTextColor.s14.semiBold.tabular
+        .withHeight(1.35);
+    final spans = <TextSpan>[];
+    var i = 0;
+    for (final m in _figure.allMatches(text)) {
+      if (m.start > i) spans.add(TextSpan(text: text.substring(i, m.start)));
+      spans.add(TextSpan(text: m.group(0), style: strong));
+      i = m.end;
+    }
+    if (i < text.length) spans.add(TextSpan(text: text.substring(i)));
+    return Text.rich(
+      TextSpan(style: base, children: spans),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
   }
 }
