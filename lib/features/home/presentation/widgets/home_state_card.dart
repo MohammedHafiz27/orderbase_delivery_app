@@ -136,22 +136,15 @@ class _ReturningBody extends StatelessWidget {
                 showTrip: false,
               ),
             12.szH,
-            // Instruction and the one time it names. The branch's name, and
-            // the reason for going, are left out: the map below is the branch
-            // and the chips under it are the reason.
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    LocaleKeys.homeReturnTitle.tr(),
-                    style: const TextStyle().setMainTextColor.s16.bold
-                        .withHeight(1.3),
-                  ),
-                ),
-                12.szW,
-                _ExpectedAtPill(eta: eta),
-              ],
+            // The instruction alone — no return-time pill (the courier asked
+            // for the time to go). The branch's name, and the reason for
+            // going, are also left out: the map below is the branch and the
+            // chips under it are the reason.
+            Text(
+              LocaleKeys.homeReturnTitle.tr(),
+              style: const TextStyle().setMainTextColor.s16.bold.withHeight(
+                1.3,
+              ),
             ),
           ],
         ).paddingOnly(
@@ -220,37 +213,6 @@ class _ReturningBody extends StatelessWidget {
           bottom: AppPadding.pH16,
         ),
       ],
-    );
-  }
-}
-
-/// «متوقَّع ~5:44 م» — the estimate, stated once and only here. The header
-/// says «متوقَّع في الفرع» with no time, and the title beside this pill has
-/// already named the branch, so neither the phrase nor the figure is printed
-/// twice on one screen.
-class _ExpectedAtPill extends StatelessWidget {
-  const _ExpectedAtPill({required this.eta});
-  final String eta;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.transitPillBg,
-        borderRadius: BorderRadius.circular(AppCircular.r8),
-      ),
-      padding: EdgeInsets.symmetric(
-        horizontal: AppPadding.pW8,
-        vertical: AppPadding.pH4,
-      ),
-      child: Text(
-        LocaleKeys.homeReturnExpected.tr(namedArgs: {'time': eta}),
-        style: const TextStyle()
-            .setColor(AppColors.transitBg)
-            .s12
-            .semiBold
-            .tabular,
-      ),
     );
   }
 }

@@ -1,9 +1,14 @@
 part of '../imports/home_imports.dart';
 
-/// The day's four numbers as one strip under the hero: in progress, delivered,
-/// failed, and the cash the courier is carrying. It replaced a 2×2 grid of tiles so the hero *and*
-/// the numbers fit on screen without a scroll — the courier asked for both
-/// upfront, with the hero still the biggest thing on the page.
+/// The day's numbers as one strip under the hero: the cash the courier is
+/// carrying FIRST, then in progress and delivered.
+///
+/// The cash leads because it is the one figure that outlives the batch — a
+/// failed count zeroes the moment the courier hands the returns back at the
+/// branch, which made it a misleading day-metric, so it was dropped from the
+/// strip entirely (failures still live on the Orders tab and the settlement).
+/// The cash in hand is what the courier is answerable for at any moment, so
+/// it takes the reading start and the widest cell.
 ///
 /// Each cell taps through to what it summarises (an Orders filter, or the
 /// settlement). The cash cell is slate, like every money surface, and turns
@@ -16,18 +21,15 @@ class _HomeStatRow extends StatelessWidget {
   final void Function(QueueFilter)? onOpenOrdersFilter;
   final VoidCallback? onOpenSettlement;
 
-  /// Whether the strip has anything to report yet — one of its own four
+  /// Whether the strip has anything to report yet — one of its own
   /// numbers off zero.
   ///
-  /// On a brand-new day it would read «00 · 00 · 00» with an empty cash cell:
-  /// four cells all saying "nothing has happened" on a screen whose only
+  /// On a brand-new day it would read «00 · 00» with an empty cash cell:
+  /// cells all saying "nothing has happened" on a screen whose only
   /// message is already "nothing has happened". So it does not render at all
   /// until the day has actually started moving.
   static bool hasAnyMetric(ShiftController shift) =>
-      shift.inProgress > 0 ||
-      shift.deliveredCount > 0 ||
-      shift.failedCount > 0 ||
-      shift.cashInHand > 0;
+      shift.inProgress > 0 || shift.deliveredCount > 0 || shift.cashInHand > 0;
 
   static String _pad(int n) => n.toString().padLeft(2, '0');
 
@@ -50,37 +52,10 @@ class _HomeStatRow extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // The cash leads the strip — the most important figure of the
+            // day, at the reading start and in the widest cell.
             Expanded(
-              flex: 3,
-              child: _StatCell(
-                value: _pad(shift.inProgress),
-                label: LocaleKeys.filterTransit.tr(),
-                road: road,
-                onTap: () => onOpenOrdersFilter?.call(QueueFilter.transit),
-              ),
-            ),
-            const _CellRule(),
-            Expanded(
-              flex: 3,
-              child: _StatCell(
-                value: _pad(shift.deliveredCount),
-                label: LocaleKeys.filterDelivered.tr(),
-                road: road,
-                onTap: () => onOpenOrdersFilter?.call(QueueFilter.delivered),
-              ),
-            ),
-            const _CellRule(),
-            Expanded(
-              flex: 3,
-              child: _StatCell(
-                value: _pad(shift.failedCount),
-                label: LocaleKeys.homeStatFailedShort.tr(),
-                road: road,
-                onTap: () => onOpenOrdersFilter?.call(QueueFilter.failed),
-              ),
-            ),
-            Expanded(
-              flex: 4,
+              flex: 5,
               child: _StatCell(
                 // Cash IN HAND, the same figure the header states — not the
                 // day's gross. They diverge the moment the branch settles a
@@ -102,6 +77,25 @@ class _HomeStatRow extends StatelessWidget {
                     : AppColors.paymentLabel,
                 road: road,
                 onTap: onOpenSettlement,
+              ),
+            ),
+            Expanded(
+              flex: 3,
+              child: _StatCell(
+                value: _pad(shift.inProgress),
+                label: LocaleKeys.filterTransit.tr(),
+                road: road,
+                onTap: () => onOpenOrdersFilter?.call(QueueFilter.transit),
+              ),
+            ),
+            const _CellRule(),
+            Expanded(
+              flex: 3,
+              child: _StatCell(
+                value: _pad(shift.deliveredCount),
+                label: LocaleKeys.filterDelivered.tr(),
+                road: road,
+                onTap: () => onOpenOrdersFilter?.call(QueueFilter.delivered),
               ),
             ),
           ],
@@ -180,7 +174,8 @@ class _StatCell extends StatelessWidget {
                         ),
                       ],
               ),
-              textDirection: TextDirection.ltr,
+              // RTL so the «جنيه» suffix lands to the LEFT of the figure.
+              textDirection: TextDirection.rtl,
               maxLines: 1,
             ),
             6.szH,

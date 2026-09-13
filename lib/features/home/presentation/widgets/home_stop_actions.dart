@@ -1,12 +1,10 @@
 part of '../imports/home_imports.dart';
 
-/// Deliver and call, below the hero card rather than inside it.
+/// Deliver and call — the hero card's own action row, at its foot.
 ///
-/// They sit on the page because they act on the stop rather than describing
-/// it: the card above is what the courier reads, this row is what they press.
-/// Keeping them outside also means the card's own tap — which opens the order
-/// — no longer has to lose the gesture arena to two controls sitting on top of
-/// it.
+/// They live inside the banner (the designer's call): the card describes the
+/// stop and closes with what to do about it. Both buttons handle their own
+/// taps, so they win the gesture arena over the card's open-the-order tap.
 class _HomeStopActions extends StatelessWidget {
   const _HomeStopActions({this.onDeliver, this.onCall});
 

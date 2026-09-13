@@ -11,23 +11,27 @@ const bool kShowRouteLeg = false;
 
 /// The next-order hero card, in the order a courier reads it at a glance:
 ///
-///  1. **The batch line** — which batch, where in it, and how the trip ends
-///     (return time to the branch, trip kilometres, a tooltip on what those
-///     mean).
+///  1. **«الطلب 5 من 8»** — where the courier is in the batch, quiet, above
+///     the destination. The old trip row above the card (batch ID, distance,
+///     the ⓘ) is gone entirely — this counter is the one batch fact the hero
+///     keeps, and it lives inside the banner now.
 ///  2. **The destination, bold** — area and street on one line at one weight,
 ///     then the door (building · floor · apartment) a step quieter.
-///  3. **The map strip** with the open-in-Maps badge. Per-stop distance and
-///     ETA are gone on purpose: Maps answers both better.
+///  3. **The map strip** — the whole strip opens Google Maps.
 ///  4. **One quiet meta row** — customer, order number, then a matched pair of
 ///     chips: a note badge when the customer left instructions, and the cash
-///     pill. Plus the promised time, a deadline rather than an estimate.
-///  5. **Two actions** — «تم تسليم الطلب» and call. WhatsApp lives on the
-///     detail, which the whole card opens.
+///     pill.
+///  5. **Two actions inside the card** — «تم تسليم الطلب» and call. WhatsApp
+///     lives on the detail, which the rest of the card opens.
 class _HomeNextStopCard extends StatelessWidget {
-  const _HomeNextStopCard({this.onViewOrder});
+  const _HomeNextStopCard({this.onViewOrder, this.onDeliver, this.onCall});
 
   /// Opens the current order's detail — the whole card taps through to it.
   final VoidCallback? onViewOrder;
+
+  /// The card's own actions — deliver and call live inside the banner.
+  final VoidCallback? onDeliver;
+  final VoidCallback? onCall;
 
   @override
   Widget build(BuildContext context) {
@@ -68,10 +72,21 @@ class _HomeNextStopCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── 1. the destination ──
-              // The batch line and the trip facts now sit above this card,
-              // and the actions below it: what is left inside is only the
-              // place the courier is going.
+              // ── 1. the stop counter ──
+              // «الطلب 5 من 8» — the one batch fact the hero keeps, quiet,
+              // directly above the destination it counts toward.
+              Text(
+                LocaleKeys.homeStopCount.tr(
+                  namedArgs: {
+                    'current': englishDigits(shift.currentStopNumber),
+                    'total': englishDigits(shift.totalStops),
+                  },
+                ),
+                style: const TextStyle().setSecondaryColor.s14.medium.tabular
+                    .road(road),
+              ),
+              4.szH,
+              // ── 2. the destination ──
               // Area and street sit on ONE line at ONE weight and size: they
               // are a single fact ("where am I going"), and setting the area
               // three steps louder than its own street invented a hierarchy
@@ -169,6 +184,9 @@ class _HomeNextStopCard extends StatelessWidget {
               ),
             ],
           ),
+          16.szH,
+          // ── 5. the actions, inside the card ──
+          _HomeStopActions(onDeliver: onDeliver, onCall: onCall),
         ],
       ).paddingAll(AppPadding.pW16),
       // The whole card opens the order. Everything inside that handles its own

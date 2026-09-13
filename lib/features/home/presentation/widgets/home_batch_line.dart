@@ -14,100 +14,6 @@ String homeReturnText(String returnEta) => LocaleKeys.homeReturnLine
     .first
     .trim();
 
-/// The trip row that sits ABOVE the hero card.
-///
-/// The batch and the courier's place in it lead the line; the distance and its
-/// ⓘ sit at the far end. Splitting them to opposite ends is what lets the row
-/// read as two separate facts without a separator between them — and it keeps
-/// the card beneath free to be only the destination.
-class _HomeStopTripRow extends StatelessWidget {
-  const _HomeStopTripRow({
-    required this.batch,
-    required this.current,
-    required this.total,
-    required this.routeKm,
-  });
-
-  final OrderBatch batch;
-  final int current;
-  final int total;
-  final double routeKm;
-
-  @override
-  Widget build(BuildContext context) {
-    final road = RoadMode.instance.on;
-    final count = LocaleKeys.homeStopCount.tr(
-      namedArgs: {
-        'current': englishDigits(current),
-        'total': englishDigits(total),
-      },
-    );
-    return Row(
-      children: [
-        Expanded(
-          child: Text.rich(
-            TextSpan(
-              style: const TextStyle().setSecondaryColor.s14.medium.road(
-                road,
-              ),
-              children: [
-                // The count leads, the batch ID trails (the Figma frame):
-                // «الطلب 5 من 8 · B #7877». The ID is Latin + digits — its own
-                // span keeps the RTL line from re-ordering «B #7877» around
-                // the hash.
-                TextSpan(text: '$count · '),
-                TextSpan(
-                  text: batch.id,
-                  style: const TextStyle().setMainTextColor.s14.medium.tabular
-                      .road(road),
-                ),
-              ],
-            ),
-            textDirection: TextDirection.rtl,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        8.szW,
-        Text(
-          formatKmArabic(routeKm),
-          maxLines: 1,
-          style: const TextStyle().setMainTextColor.s14.medium.tabular.road(
-            road,
-          ),
-        ),
-        // The ⓘ covers both figures but hangs off the distance — the end of
-        // the line, and the fact a courier is least likely to read as a
-        // promise without it.
-        _HintDot(
-          message: LocaleKeys.homeTripTooltip.tr(),
-          label: LocaleKeys.homeTripTooltipLabel.tr(),
-        ),
-      ],
-    );
-  }
-}
-
-/// «🕐 عودة للفرع ~5:40 م» on its own line, below the stop's actions.
-///
-/// It sits beside the pending-batch row rather than inside the hero because it
-/// is about the ride *after* the batch, not about the door in front of the
-/// courier — the same reason the distance stays up top with the batch it
-/// measures.
-class _HomeReturnEta extends StatelessWidget {
-  const _HomeReturnEta({required this.returnEta});
-
-  final String returnEta;
-
-  @override
-  Widget build(BuildContext context) => _HomeTripFact(
-    icon: AppAssets.svg.clock,
-    text: homeReturnText(returnEta),
-    road: RoadMode.instance.on,
-    large: true,
-  );
-}
-
 /// The hero's first line — the batch and how its trip ends.
 ///
 /// Leading: «B #7877 · الطلب 5 من 8». Beneath it the trip row — two facts, each
@@ -236,22 +142,13 @@ class _HomeBatchLine extends StatelessWidget {
 /// supporting colour rather than its black: the figures are what is read, the
 /// glyph only says which figure it is.
 class _HomeTripFact extends StatelessWidget {
-  const _HomeTripFact({
-    required this.icon,
-    required this.text,
-    this.road = false,
-    this.large = false,
-  });
+  const _HomeTripFact({required this.icon, required this.text, this.road = false});
 
   final String icon;
   final String text;
 
   /// Road mode: the glyph grows a step with the line's type.
   final bool road;
-
-  /// The return ETA is set one step above the distance: it is the fact the
-  /// courier plans the end of the round around.
-  final bool large;
 
   @override
   Widget build(BuildContext context) {
@@ -265,8 +162,8 @@ class _HomeTripFact extends StatelessWidget {
         IconWidget(
           icon: icon,
           color: AppColors.textPrimary,
-          height: large ? AppSize.sH22 : AppSize.sH20,
-          width: large ? AppSize.sW22 : AppSize.sW20,
+          height: AppSize.sH20,
+          width: AppSize.sW20,
         ),
         Flexible(
           child: Text(
@@ -275,15 +172,10 @@ class _HomeTripFact extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             // Black, like the batch id above it: this is the line the courier
             // plans the rest of the batch around.
-            style:
-                (large
-                        ? const TextStyle().setMainTextColor.s16
-                        : const TextStyle().setMainTextColor.s14)
-                    .medium
-                    .tabular
-                    .road(road)
-                    // 1.4 — the frame's line height, and the glyph's box.
-                    .withHeight(1.4),
+            style: const TextStyle().setMainTextColor.s14.medium.tabular
+                .road(road)
+                // 1.4 — the frame's line height, and the glyph's box.
+                .withHeight(1.4),
           ),
         ),
       ],

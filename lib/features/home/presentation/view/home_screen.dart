@@ -147,22 +147,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         // until one of them moves off zero.
                         if (stats != null) ...[stats, 20.szH],
                         if (hasStop) ...[
-                          // The stop, in three parts. The batch and the
-                          // distance it runs sit above the card; the
-                          // card is the destination alone; the actions
-                          // sit below it, on the page.
-                          if (shift.currentBatch case final batch?) ...[
-                            _HomeStopTripRow(
-                              batch: batch,
-                              current: shift.currentStopNumber,
-                              total: shift.totalStops,
-                              routeKm: batch.routeKm,
-                            ),
-                            8.szH,
-                          ],
-                          _HomeNextStopCard(onViewOrder: widget.onOpenOrder),
-                          12.szH,
-                          _HomeStopActions(
+                          // The hero is self-contained now: the stop counter
+                          // sits inside it above the destination, and the
+                          // deliver/call actions live inside the card too.
+                          // The old trip row above the banner is gone.
+                          _HomeNextStopCard(
+                            onViewOrder: widget.onOpenOrder,
                             onDeliver: widget.onDeliverOrder,
                             onCall: widget.onCallCustomer,
                           ),
@@ -170,23 +160,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           // turn around now — those orders are not in the
                           // bag. The status card carries this row when the
                           // hero is gone; on route it sits under the hero
-                          // instead of going unsaid.
-                          //
-                          // The return time rides WITH it. On its own it is
-                          // an orphan — a figure answering a question nobody
-                          // asked. Beside a batch waiting at the branch it
-                          // becomes the useful half: when the courier is
-                          // expected there to collect it.
+                          // instead of going unsaid. It carries no return
+                          // time — the row itself is the message.
                           if (shift.hasPendingBatch) ...[
                             20.szH,
-                            if (shift.currentBatch case final batch?) ...[
-                              _HomeReturnEta(
-                                returnEta: formatClockArabic(
-                                  shift.returnEtaOf(batch),
-                                ),
-                              ),
-                              12.szH,
-                            ],
                             _PendingBatchRow(onTap: widget.onOpenPendingBatch),
                           ],
                         ] else
