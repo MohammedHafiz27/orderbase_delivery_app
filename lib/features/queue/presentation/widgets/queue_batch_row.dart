@@ -31,7 +31,7 @@ class _QueueBatchRow extends StatelessWidget {
       order.area,
       if (order.pieces > 0)
         LocaleKeys.queuePieces.tr(
-          namedArgs: {'count': arabicDigits(order.pieces)},
+          namedArgs: {'count': englishDigits(order.pieces)},
         ),
     ].join(' · ');
 

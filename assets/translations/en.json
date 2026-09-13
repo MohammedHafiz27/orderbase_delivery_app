@@ -409,7 +409,7 @@
   "settlement_cashier_default": "Islam Mahmoud",
   "settlement_back": "Back",
   "settlement_title": "End-of-day settlement",
-  "settlement_subtitle": "{date} · {branch}",
+  "settlement_subtitle": "{date}",
   "settlement_not_settled": "Not settled",
   "settlement_settle_cta": "Settle collections",
   "settlement_collections_title": "Today's collections",
@@ -502,5 +502,10 @@
   "queue_exceptions_returns": "{count} returns",
   "queue_exceptions_postponed": "{count} postponed",
   "queue_exceptions_view": "View",
-  "queue_filter_exceptions": "Not completed"
+  "queue_filter_exceptions": "Not completed",
+  "tab_home": "Home",
+  "tab_orders": "Orders",
+  "tab_settlement": "Settlement",
+  "tab_profile": "Account",
+  "queue_eta": "ETA {time}"
 }

@@ -80,11 +80,11 @@ class FailureContext {
   final String orderNum; // "#89289"
   final String customer; // "محمد حمدي"
   final String area; // "التجمع الخامس"
-  final String address; // "٦ ش الفردوس، التجمع الخامس"
+  final String address; // "6 ش الفردوس، التجمع الخامس"
   final String addressDetail; // floor / apartment hint
   final String correctedAddress; // 1c corrected address
   final int pieces; // 2
-  final String piecesLabel; // "٢ قطعة"
+  final String piecesLabel; // "2 قطعة"
   final String branch; // "Sale Sucre — مدينة نصر"
   final List<ContactAttempt> attempts;
   final List<String> laterSlots; // retry-later time chips, e.g. ["12:30", ...]

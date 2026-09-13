@@ -153,7 +153,7 @@ class _ReturnsHero extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   children: [
                     Text(
-                      arabicDigits(count),
+                      englishDigits(count),
                       style: const TextStyle().setWhite.s36.bold.tabular,
                     ),
                     8.szW,
@@ -368,5 +368,5 @@ String _piecesLabel(int pieces) {
   final unit = pieces == 1
       ? LocaleKeys.failurePiecesUnitSingular.tr()
       : LocaleKeys.failurePiecesUnitPlural.tr();
-  return '${arabicDigits(pieces)} $unit';
+  return '${englishDigits(pieces)} $unit';
 }

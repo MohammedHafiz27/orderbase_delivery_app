@@ -205,7 +205,7 @@ class _PostponedHeader extends StatelessWidget {
                     4.szH,
                     Text(
                       LocaleKeys.postponedSubtitle.tr(
-                        namedArgs: {'count': arabicDigits(count)},
+                        namedArgs: {'count': englishDigits(count)},
                       ),
                       style: const TextStyle().setSecondaryColor.s12.medium,
                     ),

@@ -47,7 +47,7 @@ class DeliveryActivityState {
   final int codDue;
   final bool prepaid;
 
-  /// The promised-delivery label as the order carries it (e.g. "٢:٤٥ م").
+  /// The promised-delivery label as the order carries it (e.g. "2:45 م").
   ///
   /// Not a countdown: [Order.due] is a formatted string, not a timestamp, so
   /// there is nothing to count down from. Give `Order` a real `DateTime` and

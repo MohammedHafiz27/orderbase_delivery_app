@@ -97,11 +97,13 @@ class BottomNav extends StatelessWidget {
     );
   }
 
+  /// The bar's labels drop the definite article («رئيسية», not «الرئيسية») —
+  /// the page headers keep the «ال» form.
   String _label(NavTab t) => switch (t) {
-    NavTab.home => LocaleKeys.navHome.tr(),
-    NavTab.orders => LocaleKeys.navOrders.tr(),
-    NavTab.settlement => LocaleKeys.navSettlement.tr(),
-    NavTab.profile => LocaleKeys.navProfile.tr(),
+    NavTab.home => LocaleKeys.tabHome.tr(),
+    NavTab.orders => LocaleKeys.tabOrders.tr(),
+    NavTab.settlement => LocaleKeys.tabSettlement.tr(),
+    NavTab.profile => LocaleKeys.tabProfile.tr(),
   };
 
   String _icon(NavTab t) => switch (t) {

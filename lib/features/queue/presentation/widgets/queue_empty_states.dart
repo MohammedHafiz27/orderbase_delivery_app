@@ -79,7 +79,7 @@ class _PostponedHandoffCard extends StatelessWidget {
                   8.szW,
                   Text(
                     LocaleKeys.postponedWithYou.tr(
-                      namedArgs: {'count': arabicDigits(postponed.length)},
+                      namedArgs: {'count': englishDigits(postponed.length)},
                     ),
                     style: const TextStyle()
                         .setColor(AppColors.postponedText)

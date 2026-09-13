@@ -253,8 +253,8 @@ class _SearchResultsCountBar extends StatelessWidget {
         Text(
           LocaleKeys.searchResultsCount.tr(
             namedArgs: {
-              'count': arabicDigits(count),
-              'total': arabicDigits(total),
+              'count': englishDigits(count),
+              'total': englishDigits(total),
             },
           ),
           style: const TextStyle().setSecondaryColor.s12.semiBold,
@@ -287,7 +287,7 @@ class _FilterResultsBar extends StatelessWidget {
         Text(
           LocaleKeys.filterResultsCount.tr(
             namedArgs: {
-              'count': arabicDigits(count),
+              'count': englishDigits(count),
               'label': vc.filterLabelKey(filter).tr(),
             },
           ),
@@ -358,4 +358,4 @@ class _QueuePostponedEmpty extends StatelessWidget {
   }
 }
 
-// arabicDigits moved to lib/data/order.dart (shared with the app header).
+// englishDigits moved to lib/data/order.dart (shared with the app header).

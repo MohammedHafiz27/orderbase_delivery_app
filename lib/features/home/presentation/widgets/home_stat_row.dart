@@ -19,7 +19,7 @@ class _HomeStatRow extends StatelessWidget {
   /// Whether the strip has anything to report yet — one of its own four
   /// numbers off zero.
   ///
-  /// On a brand-new day it would read «٠٠ · ٠٠ · ٠٠» with an empty cash cell:
+  /// On a brand-new day it would read «00 · 00 · 00» with an empty cash cell:
   /// four cells all saying "nothing has happened" on a screen whose only
   /// message is already "nothing has happened". So it does not render at all
   /// until the day has actually started moving.

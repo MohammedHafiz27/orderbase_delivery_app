@@ -58,7 +58,7 @@ class HomeScreen extends StatefulWidget {
   /// The cash cell → settlement.
   final VoidCallback? onOpenSettlement;
 
-  /// The status card's «جولة جديدة في انتظارك» row → the Orders tab.
+  /// The status card's «تشغيلة جديدة في انتظارك» row → the Orders tab.
   final VoidCallback? onOpenPendingBatch;
 
   /// Dev-only: reset the simulated day from the settled card.

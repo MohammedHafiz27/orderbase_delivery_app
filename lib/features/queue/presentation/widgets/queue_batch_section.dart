@@ -157,18 +157,18 @@ class _QueueBatchHeader extends StatelessWidget {
     if (group.pending) {
       meta = LocaleKeys.queueBatchMetaPending.tr(
         namedArgs: {
-          'count': arabicDigits(b.count),
+          'count': englishDigits(b.count),
           'cash': formatThousands(b.codTotal),
         },
       );
     } else if (group.complete) {
       meta = LocaleKeys.queueBatchMetaComplete.tr(
-        namedArgs: {'count': arabicDigits(b.count)},
+        namedArgs: {'count': englishDigits(b.count)},
       );
     } else {
       meta = LocaleKeys.queueBatchMetaCarried.tr(
         namedArgs: {
-          'count': arabicDigits(b.count),
+          'count': englishDigits(b.count),
           'cash': formatThousands(b.codTotal),
         },
       );
@@ -266,7 +266,7 @@ class _BatchStatePill extends StatelessWidget {
   }
 }
 
-/// The ink confirm inside a waiting batch — «تأكيد استلام الجولة (٣)».
+/// The ink confirm inside a waiting batch — «تأكيد استلام التشغيلة (3)».
 class _CarryBatchButton extends StatelessWidget {
   const _CarryBatchButton({required this.count, required this.onTap});
   final int count;
@@ -296,7 +296,7 @@ class _CarryBatchButton extends StatelessWidget {
                 8.szW,
                 Text(
                   LocaleKeys.queueCarryBatch.tr(
-                    namedArgs: {'count': arabicDigits(count)},
+                    namedArgs: {'count': englishDigits(count)},
                   ),
                   style: const TextStyle().setWhite.s14.semiBold,
                 ),

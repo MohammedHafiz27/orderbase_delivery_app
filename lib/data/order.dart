@@ -35,7 +35,7 @@ class Order {
   final String addr;
   final String area;
   final OrderStatus status;
-  final String? due; // promised delivery time label, e.g. "٢:٤٥ م"
+  final String? due; // promised delivery time label, e.g. "2:45 م"
   final int? cod; // cash-on-delivery amount in EGP
   final bool prepaid;
   final String? dist; // distance label shown on the queue card, e.g. "4.2 كم"
@@ -189,9 +189,9 @@ final List<Order> sampleBatchTwo = [
     name: 'سلمى فؤاد',
     addr: 'شارع مصدق',
     area: 'الدقي',
-    addrDetail: 'عمارة ٧ · الدور ٣ · شقة ١٢',
+    addrDetail: 'عمارة 7 · الدور 3 · شقة 12',
     status: OrderStatus.transit,
-    due: '٥:٢٠ م',
+    due: '5:20 م',
     cod: 640,
     dist: '6.8 كم',
   ),
@@ -201,10 +201,10 @@ final List<Order> sampleBatchTwo = [
     name: 'طارق الشناوي',
     addr: 'شارع التسعين الشمالي',
     area: 'التجمع الخامس',
-    addrDetail: 'فيلا ١٨ · بوابة ٢',
+    addrDetail: 'فيلا 18 · بوابة 2',
     status: OrderStatus.transit,
     place: PlaceKind.villa,
-    due: '٥:٥٠ م',
+    due: '5:50 م',
     prepaid: true,
     dist: '11.3 كم',
   ),
@@ -214,9 +214,9 @@ final List<Order> sampleBatchTwo = [
     name: 'دينا سمير',
     addr: 'شارع جسر السويس',
     area: 'مصر الجديدة',
-    addrDetail: 'عمارة ٢٢ · الدور ١ · شقة ٤',
+    addrDetail: 'عمارة 22 · الدور 1 · شقة 4',
     status: OrderStatus.transit,
-    due: '٦:١٥ م',
+    due: '6:15 م',
     cod: 980,
     dist: '8.1 كم',
   ),
@@ -229,9 +229,9 @@ final List<Order> sampleOrders = [
     name: 'محمد حمدي',
     addr: 'شارع بن عبدالعزيز',
     area: 'زهراء مدينة نصر',
-    addrDetail: 'عمارة ٤٢٩٠ · الدور ٥ · شقة ٥٢',
+    addrDetail: 'عمارة 4290 · الدور 5 · شقة 52',
     status: OrderStatus.transit,
-    due: '٢:٤٥ م',
+    due: '2:45 م',
     cod: 1200,
     dist: '4.2 كم',
     items: [
@@ -255,14 +255,14 @@ final List<Order> sampleOrders = [
     num: '#89304',
     phone: '+201093040',
     name: 'سارة علي',
-    addr: 'شارع ١٠',
+    addr: 'شارع 10',
     area: 'زهراء مدينة نصر',
-    addrDetail: 'عمارة ١٥ · الدور ٢ · شقة ٨',
+    addrDetail: 'عمارة 15 · الدور 2 · شقة 8',
     dist: '2.1 كم',
     status: OrderStatus.postponed,
-    returns: '٤:٣٠ م',
+    returns: '4:30 م',
     reason: 'العميل طلب التوصيل بعد ساعتين',
-    postponedAt: '٢:٣٠ م',
+    postponedAt: '2:30 م',
     cod: 640,
     items: [
       FlowOrderItem(
@@ -276,9 +276,9 @@ final List<Order> sampleOrders = [
     num: '#89322',
     phone: '+201093220',
     name: 'نور عادل',
-    addr: 'شارع ٢٦',
+    addr: 'شارع 26',
     area: 'زهراء مدينة نصر',
-    addrDetail: 'عمارة ٣٣ · الدور الأرضي · شقة ١',
+    addrDetail: 'عمارة 33 · الدور الأرضي · شقة 1',
     dist: '1.8 كم',
     status: OrderStatus.delivered,
     cod: 350,
@@ -297,10 +297,10 @@ final List<Order> sampleOrders = [
     name: 'يوسف كمال',
     addr: 'شارع النصر',
     area: 'مصر الجديدة',
-    addrDetail: 'فيلا ٤٢ · شارع فرعي ٣',
+    addrDetail: 'فيلا 42 · شارع فرعي 3',
     status: OrderStatus.transit,
     place: PlaceKind.villa,
-    due: '٣:١٥ م',
+    due: '3:15 م',
     prepaid: true,
     dist: '6.8 كم',
     items: [
@@ -319,9 +319,9 @@ final List<Order> sampleOrders = [
     name: 'هناء مصطفى',
     addr: 'شارع التسعين',
     area: 'المعادي',
-    addrDetail: 'عمارة ١٤ · الدور ٢ · شقة ٧',
+    addrDetail: 'عمارة 14 · الدور 2 · شقة 7',
     status: OrderStatus.transit,
-    due: '٣:٤٠ م',
+    due: '3:40 م',
     cod: 640,
     dist: '11.5 كم',
     items: [
@@ -341,14 +341,14 @@ final List<Order> sampleOrders = [
     num: '#89311',
     phone: '+201093110',
     name: 'عمر شريف',
-    addr: 'شارع ٩',
+    addr: 'شارع 9',
     area: 'المقطم',
-    addrDetail: 'عمارة ٩ · الدور ٤ · شقة ١٦',
+    addrDetail: 'عمارة 9 · الدور 4 · شقة 16',
     dist: '2.4 كم',
     status: OrderStatus.postponed,
-    returns: '٦:٠٠ م',
-    reason: 'العميل مش في البيت قبل ٦ م',
-    postponedAt: '١:٠٥ م',
+    returns: '6:00 م',
+    reason: 'العميل مش في البيت قبل 6 م',
+    postponedAt: '1:05 م',
     prepaid: true,
     items: [
       FlowOrderItem(
@@ -365,10 +365,10 @@ final List<Order> sampleOrders = [
     name: 'كريم عادل',
     addr: 'شارع الثورة',
     area: 'مدينة نصر',
-    addrDetail: 'فيلا ٦ · بوابة ١',
+    addrDetail: 'فيلا 6 · بوابة 1',
     status: OrderStatus.transit,
     place: PlaceKind.villa,
-    due: '٤:٠٠ م',
+    due: '4:00 م',
     cod: 450,
     dist: '7.3 كم',
     items: [
@@ -385,7 +385,7 @@ final List<Order> sampleOrders = [
     name: 'ليلى فتحي',
     addr: 'شارع الحرية',
     area: 'مدينة نصر',
-    addrDetail: 'عمارة ٢١ · الدور ٦ · شقة ٢٤',
+    addrDetail: 'عمارة 21 · الدور 6 · شقة 24',
     dist: '3.2 كم',
     status: OrderStatus.failed,
     reason: 'تعذّر التواصل مع العميل',
@@ -401,9 +401,9 @@ final List<Order> sampleOrders = [
     num: '#89361',
     phone: '+201093610',
     name: 'خالد سمير',
-    addr: 'شارع ٩',
+    addr: 'شارع 9',
     area: 'المعادي',
-    addrDetail: 'عمارة ٥ · الدور ١ · شقة ٣',
+    addrDetail: 'عمارة 5 · الدور 1 · شقة 3',
     dist: '2.6 كم',
     status: OrderStatus.failed,
     reason: 'العميل رفض استلام الطلب',
@@ -422,7 +422,7 @@ final List<Order> sampleOrders = [
     name: 'منى سعيد',
     addr: 'شارع الميرغني',
     area: 'مصر الجديدة',
-    addrDetail: 'عمارة ١٢ · الدور ٣ · شقة ٩',
+    addrDetail: 'عمارة 12 · الدور 3 · شقة 9',
     dist: '1.9 كم',
     status: OrderStatus.failed,
     reason: 'عدم تطابق المنتج',
@@ -446,9 +446,9 @@ final List<Order> sampleBatchThree = [
     name: 'أحمد فؤاد',
     addr: 'شارع عباس العقاد',
     area: 'مدينة نصر',
-    addrDetail: 'عمارة ٦٠ · الدور ٧ · شقة ٢٨',
+    addrDetail: 'عمارة 60 · الدور 7 · شقة 28',
     status: OrderStatus.transit,
-    due: '٧:٣٠ م',
+    due: '7:30 م',
     cod: 450,
     dist: '3.4 كم',
   ),
@@ -458,9 +458,9 @@ final List<Order> sampleBatchThree = [
     name: 'ياسمين عادل',
     addr: 'شارع الخليفة المأمون',
     area: 'مصر الجديدة',
-    addrDetail: 'عمارة ٣ · الدور ٢ · شقة ٥',
+    addrDetail: 'عمارة 3 · الدور 2 · شقة 5',
     status: OrderStatus.transit,
-    due: '٨:٠٠ م',
+    due: '8:00 م',
     cod: 620,
     dist: '5.5 كم',
   ),
@@ -513,26 +513,29 @@ String formatThousands(int n) {
   return buf.toString();
 }
 
-/// Western → Eastern-Arabic digits for counts shown in Arabic copy.
-String arabicDigits(Object value) {
+/// Every number in the app is written in English (Western) digits — the
+/// design call, ending the Eastern/Western mix. This is the one funnel counts
+/// pass through on their way into Arabic copy: it stringifies, and straightens
+/// out any stray Eastern-Arabic digits that ride in on data.
+String englishDigits(Object value) {
   const eastern = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
   var s = value.toString();
   for (var i = 0; i < 10; i++) {
-    s = s.replaceAll('$i', eastern[i]);
+    s = s.replaceAll(eastern[i], '$i');
   }
   return s;
 }
 
-/// A wall-clock label in the app's Arabic 12-hour form — "٥:٤٠ م".
+/// A wall-clock label in the app's Arabic 12-hour form — "5:40 م".
 String formatClockArabic(DateTime t) {
   final h12 = t.hour % 12 == 0 ? 12 : t.hour % 12;
   final mm = t.minute.toString().padLeft(2, '0');
   final suffix = t.hour < 12 ? 'ص' : 'م';
-  return '${arabicDigits(h12)}:${arabicDigits(mm)} $suffix';
+  return '$h12:$mm $suffix';
 }
 
-/// A km figure for Arabic copy — "٣٤ كم" (rounded, Eastern digits).
-String formatKmArabic(double km) => '${arabicDigits(km.round())} كم';
+/// A km figure for Arabic copy — "34 كم" (rounded, English digits).
+String formatKmArabic(double km) => '${km.round()} كم';
 
 const List<String> _arabicMonths = [
   'يناير',
@@ -558,9 +561,9 @@ const List<String> _arabicWeekdays = [
   'الأحد',
 ];
 
-/// "١٣ سبتمبر" — day and month, Eastern digits.
+/// "13 سبتمبر" — day and month, Eastern digits.
 String formatDateArabic(DateTime d) =>
-    '${arabicDigits(d.day)} ${_arabicMonths[d.month - 1]}';
+    '${englishDigits(d.day)} ${_arabicMonths[d.month - 1]}';
 
 /// "الخميس" for a date.
 String weekdayArabic(DateTime d) => _arabicWeekdays[d.weekday - 1];

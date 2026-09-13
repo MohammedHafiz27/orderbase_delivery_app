@@ -1,6 +1,6 @@
 part of '../imports/home_imports.dart';
 
-/// «عودة للفرع ~٥:٤٠ م» — the return half of the trip line.
+/// «عودة للفرع ~5:40 م» — the return half of the trip line.
 ///
 /// Both halves still come from the one `home_return_line` string, which
 /// composes them around the app's «·». Rendering it without the distance and
@@ -38,8 +38,8 @@ class _HomeStopTripRow extends StatelessWidget {
     final road = RoadMode.instance.on;
     final count = LocaleKeys.homeStopCount.tr(
       namedArgs: {
-        'current': arabicDigits(current),
-        'total': arabicDigits(total),
+        'current': englishDigits(current),
+        'total': englishDigits(total),
       },
     );
     return Row(
@@ -52,7 +52,7 @@ class _HomeStopTripRow extends StatelessWidget {
               ),
               children: [
                 // The count leads, the batch ID trails (the Figma frame):
-                // «الطلب ٥ من ٨ · B #7877». The ID is Latin + digits — its own
+                // «الطلب 5 من 8 · B #7877». The ID is Latin + digits — its own
                 // span keeps the RTL line from re-ordering «B #7877» around
                 // the hash.
                 TextSpan(text: '$count · '),
@@ -88,7 +88,7 @@ class _HomeStopTripRow extends StatelessWidget {
   }
 }
 
-/// «🕐 عودة للفرع ~٥:٤٠ م» on its own line, below the stop's actions.
+/// «🕐 عودة للفرع ~5:40 م» on its own line, below the stop's actions.
 ///
 /// It sits beside the pending-batch row rather than inside the hero because it
 /// is about the ride *after* the batch, not about the door in front of the
@@ -110,8 +110,8 @@ class _HomeReturnEta extends StatelessWidget {
 
 /// The hero's first line — the batch and how its trip ends.
 ///
-/// Leading: «B #7877 · الطلب ٥ من ٨». Beneath it the trip row — two facts, each
-/// behind its own glyph: 🕐 «عودة للفرع ~٥:٤٠ م» and ➤ «٣٤ كم», with a small ⓘ
+/// Leading: «B #7877 · الطلب 5 من 8». Beneath it the trip row — two facts, each
+/// behind its own glyph: 🕐 «عودة للفرع ~5:40 م» and ➤ «34 كم», with a small ⓘ
 /// on the distance. Tapping ⓘ floats a tooltip above it explaining what the two
 /// figures mean: the time is the ride back to the branch after the last order,
 /// not counting stops and handoffs; the kilometres are the whole batch trip
@@ -135,19 +135,19 @@ class _HomeBatchLine extends StatelessWidget {
   final int current;
   final int total;
 
-  /// "٥:٤٠ م" — when they are expected back at the branch.
+  /// "5:40 م" — when they are expected back at the branch.
   final String returnEta;
   final double routeKm;
 
-  /// The batch is complete: the count reads «اكتملت ٨ من ٨».
+  /// The batch is complete: the count reads «اكتملت 8 من 8».
   final bool done;
 
-  /// Show the «عودة للفرع ~٥:٤٠ م · ٣٤ كم» row and its ⓘ. Off once the batch
+  /// Show the «عودة للفرع ~5:40 م · 34 كم» row and its ⓘ. Off once the batch
   /// is closed: the ride back is no longer an estimate about the route, it is
   /// the one thing the card is about, and it is stated there instead.
   final bool showTrip;
 
-  /// «عودة للفرع ~٥:٤٠ م» — the return half of the trip line.
+  /// «عودة للفرع ~5:40 م» — the return half of the trip line.
   ///
   /// Both halves still come from the one `home_return_line` string, which
   /// composes them around the app's «·». Rendering it without the distance and
@@ -164,14 +164,14 @@ class _HomeBatchLine extends StatelessWidget {
     final count = done
         ? LocaleKeys.homeBatchDone.tr(
             namedArgs: {
-              'done': arabicDigits(total),
-              'total': arabicDigits(total),
+              'done': englishDigits(total),
+              'total': englishDigits(total),
             },
           )
         : LocaleKeys.homeStopCount.tr(
             namedArgs: {
-              'current': arabicDigits(current),
-              'total': arabicDigits(total),
+              'current': englishDigits(current),
+              'total': englishDigits(total),
             },
           );
     return Column(

@@ -76,7 +76,7 @@ class _ReturnsHandoverSheet extends StatelessWidget {
               children: [
                 _SummaryRow(
                   label: LocaleKeys.failureReturnsConfirmOrders.tr(),
-                  value: '${arabicDigits(count)} ${_ordersUnit(count)}',
+                  value: '${englishDigits(count)} ${_ordersUnit(count)}',
                   emphasize: true,
                 ),
                 12.szH,

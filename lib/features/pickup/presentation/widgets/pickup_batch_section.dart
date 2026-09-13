@@ -102,7 +102,7 @@ class _PickupBatchHeader extends StatelessWidget {
     final meta = LocaleKeys.pickupBatchMeta.tr(
       // Counts are Arabic prose, so they take Eastern digits; the cash figure
       // stays Western, like every other money figure in the app.
-      namedArgs: {'count': arabicDigits(batch.count), 'cash': cash},
+      namedArgs: {'count': englishDigits(batch.count), 'cash': cash},
     );
     final at = meta.indexOf(cash);
     final quiet = const TextStyle().setSecondaryColor.s12.regular;

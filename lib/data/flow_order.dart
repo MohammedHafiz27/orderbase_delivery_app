@@ -153,7 +153,7 @@ const List<FlowOrder> sampleFlowOrders = [
     meta: 'المعادي · 2 قطعة',
     state: FlowOrderState.done,
     cod: false,
-    pay: 'تم التحصيل · 800 جم',
+    pay: 'تم التحصيل · 800 جنيه',
     address: 'كورنيش النيل - شارع 9، الدور الأرضي شقة رقم 3 - المعادي، القاهرة',
     items: [
       FlowOrderItem(

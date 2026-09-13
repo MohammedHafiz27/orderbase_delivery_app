@@ -217,7 +217,7 @@ class _NotificationsHeroBanner extends StatelessWidget {
           Text(
             LocaleKeys.notifHeroBody.tr(
               namedArgs: {
-                'count': arabicDigits(batch.count),
+                'count': englishDigits(batch.count),
                 'branch': branch,
                 'cash': formatThousands(batch.codTotal),
               },

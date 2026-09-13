@@ -82,8 +82,8 @@ class _HistoryRow extends StatelessWidget {
                         LocaleKeys.settlementHistoryMeta.tr(
                           namedArgs: {
                             'cash': formatThousands(day.cashTotal),
-                            'batches': arabicDigits(day.carriedBatchCount),
-                            'orders': arabicDigits(day.orderCount),
+                            'batches': englishDigits(day.carriedBatchCount),
+                            'orders': englishDigits(day.orderCount),
                           },
                         ),
                         style: const TextStyle()

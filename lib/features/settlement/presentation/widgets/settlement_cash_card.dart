@@ -47,10 +47,11 @@ class _CashInHandCard extends StatelessWidget {
           Text(
             '${formatThousands(data.cashTotal)} '
             '${LocaleKeys.settlementCurrency.tr()}',
-            // LTR so the digits lead the unit; end-aligned so the figure
-            // hangs off the same right edge as its label.
-            textDirection: TextDirection.ltr,
-            textAlign: TextAlign.end,
+            // RTL so «جنيه» sits to the LEFT of the figure (the design call);
+            // start-aligned so the figure hangs off the same right edge as
+            // its label.
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.start,
             style: const TextStyle().setWhite.s28.bold.tabular,
           ),
           if (over) ...[
@@ -80,21 +81,25 @@ class _CashInHandCard extends StatelessWidget {
                 Expanded(
                   child: _BreakdownCol(
                     label: LocaleKeys.settlementBreakdownOrders.tr(),
-                    value: '${formatThousands(data.ordersTotal)} جم',
+                    value:
+                        '${formatThousands(data.ordersTotal)} '
+                        '${LocaleKeys.settlementCurrency.tr()}',
                     labelColor: labelColor,
                   ),
                 ),
                 Expanded(
                   child: _BreakdownCol(
                     label: LocaleKeys.settlementBreakdownWallet.tr(),
-                    value: '${formatThousands(data.walletTotal)} جم',
+                    value:
+                        '${formatThousands(data.walletTotal)} '
+                        '${LocaleKeys.settlementCurrency.tr()}',
                     labelColor: labelColor,
                   ),
                 ),
                 Expanded(
                   child: _BreakdownCol(
                     label: LocaleKeys.settlementBreakdownBatches.tr(),
-                    value: arabicDigits(data.carriedBatchCount),
+                    value: englishDigits(data.carriedBatchCount),
                     labelColor: labelColor,
                   ),
                 ),
@@ -127,7 +132,8 @@ class _BreakdownCol extends StatelessWidget {
         4.szH,
         Text(
           value,
-          textDirection: TextDirection.ltr,
+          // RTL keeps the unit to the LEFT of the figure.
+          textDirection: TextDirection.rtl,
           textAlign: TextAlign.start,
           style: const TextStyle().setColor(AppColors.surface).s14.bold.tabular,
         ),

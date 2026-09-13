@@ -12,7 +12,7 @@ part of '../imports/home_imports.dart';
 ///  * **settled** — the branch closed the day. Who took the cash and when, and
 ///    (dev only) a way to start the simulated day again.
 ///
-/// A batch waiting at the branch adds the amber «ارجع للفرع لاستلام جولة»
+/// A batch waiting at the branch adds the amber «ارجع للفرع لاستلام تشغيلة»
 /// row to any of the three, since collecting it is then the next thing to do.
 /// That row also rides under the hero while the courier is still on route —
 /// see [HomeScreen].
@@ -193,7 +193,7 @@ class _ReturningBody extends StatelessWidget {
                       if (returns > 0)
                         _HandChip(
                           text: LocaleKeys.homeReturnHandReturns.tr(
-                            namedArgs: {'count': arabicDigits(returns)},
+                            namedArgs: {'count': englishDigits(returns)},
                           ),
                         ),
                     ],
@@ -224,7 +224,7 @@ class _ReturningBody extends StatelessWidget {
   }
 }
 
-/// «متوقَّع ~٥:٤٤ م» — the estimate, stated once and only here. The header
+/// «متوقَّع ~5:44 م» — the estimate, stated once and only here. The header
 /// says «متوقَّع في الفرع» with no time, and the title beside this pill has
 /// already named the branch, so neither the phrase nor the figure is printed
 /// twice on one screen.
@@ -317,8 +317,8 @@ class _SettledBody extends StatelessWidget {
         Text(
           LocaleKeys.homeRouteCompleteStats.tr(
             namedArgs: {
-              'done': arabicDigits(shift.deliveredCount),
-              'total': arabicDigits(shift.orders.length),
+              'done': englishDigits(shift.deliveredCount),
+              'total': englishDigits(shift.orders.length),
               'cash': formatThousands(shift.collectedEgp),
             },
           ),
@@ -373,7 +373,7 @@ class _StateGlyph extends StatelessWidget {
   }
 }
 
-/// «1,250 جم نقدًا» / «٣ مرتجعات» — what the courier hands the branch. The
+/// «1,250 جنيه نقدًا» / «3 مرتجعات» — what the courier hands the branch. The
 /// cash chip goes red over the limit, like the figure everywhere else.
 class _HandChip extends StatelessWidget {
   const _HandChip({required this.text, this.alert = false});
@@ -403,7 +403,7 @@ class _HandChip extends StatelessWidget {
   }
 }
 
-/// «ارجع للفرع لاستلام جولة جديدة» — shown wherever Home is, on route or not.
+/// «ارجع للفرع لاستلام تشغيلة جديدة» — shown wherever Home is, on route or not.
 ///
 /// A batch dispatched mid-route is a reason to turn around *now*: the orders
 /// are not in the bag, and nothing else on Home would say so while the hero is

@@ -124,7 +124,7 @@ class _AppShellState extends State<AppShell> {
   void _onShiftChanged() => _announceDispatch();
 
   /// A batch has just been dispatched: raise the mid-flight sheet exactly once.
-  /// It is informative, not a gate — «عرض الجولة» jumps to the Orders tab,
+  /// It is informative, not a gate — «عرض التشغيلة» jumps to the Orders tab,
   /// «لاحقًا» leaves the batch waiting (the header chip keeps pointing at it).
   Future<void> _announceDispatch() async {
     if (!mounted) return;
@@ -229,7 +229,7 @@ class _AppShellState extends State<AppShell> {
     _select(NavTab.orders);
   }
 
-  /// The dispatch sheet's «عرض الجولة» and Home's «جولة جديدة في انتظارك» row
+  /// The dispatch sheet's «عرض التشغيلة» and Home's «تشغيلة جديدة في انتظارك» row
   /// → the Orders tab, filters cleared so the waiting batch is at the top.
   void _openPendingBatch() {
     _ordersVc.closeSearch();

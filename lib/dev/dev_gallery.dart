@@ -24,7 +24,7 @@ class DevGallery extends StatelessWidget {
   static final _screens = <String, WidgetBuilder>{
     'شريط التبويب · Tab bar lab': (_) => const NavBarLab(),
     'الرئيسية · Home (1a)': (_) => const HomeScreen(),
-    'الرئيسية · Home — لا جولة بعد': (_) =>
+    'الرئيسية · Home — لا تشغيلة بعد': (_) =>
         const HomeScreen(preview: HomePreview.idle),
     'الرئيسية · Home — متوقَّع في الفرع': (_) =>
         const HomeScreen(preview: HomePreview.returning),

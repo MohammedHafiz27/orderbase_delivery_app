@@ -1,12 +1,12 @@
 part of '../imports/queue_imports.dart';
 
 /// The one line above the batch cards that reports what did not go to plan:
-/// «٣ مرتجعات · ٢ مؤجلة» with «عرض» at the end. It replaced the filter chip
+/// «3 مرتجعات · 2 مؤجلة» with «عرض» at the end. It replaced the filter chip
 /// row, which restated counts the batch headers already carry.
 ///
 /// It is not a permanent fixture — a day with nothing wrong never renders it,
 /// so the row appearing *is* the signal. Only the non-zero halves are named:
-/// «٠ مؤجلة» would be a fact nobody needs.
+/// «0 مؤجلة» would be a fact nobody needs.
 class _QueueExceptionsRow extends StatelessWidget {
   const _QueueExceptionsRow({
     required this.returns,
@@ -23,11 +23,11 @@ class _QueueExceptionsRow extends StatelessWidget {
     final counts = [
       if (returns > 0)
         LocaleKeys.queueExceptionsReturns.tr(
-          namedArgs: {'count': arabicDigits(returns)},
+          namedArgs: {'count': englishDigits(returns)},
         ),
       if (postponed > 0)
         LocaleKeys.queueExceptionsPostponed.tr(
-          namedArgs: {'count': arabicDigits(postponed)},
+          namedArgs: {'count': englishDigits(postponed)},
         ),
     ].join(' · ');
 

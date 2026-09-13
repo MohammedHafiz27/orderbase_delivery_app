@@ -1,6 +1,6 @@
 part of '../imports/settlement_imports.dart';
 
-/// «جولات اليوم» — the day batch by batch. Each batch is a collapsible
+/// «تشغيلات اليوم» — the day batch by batch. Each batch is a collapsible
 /// section headed by its ID and what it produced (cash · cash orders ·
 /// returns); open it for the cash lines (collected vs order value, wallet
 /// change) and the parcels it sends back. A batch still at the branch is one
@@ -89,7 +89,7 @@ class _SettlementBatchSectionState extends State<_SettlementBatchSection> {
       meta = LocaleKeys.settlementBatchPending.tr();
     } else if (!_hasBody) {
       meta = LocaleKeys.settlementBatchNoCash.tr(
-        namedArgs: {'count': arabicDigits(b.orderCount)},
+        namedArgs: {'count': englishDigits(b.orderCount)},
       );
     } else {
       meta = [
@@ -98,12 +98,12 @@ class _SettlementBatchSectionState extends State<_SettlementBatchSection> {
             namedArgs: {'cash': formatThousands(b.cashTotal)},
           ),
           LocaleKeys.settlementBatchCashOrders.tr(
-            namedArgs: {'count': arabicDigits(b.lines.length)},
+            namedArgs: {'count': englishDigits(b.lines.length)},
           ),
         ],
         if (b.returns.isNotEmpty)
           LocaleKeys.settlementBatchReturns.tr(
-            namedArgs: {'count': arabicDigits(b.returns.length)},
+            namedArgs: {'count': englishDigits(b.returns.length)},
           ),
       ].join(' · ');
     }
@@ -370,7 +370,7 @@ class _ReturnRow extends StatelessWidget {
   }
 }
 
-/// Small amber pill: "فكة {change} جم" with a wallet glyph — shown on a line
+/// Small amber pill: "فكة {change} جنيه" with a wallet glyph — shown on a line
 /// whose collected cash exceeded the order value.
 class _WalletPill extends StatelessWidget {
   const _WalletPill({required this.amount});

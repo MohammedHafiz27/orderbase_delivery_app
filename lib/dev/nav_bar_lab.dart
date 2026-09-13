@@ -163,7 +163,7 @@ class _DarkCard extends StatelessWidget {
             style: const TextStyle().setColor(AppColors.paymentLabel).s12.medium,
           ),
           8.szH,
-          Text('1,250 جم', style: const TextStyle().setWhite.s28.bold),
+          Text('1,250 جنيه', style: const TextStyle().setWhite.s28.bold),
         ],
       ),
     );
@@ -222,7 +222,7 @@ class _Row extends StatelessWidget {
           12.szW,
           Expanded(
             child: Text(
-              'محمد حمدي · زهراء مدينة نصر · ٤ قطعة',
+              'محمد حمدي · زهراء مدينة نصر · 4 قطعة',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle().setSecondaryColor.s12.regular,
@@ -235,7 +235,7 @@ class _Row extends StatelessWidget {
               borderRadius: BorderRadius.circular(7),
             ),
             child: Text(
-              cod ? '640 جم' : 'مدفوع',
+              cod ? '640 جنيه' : 'مدفوع',
               style: const TextStyle()
                   .setColor(cod ? AppColors.postponedText : AppColors.deliveredText)
                   .s12

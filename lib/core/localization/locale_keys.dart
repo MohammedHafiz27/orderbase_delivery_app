@@ -111,6 +111,13 @@ abstract final class LocaleKeys {
   static const String navSettlement = 'nav_settlement';
   static const String navMore = 'nav_more';
 
+  // Tab-bar labels — the nav_* twins without the definite article («رئيسية»,
+  // not «الرئيسية»). The headers keep the «ال» form; the bar drops it.
+  static const String tabHome = 'tab_home';
+  static const String tabOrders = 'tab_orders';
+  static const String tabSettlement = 'tab_settlement';
+  static const String tabProfile = 'tab_profile';
+
   // ── home ──
   static const String homeCourierName = 'home_courier_name';
   static const String homeMerchantName = 'home_merchant_name';
@@ -589,6 +596,7 @@ abstract final class LocaleKeys {
   static const String queueBatchInHand = 'queue_batch_in_hand';
   static const String queueCarryBatch = 'queue_carry_batch';
   static const String queuePieces = 'queue_pieces';
+  static const String queueEta = 'queue_eta';
   static const String settlementAwaiting = 'settlement_awaiting';
   static const String settlementOverLimit = 'settlement_over_limit';
   static const String settlementBreakdownBatches =

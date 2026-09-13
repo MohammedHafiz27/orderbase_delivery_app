@@ -37,7 +37,7 @@ class _PickupDispatchSheet extends StatelessWidget {
             children: [
               Text(
                 LocaleKeys.pickupDispatchCount.tr(
-                  namedArgs: {'count': arabicDigits(batch.count)},
+                  namedArgs: {'count': englishDigits(batch.count)},
                 ),
                 style: const TextStyle()
                     .setColor(AppColors.textBody)
@@ -128,7 +128,7 @@ class _PickupCarrySheet extends StatelessWidget {
         children: [
           Text(
             LocaleKeys.pickupCarryBody.tr(
-              namedArgs: {'id': batch.id, 'count': arabicDigits(batch.count)},
+              namedArgs: {'id': batch.id, 'count': englishDigits(batch.count)},
             ),
             style: const TextStyle().setSecondaryColor.s14.regular.withHeight(
               1.5,

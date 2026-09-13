@@ -160,7 +160,7 @@ class ShiftController extends ChangeNotifier {
     return DateTime.now().add(Duration(minutes: minutes));
   }
 
-  /// "٥:٤٠ م" for [currentBatch]; null before anything is carried.
+  /// "5:40 م" for [currentBatch]; null before anything is carried.
   String? get returnEtaLabel {
     final b = currentBatch;
     return b == null ? null : formatClockArabic(returnEtaOf(b));
@@ -279,8 +279,8 @@ class ShiftController extends ChangeNotifier {
     return batch;
   }
 
-  /// Carry one waiting batch onto the route. Totals grow, so «الطلب ٥ من ٨»
-  /// becomes the new batch's «الطلب ١ من ٣» the moment its first stop is next.
+  /// Carry one waiting batch onto the route. Totals grow, so «الطلب 5 من 8»
+  /// becomes the new batch's «الطلب 1 من 3» the moment its first stop is next.
   void carryBatch(String id) {
     final i = _pending.indexWhere((b) => b.id == id);
     if (i < 0) return;

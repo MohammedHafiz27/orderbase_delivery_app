@@ -42,7 +42,7 @@ class _SettlementSettledView extends StatelessWidget {
               LocaleKeys.settlementSettledBody.tr(
                 namedArgs: {
                   'cash': formatThousands(data.cashTotal),
-                  'count': arabicDigits(data.rowCount),
+                  'count': englishDigits(data.rowCount),
                 },
               ),
               textAlign: TextAlign.center,
@@ -160,13 +160,17 @@ class _SummaryCard extends StatelessWidget {
         children: [
           _SummaryRow(
             label: LocaleKeys.settlementSummaryDelivered.tr(),
-            value: '${formatThousands(data.cashTotal)} جم',
+            value:
+                '${formatThousands(data.cashTotal)} '
+                '${LocaleKeys.settlementCurrency.tr()}',
             valueColor: AppColors.textPrimary,
           ),
           12.szH,
           _SummaryRow(
             label: LocaleKeys.settlementSummaryWallet.tr(),
-            value: '${formatThousands(data.walletTotal)} جم',
+            value:
+                '${formatThousands(data.walletTotal)} '
+                '${LocaleKeys.settlementCurrency.tr()}',
             valueColor: _walletAmber,
           ),
           16.szH,

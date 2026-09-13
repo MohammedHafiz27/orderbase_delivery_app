@@ -57,7 +57,7 @@ class AppNotification {
   final String orderNum;
   final String title;
   final String body;
-  final String time; // relative label, e.g. "١٠ دقائق"
+  final String time; // relative label, e.g. "10 دقائق"
   final bool unread;
 
   AppNotification copyWith({bool? unread}) => AppNotification(
@@ -82,12 +82,12 @@ List<AppNotification> sampleNotifications() {
       kind: NotifKind.batch,
       orderNum: '89289',
       title: LocaleKeys.notifTitleBatch.tr(
-        namedArgs: {'id': sampleBatchOneId, 'count': '٨'},
+        namedArgs: {'id': sampleBatchOneId, 'count': '8'},
       ),
       body: LocaleKeys.notifBodyBatch.tr(
         namedArgs: {'branch': branch, 'cash': '2,290'},
       ),
-      time: LocaleKeys.notifMinutesAgo.tr(namedArgs: {'n': '٥'}),
+      time: LocaleKeys.notifMinutesAgo.tr(namedArgs: {'n': '5'}),
       unread: true,
     ),
     AppNotification(
@@ -97,7 +97,7 @@ List<AppNotification> sampleNotifications() {
       body: LocaleKeys.notifBodyAssigned.tr(
         namedArgs: {'ready': '526689', 'branch': branch},
       ),
-      time: LocaleKeys.notifMinutesAgo.tr(namedArgs: {'n': '١٠'}),
+      time: LocaleKeys.notifMinutesAgo.tr(namedArgs: {'n': '10'}),
       unread: true,
     ),
     AppNotification(
@@ -107,7 +107,7 @@ List<AppNotification> sampleNotifications() {
       body: LocaleKeys.notifBodyCancelled.tr(
         namedArgs: {'num': '89355', 'branch': branch},
       ),
-      time: LocaleKeys.notifMinutesAgo.tr(namedArgs: {'n': '١٢'}),
+      time: LocaleKeys.notifMinutesAgo.tr(namedArgs: {'n': '12'}),
       unread: true,
     ),
     AppNotification(
@@ -115,17 +115,17 @@ List<AppNotification> sampleNotifications() {
       orderNum: '89289',
       title: LocaleKeys.notifTitleNote.tr(namedArgs: {'num': '89289'}),
       body: LocaleKeys.notifBodyNote.tr(),
-      time: LocaleKeys.notifMinutesAgo.tr(namedArgs: {'n': '٢٥'}),
+      time: LocaleKeys.notifMinutesAgo.tr(namedArgs: {'n': '25'}),
       unread: true,
     ),
     AppNotification(
       kind: NotifKind.wallet,
       orderNum: '89298',
       title: LocaleKeys.notifTitleWallet.tr(
-        namedArgs: {'amt': '٢٠', 'num': '89298'},
+        namedArgs: {'amt': '20', 'num': '89298'},
       ),
       body: LocaleKeys.notifBodyWallet.tr(
-        namedArgs: {'amt': '٢٠', 'num': '89298'},
+        namedArgs: {'amt': '20', 'num': '89298'},
       ),
       time: LocaleKeys.notifHourAgo.tr(),
     ),
@@ -136,25 +136,25 @@ List<AppNotification> sampleNotifications() {
       body: LocaleKeys.notifBodyAssigned.tr(
         namedArgs: {'ready': '526701', 'branch': branch},
       ),
-      time: LocaleKeys.notifHoursAgo.tr(namedArgs: {'n': '٢'}),
+      time: LocaleKeys.notifHoursAgo.tr(namedArgs: {'n': '2'}),
     ),
     AppNotification(
       kind: NotifKind.note,
       orderNum: '89322',
       title: LocaleKeys.notifTitleNote.tr(namedArgs: {'num': '89322'}),
       body: LocaleKeys.notifBodyNote.tr(),
-      time: LocaleKeys.notifHoursAgo.tr(namedArgs: {'n': '٣'}),
+      time: LocaleKeys.notifHoursAgo.tr(namedArgs: {'n': '3'}),
     ),
     AppNotification(
       kind: NotifKind.wallet,
       orderNum: '89304',
       title: LocaleKeys.notifTitleWallet.tr(
-        namedArgs: {'amt': '١٥', 'num': '89304'},
+        namedArgs: {'amt': '15', 'num': '89304'},
       ),
       body: LocaleKeys.notifBodyWallet.tr(
-        namedArgs: {'amt': '١٥', 'num': '89304'},
+        namedArgs: {'amt': '15', 'num': '89304'},
       ),
-      time: LocaleKeys.notifHoursAgo.tr(namedArgs: {'n': '٤'}),
+      time: LocaleKeys.notifHoursAgo.tr(namedArgs: {'n': '4'}),
     ),
   ];
 }
@@ -194,7 +194,7 @@ class NotificationsStore extends ChangeNotifier {
         kind: NotifKind.batch,
         orderNum: batch.orders.first.num.replaceAll('#', '').trim(),
         title: LocaleKeys.notifTitleBatch.tr(
-          namedArgs: {'id': batch.id, 'count': arabicDigits(batch.count)},
+          namedArgs: {'id': batch.id, 'count': englishDigits(batch.count)},
         ),
         body: LocaleKeys.notifBodyBatch.tr(
           namedArgs: {
@@ -202,7 +202,7 @@ class NotificationsStore extends ChangeNotifier {
             'cash': formatThousands(batch.codTotal),
           },
         ),
-        time: LocaleKeys.notifMinutesAgo.tr(namedArgs: {'n': '١'}),
+        time: LocaleKeys.notifMinutesAgo.tr(namedArgs: {'n': '1'}),
         unread: true,
       ),
     );

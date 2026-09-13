@@ -116,5 +116,5 @@ String _piecesLabel(int pieces) {
   final unit = pieces == 1
       ? LocaleKeys.failurePiecesUnitSingular.tr()
       : LocaleKeys.failurePiecesUnitPlural.tr();
-  return '${arabicDigits(pieces)} $unit';
+  return '${englishDigits(pieces)} $unit';
 }
