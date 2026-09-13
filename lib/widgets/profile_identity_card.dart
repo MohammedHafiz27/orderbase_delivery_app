@@ -1,15 +1,30 @@
-part of '../imports/profile_imports.dart';
+import 'dart:typed_data';
 
-/// Who is signed in: photo, name, and the account they are signed in under.
+import 'package:flutter/material.dart';
+
+import '../config/res/config_imports.dart';
+import '../core/session/courier.dart';
+import '../core/session/profile_photo.dart';
+
+/// Who is signed in: photo, name, and the account they are signed in under —
+/// one white surface block with hairline edges, shared by the Account tab and
+/// the change-password screen so the two can never disagree about the person
+/// (or about how the photo is changed).
 ///
 /// The avatar is the courier's own photo once they upload one; initials until
-/// then. Tapping it (or the camera badge on its corner) opens the system
-/// photo picker via [ProfilePhoto]. An uploaded photo is not immediately
-/// theirs to keep: it goes **under review** — the amber «قيد المراجعة» pill by
-/// the name says so until the branch accepts or declines it (no backend yet,
-/// so in the demo it stays pending).
-class _ProfileIdentity extends StatelessWidget {
-  const _ProfileIdentity();
+/// then. Tapping it (or the pen badge on its corner) opens the system photo
+/// picker via [ProfilePhoto]. An uploaded photo is not immediately theirs to
+/// keep: it goes **under review** — the amber «قيد المراجعة» pill by the name
+/// says so until the branch accepts or declines it (no backend yet, so in the
+/// demo it stays pending).
+class ProfileIdentityCard extends StatelessWidget {
+  const ProfileIdentityCard({super.key, this.topHairline = false});
+
+  /// True when the card floats in a page body (the change-password screen):
+  /// it closes with a hairline on both edges like every profile group. The
+  /// Account tab passes false — there the card sits flush under the header
+  /// and only rules itself off from the rows below.
+  final bool topHairline;
 
   Future<void> _changePhoto(BuildContext context) async {
     final uploaded = await ProfilePhoto.instance.pick();
@@ -26,9 +41,14 @@ class _ProfileIdentity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.surface,
-        border: Border(bottom: BorderSide(color: AppColors.borderHeader)),
+        border: Border(
+          top: topHairline
+              ? const BorderSide(color: AppColors.borderHeader)
+              : BorderSide.none,
+          bottom: const BorderSide(color: AppColors.borderHeader),
+        ),
       ),
       child:
           ListenableBuilder(

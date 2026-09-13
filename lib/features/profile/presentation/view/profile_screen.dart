@@ -69,7 +69,9 @@ class ProfileScreen extends StatelessWidget {
                 ),
                 sliver: SliverList.list(
                   children: [
-                    const _ProfileIdentity(),
+                    // The shared identity card (lib/widgets) — the same block
+                    // the change-password screen opens with.
+                    const ProfileIdentityCard(),
                     16.szH,
                     // Rows on one surface, hairline-separated — the same flat
                     // list treatment the orders and batches now use.

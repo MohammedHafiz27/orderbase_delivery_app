@@ -252,6 +252,14 @@ permission prompt, no Info.plist key), downscaled to 512px JPEG persisted in doc
 handed back over the channel so Dart stays `dart:io`-free (the web build must keep compiling;
 web/Android are silent no-ops and keep the initials avatar).
 
+The identity block is **`ProfileIdentityCard`** (`lib/widgets/profile_identity_card.dart`) —
+shared by the Account tab and the **change-password screen**, so the photo is changeable from
+both and the two can never disagree. Auth 1e (`ChangePasswordScreen`) was restyled into the
+profile page's language on the courier's ask (13 Sep 2026): back tile + title header, the shared
+identity card, and the password form as a white edge-to-edge hairline-ruled group — the old
+carded auth look (`auth_profile_card.dart`) is retired; the login/forgot/code screens keep the
+Auth.dc.html look.
+
 ## Icons (`assets/icons/` + `AppIcon` / `IconWidget`)
 
 `AppIcon(AppIconName.x, color:, size:)` / `IconWidget(icon: AppAssets.svg.x, color:)` render

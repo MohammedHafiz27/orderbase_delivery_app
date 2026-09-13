@@ -16,9 +16,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../config/res/config_imports.dart';
-import '../../../../core/session/courier.dart';
 import '../../../../theme/shadows.dart';
+import '../../../../widgets/header_back_button.dart';
 import '../../../../widgets/home_indicator.dart';
+import '../../../../widgets/profile_identity_card.dart';
 
 // Controllers (ephemeral per-screen form state)
 part '../controllers/login_controller.dart';
@@ -41,5 +42,4 @@ part '../widgets/auth_buttons.dart';
 part '../widgets/auth_code_boxes.dart';
 part '../widgets/auth_password_extras.dart';
 part '../widgets/auth_info_card.dart';
-part '../widgets/auth_profile_card.dart';
 part '../widgets/auth_brand_lockup.dart';
