@@ -62,16 +62,23 @@ Shared widgets (`lib/widgets/bottom_nav`, `home_indicator`, `map_view`, `status_
 were also converted in place (same public APIs, Flutter_Base internals).
 
 **The Order Flow is now navigable end-to-end** and payment-/outcome-aware (see
-`OrderFlowController`). In `OrderDetailScreen` the two outcomes are **two buttons side by side** in
-the sticky footer (`_OutcomeBar`, `order_detail_deliver_bar.dart`) — they are the two answers to a
-single question, so they stopped living a screen apart (13 Sep 2026: «لم يتم التسليم» used to be
-an outlined button buried mid-scroll, above the timeline). They were briefly *joined* into one
-segmented control and the courier asked for them **separated** (14 Sep 2026): a joined pair reads
-as one control with a mode rather than as two things that can each be pressed. So: an **8pt gap**,
-a full r15 radius each, and one shared height (`CrossAxisAlignment.stretch` — a Row centres its
-children, which otherwise leaves them at their own intrinsic sizes). «تم التسليم» black and
-`Expanded` at the reading start, «لم يتم التسليم» white, red-outlined and sized to its own label
-at the far end. The deliver label was shortened to
+`OrderFlowController`). In `OrderDetailScreen` the two outcomes are **two buttons side by side, directly under the map** (`_OutcomeBar`,
+`order_detail_deliver_bar.dart`) — they are the two answers to a single question, so they stopped
+living a screen apart (13 Sep 2026: «لم يتم التسليم» used to be an outlined button buried
+mid-scroll, above the timeline). Two revisions since, both the courier's:
+
+- **Separated, not segmented** (14 Sep 2026). They were briefly joined into one silhouette; a
+  joined pair reads as one control with a mode rather than as two things that can each be pressed.
+  So: an **8pt gap**, a full r15 radius each, one shared height
+  (`CrossAxisAlignment.stretch` — a Row centres its children, which otherwise leaves them at their
+  own intrinsic sizes). «تم التسليم» black and `Expanded` at the reading start, «لم يتم التسليم»
+  white, red-outlined and sized to its own label at the far end.
+- **On the page, not in the footer** (14 Sep 2026). The row sits straight after `_AddressSection`
+  (which owns the map), so the decision follows *where am I going* and lands above the fold on
+  open, ahead of the items and the timeline. It **scrolls with the page** — `OrderDetailScreen`
+  has no sticky action bar any more and its `bottomNavigationBar` holds `BottomNav` alone. The row
+  carries no fill, rule or side padding: the scroll column already has the 20pt gutter, and a
+  white strip behind it would be the old footer's chrome stranded mid-page. The deliver label was shortened to
 «تم التسليم» to fit (it was «تم تسليم الطلب للعميل»; Home keeps its own `home_deliver` key). The
 black half opens the **handoff** sheet (proof photo enforced) → for COD orders, the **COD 2a**
 collection flow (`showCodCollectionSheet`) → *delivered* result showing the real collected cash +
@@ -519,7 +526,11 @@ filter keeps its rich cards; `_MerchantThumb` survives only there.
 
 `PickupScreen` (`/pickup`, DevGallery) is the standalone "carry everything waiting" page; the
 dispatch sheet (`showPickupDispatchSheet(batch:, branch:)`) names the batch and closes on one
-**«تمام»** — it informs, it does not route. (13 Sep 2026 it lost the «لاحقًا» link and its «عرض
+**«تمام»** — it informs, it does not route. Its title is **«أُسندت لك {id} في الفرع»** (14 Sep
+2026, was «وصلت {id} إلى الفرع»): the courier wants to be told the batch is *theirs*, not that
+parcels moved. «أُسندت لك» is the app's established verb for assignment — `home_idle_title` is
+«لم تُسند لك تشغيلة بعد» — and `{id}` still carries the batch number the way every other surface
+does. (13 Sep 2026 it lost the «لاحقًا» link and its «عرض
 التشغيلة في الطلبات» button: two ways out of a sheet that only announces was one too many, and
 the Orders badge plus Home's collect row already point at the waiting batch. It returns
 `Future<void>` now, so nothing downstream reads an outcome from it.)

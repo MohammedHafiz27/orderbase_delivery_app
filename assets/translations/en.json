@@ -141,7 +141,7 @@
   "pickup_batch_meta": "{count} orders · {cash} EGP to collect",
   "pickup_empty_title": "Nothing to pick up",
   "pickup_empty_desc": "You've picked up every ready order from the branch. New orders will appear here when available.",
-  "pickup_dispatch_title": "New batch at the branch · {id}",
+  "pickup_dispatch_title": "Assigned to you at the branch · {id}",
   "pickup_dispatch_banner": "{count} orders ready to collect from the branch",
   "pickup_dispatch_body": "Finish your current order. The batch is waiting at the branch; collect it from the Orders tab.",
   "pickup_dispatch_carry": "Carry from branch",

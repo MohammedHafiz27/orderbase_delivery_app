@@ -83,26 +83,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: AppColors.background,
-        // The detail runs under its footer: the opaque deliver bar hides the
-        // content behind it, and the floating pill below blurs it. Both live
-        // in the one bottom slot so the body's own MediaQuery reports their
-        // measured height back to [BottomNav.reservedHeight].
+        // The detail runs under its footer, which is now the floating tab bar
+        // alone — the outcome row moved into the page, under the map. The bar
+        // still sits in the one bottom slot so the body's own MediaQuery
+        // reports its measured height back to [BottomNav.reservedHeight].
         extendBody: true,
-        bottomNavigationBar: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (isOpen)
-              _OutcomeBar(
-                onDeliver: () =>
-                    controller.deliver(context, cod: isCod, due: o.codDue),
-                onFail: () => controller.fail(context, order: o),
-              ),
-            BottomNav(
-              active: NavTab.orders,
-              notificationsBadge: true,
-              onTap: widget.onSelectTab,
-            ),
-          ],
+        bottomNavigationBar: BottomNav(
+          active: NavTab.orders,
+          notificationsBadge: true,
+          onTap: widget.onSelectTab,
         ),
         body: SafeArea(
           bottom: false,
@@ -129,6 +118,21 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             16.szH,
                             _AddressSection(address: o.address),
                             16.szH,
+                            // Directly under the map: the decision follows
+                            // "where am I going", above the items and the
+                            // timeline, and lands above the fold on open.
+                            if (isOpen) ...[
+                              _OutcomeBar(
+                                onDeliver: () => controller.deliver(
+                                  context,
+                                  cod: isCod,
+                                  due: o.codDue,
+                                ),
+                                onFail: () =>
+                                    controller.fail(context, order: o),
+                              ),
+                              16.szH,
+                            ],
                             const _HDivider(),
                             16.szH,
                             _ItemsSection(items: o.items),

@@ -141,7 +141,7 @@
   "pickup_batch_meta": "{count} طلبات · {cash} جنيه للتحصيل",
   "pickup_empty_title": "لا طلبات للاستلام",
   "pickup_empty_desc": "استلمت كل الطلبات الجاهزة من الفرع. ستظهر هنا الطلبات الجديدة عند توفّرها.",
-  "pickup_dispatch_title": "وصلت {id} إلى الفرع",
+  "pickup_dispatch_title": "أُسندت لك {id} في الفرع",
   "pickup_dispatch_banner": "{count} طلبات جاهزة للاستلام من الفرع",
   "pickup_dispatch_body": "كمّل طلبك الحالي. التشغيلة مستنياك في الفرع، تستلمها من تبويب «الطلبات».",
   "pickup_dispatch_carry": "استلام من الفرع",
