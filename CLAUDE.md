@@ -271,6 +271,11 @@ the full flow (`showReturnsHandoverSheet`, failure_states) for anyone who needs 
   rides the Live Activity method channel's `openUrl` rather than adding `url_launcher` — that
   plugin would put native code back into the iOS build.
 - `StatusPill` — small status pill (background/foreground/border/icon).
+- `TripFact` — a 14pt glyph then a figure, `textTertiary`, 4 between them. The app's two trip
+  facts: 🕐 «الوصول المتوقع 2:45 م» and ➤ the leg's km. The glyph is the Row's **first** child so
+  RTL paints it to the *right* of the figure — that ordering is the layout, not an accident.
+  Shared by the Orders batch row and the handover sheet, which show the same facts about the same
+  order and must not drift.
 
 ## Inputs are 46px
 
@@ -558,6 +563,41 @@ outcome mark at the far end, then name · area · pieces, then the trip facts ea
 🕐 «الوصول المتوقع 2:45 م» (`queue_eta`) and ➤ the leg's km (`Order.dist`). Outcome marks are
 **minimal** — a small glyph + coloured word, no pill container (`_StatusBadge`). The postponed
 filter keeps its rich cards; `_MerchantThumb` survives only there.
+
+### Three sheets, three jobs (the batch handover, 14 Sep 2026)
+
+One batch can legitimately raise two of these, at two different moments:
+
+1. **`showPickupDispatchSheet`** — the branch dispatched a batch while the courier is still out on
+   the road. Informative, one «تمام». He cannot act on it from a bike.
+2. **`showBatchHandoverSheet`** — *the handover*. Raised the moment
+   `ShiftController.pendingHandoverBatch` turns non-null: a batch is waiting, everything in hand is
+   closed, and he is in the branch. Carries what he needs to check parcels against — the size/cash
+   strip, then one row per order with number, customer · area and the two `TripFact`s. «نعم، استلمت
+   الطلبات» carries the batch; «مش دلوقتي» resolves false.
+3. **`showCarryBatchSheet`** — the Orders tab's carry button opens this and only this: title, one
+   line, confirm. It is a **mis-tap guard**, not a manifest. Deliberately *not* merged with (2).
+
+**Handover supersedes the announcement.** `AppShell._raiseShiftSheets` checks the handover first
+and swallows any pending announcement on the way past (`takeAnnouncement()` discarded) — there is
+no sense telling a courier standing at the counter to finish his current order when he has none.
+A `_shiftSheetOpen` latch keeps the two from stacking.
+
+**`pendingHandoverBatch` is state, not an event** — which is why it also covers the relaunch case:
+the shell calls `_raiseShiftSheets` from a post-frame callback in `initState`, so a day that
+already meets all three conditions raises the sheet on launch with no edge to catch. (The demo
+cannot *show* this: `ShiftController` holds no persistence, so a relaunch reseeds the mid-day
+state and the gate is false. The path is there for a real backend.)
+
+**«مش دلوقتي» is recorded per batch** (`_handoverDismissed`, session-only) so the sheet never
+nags; the Orders tab's «تأكيد استلام التشغيلة (n)» stays the way in, gated on the same
+`canCarryPendingBatch`. Carrying a batch clears its dismissal.
+
+**Testing it:** the Account tab's dev row «محاكاة: في الفرع وتشغيلة جديدة (تجريبي)» calls
+`ShiftController.simulateReadyForHandover()` — it closes every order in transit, dispatches the
+next batch from `demoDayBatches`, and stops. It does **not** show the sheet; the real gate flips
+and the real trigger raises it, which is the point of testing through it. DevGallery's «ورقة ·
+استلام التشغيلة من الفرع» renders the sheet standalone when you only want to look at it.
 
 `PickupScreen` (`/pickup`, DevGallery) is the standalone "carry everything waiting" page; the
 dispatch sheet (`showPickupDispatchSheet(batch:, branch:)`) names the batch and closes on one

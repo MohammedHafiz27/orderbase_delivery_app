@@ -20,6 +20,7 @@ import '../../../../widgets/batch_id.dart';
 import '../../../../widgets/bottom_nav.dart';
 import '../../../../widgets/header_back_button.dart';
 import '../../../../widgets/home_indicator.dart';
+import '../../../../widgets/trip_fact.dart';
 
 // Controllers (ephemeral UI state)
 part '../controllers/queue_view_controller.dart';

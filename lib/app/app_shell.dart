@@ -107,8 +107,10 @@ class _AppShellState extends State<AppShell> {
     LiveActivityBridge.instance.onOpenOrder = _openOrderByNum;
     ShiftController.instance.addListener(_onShiftChanged);
     _simulator.start();
-    // A batch may already be waiting when the shell appears.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _announceDispatch());
+    // A batch may already be waiting when the shell appears — including a day
+    // that already meets every handover condition, which is what a courier who
+    // force-quit in the branch comes back to.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _raiseShiftSheets());
   }
 
   @override
@@ -120,20 +122,49 @@ class _AppShellState extends State<AppShell> {
     super.dispose();
   }
 
-  void _onShiftChanged() => _announceDispatch();
+  void _onShiftChanged() => _raiseShiftSheets();
 
-  /// A batch has just been dispatched: raise the mid-flight sheet exactly once.
-  /// It is informative, not a gate — «تمام» closes it and leaves the batch
-  /// waiting; the Orders badge and Home's collect row keep pointing at it.
-  Future<void> _announceDispatch() async {
-    if (!mounted) return;
-    final batch = ShiftController.instance.takeAnnouncement();
+  /// Only one of these may be up at a time; a second would stack on the first.
+  bool _shiftSheetOpen = false;
+
+  /// The day's two automatic sheets, in priority order.
+  ///
+  /// **Handover wins.** If the branch is ready to hand over — courier in the
+  /// branch, nothing left in hand — that is the sheet to show, and any pending
+  /// announcement is swallowed on the way past: there is no sense telling a
+  /// courier standing at the counter to "finish the current order, this one
+  /// waits at the branch" when he has no current order and is already there.
+  /// Otherwise the mid-flight announcement plays as before.
+  Future<void> _raiseShiftSheets() async {
+    if (!mounted || _shiftSheetOpen) return;
+    final shift = ShiftController.instance;
+
+    final handover = shift.pendingHandoverBatch;
+    if (handover != null) {
+      shift.takeAnnouncement(); // superseded — never announce it later
+      _shiftSheetOpen = true;
+      final took = await showBatchHandoverSheet(context, batch: handover);
+      _shiftSheetOpen = false;
+      if (!mounted) return;
+      if (took == true) {
+        shift.carryBatch(handover.id);
+        _select(NavTab.orders);
+      } else {
+        // «مش دلوقتي» — the Orders tab's carry button is the way in now.
+        shift.dismissHandover(handover.id);
+      }
+      return;
+    }
+
+    final batch = shift.takeAnnouncement();
     if (batch == null) return;
+    _shiftSheetOpen = true;
     await showPickupDispatchSheet(
       context,
       batch: batch,
-      branch: ShiftController.instance.branchName,
+      branch: shift.branchName,
     );
+    _shiftSheetOpen = false;
   }
 
   void _select(NavTab t) {

@@ -79,6 +79,12 @@ class ShiftController extends ChangeNotifier {
   /// Read once via [takeAnnouncement] so it cannot announce twice.
   OrderBatch? _announcement;
 
+  /// Batches the courier answered «مش دلوقتي» to on the handover sheet. The
+  /// sheet never raises again for one of these; the Orders tab's carry button
+  /// stays as the way in. Session-only by design — a fresh launch offers the
+  /// handover again, which is what a courier who quit and came back expects.
+  final Set<String> _handoverDismissed = <String>{};
+
   bool _returnsHandedOver = false;
 
   /// Orders whose cash the branch has already taken — they no longer count
@@ -156,6 +162,28 @@ class ShiftController extends ChangeNotifier {
   /// section shows without its «تأكيد استلام التشغيلة» button.
   bool get canCarryPendingBatch =>
       hasPendingBatch && completedCurrentBatch && isAtBranch;
+
+  /// The batch the branch is ready to hand over **right now** — the waiting
+  /// batch once [canCarryPendingBatch] holds and the courier has not waved the
+  /// sheet away for it.
+  ///
+  /// Deliberately a *state*, not a fired event: the shell raises the handover
+  /// sheet whenever this turns non-null, so it works the same whether the gate
+  /// closed because the last order was delivered, because a batch landed while
+  /// the courier was already standing in the branch, or because the app was
+  /// relaunched into a day that already met all three conditions.
+  OrderBatch? get pendingHandoverBatch {
+    if (!canCarryPendingBatch) return null;
+    for (final b in _pending) {
+      if (!_handoverDismissed.contains(b.id)) return b;
+    }
+    return null;
+  }
+
+  /// «مش دلوقتي» — the courier is at the branch but not taking the batch yet.
+  void dismissHandover(String id) {
+    if (_handoverDismissed.add(id)) notifyListeners();
+  }
 
   /// True once the branch has settled the day (until a new batch is carried).
   bool get settled => _settlement != null && status != CourierStatus.onRoute;
@@ -319,6 +347,7 @@ class ShiftController extends ChangeNotifier {
   }
 
   void _carry(OrderBatch batch) {
+    _handoverDismissed.remove(batch.id);
     _carried.add(batch);
     _orders = [..._orders, ...batch.orders];
     for (final o in batch.orders) {
@@ -393,6 +422,39 @@ class ShiftController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// **Dev only.** Put the day into the one state the handover sheet needs:
+  /// everything in hand closed, the courier standing in the branch, and a
+  /// fresh batch waiting. Closes every order still in transit (delivering the
+  /// COD ones for their full amount, so the cash figures stay believable) and
+  /// dispatches the next batch from [demoDayBatches].
+  ///
+  /// It does not raise anything itself — it only moves the day. The shell
+  /// watches [pendingHandoverBatch] and raises the sheet on the next frame,
+  /// which is the point: the dev row exercises the real trigger rather than
+  /// short-cutting to the sheet.
+  void simulateReadyForHandover() {
+    for (final o in List<Order>.of(_orders)) {
+      if (o.status == OrderStatus.transit) {
+        markDelivered(o.num, collected: o.prepaid ? null : o.cod);
+      }
+    }
+    if (!hasPendingBatch) {
+      for (final b in demoDayBatches) {
+        final known =
+            _carried.any((c) => c.id == b.id) ||
+            _pending.any((p) => p.id == b.id);
+        if (!known) {
+          assignBatch(b);
+          break;
+        }
+      }
+    }
+    // A batch waved away earlier should be offered again by an explicit
+    // "put me in the branch" — otherwise the row looks broken on second use.
+    _handoverDismissed.clear();
+    notifyListeners();
+  }
+
   /// Reset the shift (used on logout) — back to the seeded mid-day state.
   void reset() {
     _clear();
@@ -406,6 +468,7 @@ class ShiftController extends ChangeNotifier {
     _orders = <Order>[];
     _batchOf.clear();
     _announcement = null;
+    _handoverDismissed.clear();
     _returnsHandedOver = false;
     _settledOrderNums.clear();
     _settlement = null;

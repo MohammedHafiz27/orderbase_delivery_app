@@ -70,6 +70,15 @@ class DevGallery extends StatelessWidget {
         SheetPreviewHost(label: 'تأكيد التسليم', open: showHandoffSheet),
     'ورقة · Postpone sheet': (_) =>
         SheetPreviewHost(label: 'تأجيل التسليم', open: showPostponeSheet),
+    // The branch handover, standalone — for looking at the sheet without
+    // having to land both of its conditions first.
+    'ورقة · استلام التشغيلة من الفرع': (_) => SheetPreviewHost(
+      label: 'استلام التشغيلة',
+      open: (ctx) async => showBatchHandoverSheet(
+        ctx,
+        batch: demoDayBatches[1],
+      ),
+    ),
     // Auth flow (Auth.dc.html 1a–1f). Login walks the whole reset flow
     // (login → forgot → code → new password → success) via internal pushes.
     // Failure States (Failure States.dc.html 1a–1g)

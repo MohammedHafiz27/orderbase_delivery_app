@@ -88,6 +88,20 @@ class ProfileScreen extends StatelessWidget {
                           label: LocaleKeys.profileDevScreens.tr(),
                           onTap: () => _push(context, const DevGallery()),
                         ),
+                        // Dev: land both handover conditions at once — every
+                        // order in hand closed and a fresh batch waiting — and
+                        // let the real trigger raise the real sheet. Gated on
+                        // the same dev flag as «بدء يوم جديد».
+                        if (onStartNewDay != null)
+                          _ProfileRow(
+                            icon: AppAssets.svg.store,
+                            label: LocaleKeys.profileSimHandover.tr(),
+                            onTap: () {
+                              ShiftController.instance
+                                  .simulateReadyForHandover();
+                              onSelectTab(NavTab.orders);
+                            },
+                          ),
                         if (onStartNewDay != null)
                           _ProfileRow(
                             icon: AppAssets.svg.box,

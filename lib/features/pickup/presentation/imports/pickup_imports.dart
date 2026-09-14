@@ -10,6 +10,7 @@ import '../../../../core/session/courier.dart';
 import '../../../../data/flow_order.dart';
 import '../../../../data/order.dart';
 import '../../../../widgets/app_sheet.dart';
+import '../../../../widgets/trip_fact.dart';
 import '../../../../widgets/header_back_button.dart';
 import '../../../../widgets/home_indicator.dart';
 
@@ -22,3 +23,4 @@ part '../widgets/pickup_confirm_bar.dart';
 part '../widgets/pickup_batch_section.dart';
 part '../widgets/pickup_order_row.dart';
 part '../widgets/pickup_dispatch_sheet.dart';
+part '../widgets/pickup_handover_sheet.dart';

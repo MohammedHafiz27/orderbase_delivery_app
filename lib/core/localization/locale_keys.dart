@@ -96,6 +96,7 @@ abstract final class LocaleKeys {
   static const String navProfile = 'nav_profile';
   static const String profileAccountPassword = 'profile_account_password';
   static const String profileDevScreens = 'profile_dev_screens';
+  static const String profileSimHandover = 'profile_sim_handover';
   static const String profileMerchantNo = 'profile_merchant_no';
   static const String profilePhotoChange = 'profile_photo_change';
   static const String profilePhotoPending = 'profile_photo_pending';
@@ -587,6 +588,10 @@ abstract final class LocaleKeys {
   static const String homeStartNewDay = 'home_start_new_day';
   static const String pickupDispatchMeta = 'pickup_dispatch_meta';
   static const String pickupDispatchOk = 'pickup_dispatch_ok';
+  static const String pickupHandoverTitle = 'pickup_handover_title';
+  static const String pickupHandoverCash = 'pickup_handover_cash';
+  static const String pickupHandoverConfirm = 'pickup_handover_confirm';
+  static const String pickupHandoverLater = 'pickup_handover_later';
   static const String queueBatchMetaPending = 'queue_batch_meta_pending';
   static const String queueBatchMetaComplete = 'queue_batch_meta_complete';
   static const String queueBatchMetaCarried = 'queue_batch_meta_carried';
