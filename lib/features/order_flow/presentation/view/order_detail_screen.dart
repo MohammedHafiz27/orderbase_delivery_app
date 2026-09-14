@@ -44,6 +44,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   // the detail content scrolls beneath it.
   final ValueNotifier<bool> _scrolled = ValueNotifier(false);
 
+  // The inline outcome row (under the map) and the scroll view it lives in.
+  // Measuring one against the other is how we know the row has left the top.
+  final GlobalKey _outcomeKey = GlobalKey();
+  final GlobalKey _viewportKey = GlobalKey();
+
+  /// True once the inline outcome row has scrolled off the top of the page —
+  /// the cue to pin «تم التسليم» back to the footer.
+  final ValueNotifier<bool> _outcomePassed = ValueNotifier(false);
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +62,19 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   void _onScroll() {
     final v = _scroll.offset > 2;
     if (v != _scrolled.value) _scrolled.value = v;
+    _measureOutcomeRow();
+  }
+
+  /// Has the inline row's bottom edge passed above the viewport's top? Measured
+  /// rather than guessed from an offset: the address block above it is
+  /// variable-height (one address line or two), so no constant would hold.
+  void _measureOutcomeRow() {
+    final row = _outcomeKey.currentContext?.findRenderObject() as RenderBox?;
+    final view = _viewportKey.currentContext?.findRenderObject() as RenderBox?;
+    if (row == null || view == null || !row.hasSize || !view.hasSize) return;
+    final top = row.localToGlobal(Offset.zero, ancestor: view).dy;
+    final passed = top + row.size.height < 0;
+    if (passed != _outcomePassed.value) _outcomePassed.value = passed;
   }
 
   @override
@@ -60,6 +82,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     _scroll.removeListener(_onScroll);
     _scroll.dispose();
     _scrolled.dispose();
+    _outcomePassed.dispose();
     super.dispose();
   }
 
@@ -88,10 +111,24 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         // still sits in the one bottom slot so the body's own MediaQuery
         // reports its measured height back to [BottomNav.reservedHeight].
         extendBody: true,
-        bottomNavigationBar: BottomNav(
-          active: NavTab.orders,
-          notificationsBadge: true,
-          onTap: widget.onSelectTab,
+        bottomNavigationBar: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isOpen)
+              ValueListenableBuilder<bool>(
+                valueListenable: _outcomePassed,
+                builder: (_, passed, _) => _PinnedDeliverBar(
+                  shown: passed,
+                  onDeliver: () =>
+                      controller.deliver(context, cod: isCod, due: o.codDue),
+                ),
+              ),
+            BottomNav(
+              active: NavTab.orders,
+              notificationsBadge: true,
+              onTap: widget.onSelectTab,
+            ),
+          ],
         ),
         body: SafeArea(
           bottom: false,
@@ -107,6 +144,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   // Below the Scaffold's own MediaQuery, so the footer's
                   // measured height is what the scroll reserves.
                   builder: (context) => SingleChildScrollView(
+                    key: _viewportKey,
                     controller: _scroll,
                     child:
                         Column(
@@ -123,6 +161,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             // timeline, and lands above the fold on open.
                             if (isOpen) ...[
                               _OutcomeBar(
+                                key: _outcomeKey,
                                 onDeliver: () => controller.deliver(
                                   context,
                                   cod: isCod,

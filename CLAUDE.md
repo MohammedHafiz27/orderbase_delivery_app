@@ -75,10 +75,21 @@ mid-scroll, above the timeline). Two revisions since, both the courier's:
   white, red-outlined and sized to its own label at the far end.
 - **On the page, not in the footer** (14 Sep 2026). The row sits straight after `_AddressSection`
   (which owns the map), so the decision follows *where am I going* and lands above the fold on
-  open, ahead of the items and the timeline. It **scrolls with the page** — `OrderDetailScreen`
-  has no sticky action bar any more and its `bottomNavigationBar` holds `BottomNav` alone. The row
-  carries no fill, rule or side padding: the scroll column already has the 20pt gutter, and a
-  white strip behind it would be the old footer's chrome stranded mid-page. The deliver label was shortened to
+  open, ahead of the items and the timeline. It scrolls with the page. The row carries no fill,
+  rule or side padding: the scroll column already has the 20pt gutter, and a white strip behind it
+  would be the old footer's chrome stranded mid-page.
+- **…and «تم التسليم» pins back to the footer once that row scrolls off the top**
+  (`_PinnedDeliverBar`, same file). Only the primary: a failure is a decision the courier stops and
+  makes, so it stays in the page where the context is. The pinned bar wears the old footer chrome
+  (white surface, top hairline, 20pt gutter) because there it *is* a footer, and it shares the
+  bottom slot with `BottomNav` so the body's MediaQuery reports both heights to
+  `BottomNav.reservedHeight`. It grows out of the bottom edge over `AppMotion.stamp`
+  (`AnimatedSize`, `alignment: topCenter`); Reduce Motion jumps.
+
+  **The trigger is measured, never a constant offset**: `_measureOutcomeRow` compares the row's
+  `localToGlobal(Offset.zero, ancestor: <the SingleChildScrollView>)` against the viewport's own
+  top, and pins when `top + height < 0`. The address block above it is one line or two depending on
+  the order, so no fixed scroll offset would hold. The deliver label was shortened to
 «تم التسليم» to fit (it was «تم تسليم الطلب للعميل»; Home keeps its own `home_deliver` key). The
 black half opens the **handoff** sheet (proof photo enforced) → for COD orders, the **COD 2a**
 collection flow (`showCodCollectionSheet`) → *delivered* result showing the real collected cash +
