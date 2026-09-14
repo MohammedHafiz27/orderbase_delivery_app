@@ -1,15 +1,20 @@
 part of '../imports/order_flow_imports.dart';
 
-/// Sticky bottom bar — the order's two outcomes as **one segmented control**.
+/// Sticky bottom bar — the order's two outcomes, side by side.
 ///
 /// They used to sit a screen apart: «تم التسليم» pinned to the footer and
-/// «لم يتم التسليم» outlined halfway down the scroll, above the timeline. But
-/// they are the two answers to a single question — *did this order reach the
-/// customer?* — so they belong in one control, side by side, answered without
-/// scrolling. One 56pt silhouette, one radius: the primary takes whatever
-/// width is left over (it is the normal outcome and must stay the loud one),
-/// the failure segment sizes to its own label at the far end, marked by a red
-/// hairline rather than by weight.
+/// «لم يتم التسليم» outlined halfway down the scroll, above the timeline. They
+/// are the two answers to a single question — *did this order reach the
+/// customer?* — so they belong in one row, answered without scrolling.
+///
+/// **Two buttons, not one segmented control** (the courier's ask, 14 Sep
+/// 2026): they briefly shared a silhouette, and a joined pair reads as one
+/// control with a mode rather than as two things that can each be pressed.
+/// An 8pt gap and a full radius each says what they are. They still keep one
+/// height and one baseline: «تم التسليم» black and `Expanded` at the reading
+/// start — it is the normal outcome and must stay the loud one — and
+/// «لم يتم التسليم» white and red-outlined, sized to its own label, at the
+/// far end.
 class _OutcomeBar extends StatelessWidget {
   const _OutcomeBar({this.onDeliver, required this.onFail});
   final VoidCallback? onDeliver;
@@ -26,7 +31,7 @@ class _OutcomeBar extends StatelessWidget {
   Widget _build(bool road) {
     // 64 on the road — a gloved thumb's target.
     final double height = road ? AppSize.sH64 : AppSize.sH56;
-    final radius = Radius.circular(AppCircular.r15); // mockup radius
+    final radius = BorderRadius.circular(AppCircular.r15); // mockup radius
     return Container(
       padding: EdgeInsets.only(
         left: AppPadding.pW20,
@@ -41,20 +46,18 @@ class _OutcomeBar extends StatelessWidget {
       child: SizedBox(
         height: height,
         child: Row(
-          // Both halves fill the bar's height — a Row centres its children by
-          // default, which left the two segments at their own intrinsic sizes
-          // and the pair reading as one tall box beside one short one.
+          // Both buttons fill the bar's height — a Row centres its children by
+          // default, which left them at their own intrinsic sizes and the pair
+          // reading as one tall box beside one short one.
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // The delivered half: expanded, so the segment that carries the
+            // The delivered button: expanded, so the one that carries the
             // day's normal ending is always the wider of the two.
             Expanded(
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: AppColors.inkFill,
-                  borderRadius: BorderRadiusDirectional.horizontal(
-                    start: radius,
-                  ),
+                  borderRadius: radius,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -82,12 +85,13 @@ class _OutcomeBar extends StatelessWidget {
                 ).paddingSymmetric(horizontal: AppPadding.pW12),
               ).onClick(onTap: onDeliver),
             ),
-            // The failure half: white, sized to its own label, and outlined in
-            // red — its border on the shared edge is the rule between the two.
+            8.szW,
+            // The failure button: white, sized to its own label, outlined in
+            // red, and standing on its own.
             DecoratedBox(
               decoration: BoxDecoration(
                 color: AppColors.surface,
-                borderRadius: BorderRadiusDirectional.horizontal(end: radius),
+                borderRadius: radius,
                 border: Border.all(color: AppColors.failedBorder, width: 1.5),
               ),
               child: Center(

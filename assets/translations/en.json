@@ -26,7 +26,7 @@
   "notif_body_note": "Please make sure to read the notes before delivery",
   "notif_title_wallet": "EGP {amt} added to customer wallet for order #{num}",
   "notif_body_wallet": "You added EGP {amt} to the customer wallet for order #{num}",
-  "search_hint": "Order number or customer name",
+  "search_hint": "Order number or name",
   "search_scope": "Searches order number, customer name, and street or area",
   "search_prompt": "Type to search today's orders",
   "search_results_count": "{count} results of {total} orders",

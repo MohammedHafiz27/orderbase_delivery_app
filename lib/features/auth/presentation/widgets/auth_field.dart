@@ -113,7 +113,10 @@ class _AuthFieldState extends State<_AuthField> {
             if (obscureText) textStyle = textStyle.copyWith(letterSpacing: 4);
 
             return Container(
-              height: AppSize.sH46,
+              // 42 — the auth-shaped fields sit a notch shorter than the
+              // Orders search field (the courier's pin). Shared by the login,
+              // forgot- and new-password screens and the change-password form.
+              height: AppSize.sH42,
               decoration: BoxDecoration(
                 color: AppColors.surfaceMuted,
                 borderRadius: BorderRadius.circular(AppCircular.r14),

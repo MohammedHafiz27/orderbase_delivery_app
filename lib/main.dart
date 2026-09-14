@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -14,6 +15,12 @@ import 'package:liquid_tab_bar/liquid_tab_bar.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Portrait, always. A courier reads this one-handed on a bike mount; there is
+  // no landscape layout in the app and nothing that would earn one. Belt and
+  // braces: this is the runtime lock, and the two platform manifests
+  // (ios/Runner/Info.plist, android/app/src/main/AndroidManifest.xml) declare
+  // portrait-only as well, so the OS never even offers the rotation.
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await EasyLocalization.ensureInitialized();
   // Mirrors the shift onto the iOS Dynamic Island / Lock Screen where the
   // device supports it. A no-op everywhere else — see [LiveActivityService].

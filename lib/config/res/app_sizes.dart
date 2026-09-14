@@ -25,8 +25,10 @@ abstract final class AppSize {
   static double get sH36 => 36.h;
   static double get sH40 => 40.h;
   static double get sH44 => 44.h;
-  // 46 breaks the 4px grid on purpose: the courier pinned every input field
-  // at exactly 46px.
+  // 42 and 46 both break the 4px grid on purpose. 46 is the Orders search
+  // field; 42 is every auth-shaped field — the login/forgot/new-password
+  // screens and the change-password form, which share `_AuthField`.
+  static double get sH42 => 42.h;
   static double get sH46 => 46.h;
   static double get sH48 => 48.h;
   static double get sH52 => 52.h;
