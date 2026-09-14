@@ -89,9 +89,16 @@ class _AuthFieldState extends State<_AuthField> {
           children: [
             Text(
               widget.label,
+              // 1.4 — the courier's Figma frame sets 140% on every block of
+              // copy on the card (title, subtitle, labels, link); the typed
+              // value and the button label stay on the font's own metrics.
               style: widget.compact
-                  ? const TextStyle().setTertiaryColor.s12.semiBold
-                  : const TextStyle().setTertiaryColor.s14.semiBold,
+                  ? const TextStyle().setTertiaryColor.s12.semiBold.withHeight(
+                      1.4,
+                    )
+                  : const TextStyle().setTertiaryColor.s14.semiBold.withHeight(
+                      1.4,
+                    ),
             ),
             if (widget.labelTrailing != null) ...[
               const Spacer(),
@@ -223,7 +230,10 @@ class _AuthLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final base = const TextStyle().setColor(AppColors.dangerAccent).semiBold;
+    final base = const TextStyle()
+        .setColor(AppColors.dangerAccent)
+        .semiBold
+        .withHeight(1.4);
     return Text(
       label,
       style: compact ? base.s12 : base.s14,

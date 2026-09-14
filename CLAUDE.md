@@ -175,6 +175,9 @@ Ported from the design project's own `CLAUDE.md`. Applies across the whole app.
 - **Font sizes**: only multiples of 4 (…8, 12, 16, 20, 24, 28, 32, 36…). The **only** allowed
   exceptions are **14px** and **18px**.
 - **Padding / gaps**: only multiples of 4 (0, 4, 8, 12, 16, 20, 24…). No 14/18 exception for spacing.
+  The **one** standing exception is the **2** between the login card's title and its subtitle
+  (the courier's Figma frame `639:2`) — two lines of one thought, deliberately tighter than
+  anything else on the card.
 - No fractional pixels anywhere. (Corner **radii** are exempt — the mockups use 7/13/15/18/22.)
 
 Use `AppSpacing` (`lib/theme/spacing.dart`) for padding/gaps, not raw numbers.
@@ -279,9 +282,23 @@ carry the note):
   the courier's ask). Change it in `auth_field.dart` and all five screens follow.
 - **46** — the Orders search field (was 48).
 
-The OTP code boxes (56×48) and every button are not inputs and keep their own heights. The
-free-text note fields (failure `_NoteField`, the corrected-address field) grow with their content
-off a 56 floor instead — a note has no fixed length.
+The OTP code boxes (56×48) are not inputs and keep their own height. The free-text note fields
+(failure `_NoteField`, the corrected-address field) grow with their content off a 56 floor
+instead — a note has no fixed length.
+
+**The auth flow's primary button is 46 too** (`_AuthPrimaryButton`, was 56) — it is shared by
+login, forgot-password, code entry, new password, success and change-password, so all six follow.
+
+### The login card's rhythm (the courier's Figma `639:2`, 14 Sep 2026)
+
+Synced back from the frame after the courier edited it, and the numbers are **grouped, not flat**:
+**16** padding, then four blocks **12** apart — heading, fields, forgot link, button — with each
+block tighter inside than the space around it. The heading holds its two lines **2** apart; the
+field group holds its three inputs **8** apart (was 16). `login_screen.dart` expresses that as real
+nested Columns (`_heading()` / `_fields()`), not one run of spacers, so the structure survives
+edits. The subtitle went **12 → 14**, and every block of copy on the card — title, subtitle, field
+labels, the forgot link — carries a **1.4 line height**; the typed value inside a field and the
+button label stay on the font's own metrics.
 
 **A 46pt field is a tight budget for a placeholder**, and the Orders search hint proved it twice.
 The courier asked it to say what can be typed; «ابحث برقم الطلب أو اسم العميل» overran the box and

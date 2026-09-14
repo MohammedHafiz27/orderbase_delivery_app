@@ -1,7 +1,8 @@
 part of '../imports/auth_imports.dart';
 
-/// The ink-black primary action shared across the Auth flow: full-width, 56px
-/// tall, 16px radius, an optional leading glyph, a centered bold label. Disabled
+/// The ink-black primary action shared across the Auth flow: full-width, **46px
+/// tall** (the courier's Figma frame `639:2`, 14 Sep 2026 — it was 56; every
+/// auth screen follows, since they all use this button), 16px radius, an optional leading glyph, a centered bold label. Disabled
 /// drops to the border-default fill with a muted label (matching the COD confirm
 /// button), naming *why* it's inert where the caller supplies a disabled label.
 class _AuthPrimaryButton extends StatelessWidget {
@@ -31,7 +32,7 @@ class _AuthPrimaryButton extends StatelessWidget {
       enabled: enabled,
       label: label,
       child: Container(
-        height: AppSize.sH56,
+        height: AppSize.sH46,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: enabled ? AppColors.inkFill : AppColors.borderDefault,
