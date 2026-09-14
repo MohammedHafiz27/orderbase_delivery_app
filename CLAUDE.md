@@ -79,12 +79,19 @@ mid-scroll, above the timeline). Two revisions since, both the courier's:
   rule or side padding: the scroll column already has the 20pt gutter, and a white strip behind it
   would be the old footer's chrome stranded mid-page.
 - **…and «تم التسليم» pins back to the footer once that row scrolls off the top**
-  (`_PinnedDeliverBar`, same file). Only the primary: a failure is a decision the courier stops and
-  makes, so it stays in the page where the context is. The pinned bar wears the old footer chrome
-  (white surface, top hairline, 20pt gutter) because there it *is* a footer, and it shares the
-  bottom slot with `BottomNav` so the body's MediaQuery reports both heights to
+  (`_PinnedFooter`, same file). Only the primary: a failure is a decision the courier stops and
+  makes, so it stays in the page where the context is. `_PinnedFooter` owns the **whole bottom
+  slot** — the pinned button *and* `BottomNav` — so the body's MediaQuery reports both heights to
   `BottomNav.reservedHeight`. It grows out of the bottom edge over `AppMotion.stamp`
-  (`AnimatedSize`, `alignment: topCenter`); Reduce Motion jumps.
+  (`AnimatedSize`, `alignment: topCenter`) while the surface fades up under it
+  (`AnimatedContainer`); Reduce Motion jumps.
+
+  **The white has to run behind the tab bar, not stop at the button.** The bar floats with ~96pt
+  of transparent page around it, so a white strip ending at the button's lower edge left the page
+  scrolling through underneath and the footer read as two unrelated pieces (the courier caught
+  this, 14 Sep 2026). The fill and hairline therefore live on the slot's own `AnimatedContainer`,
+  not on the button's container; unpinned, the slot goes fully transparent again and the bar
+  floats over the page as everywhere else.
 
   **The trigger is measured, never a constant offset**: `_measureOutcomeRow` compares the row's
   `localToGlobal(Offset.zero, ancestor: <the SingleChildScrollView>)` against the viewport's own

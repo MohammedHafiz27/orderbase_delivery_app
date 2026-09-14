@@ -107,23 +107,37 @@ class _OutcomeBar extends StatelessWidget {
   }
 }
 
-/// The «تم التسليم» button pinned back to the footer, shown **only once the
-/// inline [_OutcomeBar] has scrolled off the top**.
+/// The order detail's whole bottom slot: the floating [BottomNav], and — **only
+/// once the inline [_OutcomeBar] has scrolled off the top** — «تم التسليم»
+/// pinned above it.
 ///
 /// The two outcomes live under the map now, which puts them above the fold on
 /// open but lets them scroll away while the courier reads the items or the
-/// timeline. This is the primary action coming back within a thumb's reach —
-/// and only the primary: a failure is a decision the courier stops and makes,
-/// so it stays in the page where the context is. It carries the old footer's
-/// chrome (white surface, top hairline, the page's 20pt gutter) because here
-/// it *is* a footer, and it sits in the same bottom slot as [BottomNav], so
-/// the body's own MediaQuery reports both heights to
-/// [BottomNav.reservedHeight].
-class _PinnedDeliverBar extends StatelessWidget {
-  const _PinnedDeliverBar({required this.shown, this.onDeliver});
+/// timeline. This brings the primary action back within a thumb's reach — and
+/// only the primary: a failure is a decision the courier stops and makes, so it
+/// stays in the page where the context is.
+///
+/// **The white runs the whole slot, behind the tab bar too**, which is why it is
+/// painted here and not on the button's own container. The tab bar floats with
+/// ~96pt of transparent page around it ([BottomNav.reservedHeight]), so a white
+/// strip that stopped at the button's lower edge left the page scrolling
+/// through underneath and the footer read as two unrelated pieces. With the
+/// fill on the slot, the pinned button and the bar sit on one surface.
+/// Unpinned, the slot is fully transparent again and the bar floats over the
+/// page the way it does everywhere else.
+class _PinnedFooter extends StatelessWidget {
+  const _PinnedFooter({
+    required this.shown,
+    required this.navBar,
+    this.onDeliver,
+  });
 
-  /// Whether the inline row has scrolled past.
+  /// Whether the inline outcome row has scrolled past the top.
   final bool shown;
+
+  /// The floating tab bar, which shares this slot and sits under the button.
+  final Widget navBar;
+
   final VoidCallback? onDeliver;
 
   @override
@@ -135,54 +149,72 @@ class _PinnedDeliverBar extends StatelessWidget {
   }
 
   Widget _build(BuildContext context, bool road) {
-    // A bar that pops in mid-scroll reads as a glitch; it grows out of the
-    // bottom edge instead. Reduce Motion jumps to both ends.
+    // A footer that pops in mid-scroll reads as a glitch: the surface fades up
+    // while the button grows out of the bottom edge. Reduce Motion jumps.
     final duration = AppMotion.reduced(context)
         ? Duration.zero
         : AppMotion.stamp;
-    return AnimatedSize(
+    return AnimatedContainer(
       duration: duration,
       curve: AppMotion.ease,
-      alignment: Alignment.topCenter,
-      child: !shown
-          ? const SizedBox(width: double.infinity)
-          : Container(
-              padding: EdgeInsets.only(
-                left: AppPadding.pW20,
-                right: AppPadding.pW20,
-                top: AppPadding.pH12,
-                bottom: AppPadding.pH8,
-              ),
-              decoration: const BoxDecoration(
-                color: AppColors.surface,
-                border: Border(top: BorderSide(color: AppColors.borderHeader)),
-              ),
-              child: Container(
-                // 64 on the road — a gloved thumb's target.
-                height: road ? AppSize.sH64 : AppSize.sH56,
-                decoration: BoxDecoration(
-                  color: AppColors.inkFill,
-                  borderRadius: BorderRadius.circular(AppCircular.r15),
-                ),
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconWidget(
-                      icon: AppAssets.svg.check,
-                      color: AppColors.surface,
-                      height: AppSize.sH18,
-                      width: AppSize.sW18,
-                    ),
-                    8.szW,
-                    Text(
-                      LocaleKeys.orderDetailDeliver.tr(),
-                      style: const TextStyle().setWhite.s14.semiBold.road(road),
-                    ),
-                  ],
-                ),
-              ).onClick(onTap: onDeliver),
-            ),
+      decoration: BoxDecoration(
+        color: shown ? AppColors.surface : _clear(AppColors.surface),
+        border: Border(
+          top: BorderSide(
+            color: shown
+                ? AppColors.borderHeader
+                : _clear(AppColors.borderHeader),
+          ),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedSize(
+            duration: duration,
+            curve: AppMotion.ease,
+            alignment: Alignment.topCenter,
+            child: shown
+                ? _button(road).paddingOnly(
+                    left: AppPadding.pW20,
+                    right: AppPadding.pW20,
+                    top: AppPadding.pH12,
+                    bottom: AppPadding.pH8,
+                  )
+                : const SizedBox(width: double.infinity),
+          ),
+          navBar,
+        ],
+      ),
     );
   }
+
+  /// The same ink primary the inline row carries, full width down here.
+  Widget _button(bool road) => Container(
+    // 64 on the road — a gloved thumb's target.
+    height: road ? AppSize.sH64 : AppSize.sH56,
+    decoration: BoxDecoration(
+      color: AppColors.inkFill,
+      borderRadius: BorderRadius.circular(AppCircular.r15),
+    ),
+    alignment: Alignment.center,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconWidget(
+          icon: AppAssets.svg.check,
+          color: AppColors.surface,
+          height: AppSize.sH18,
+          width: AppSize.sW18,
+        ),
+        8.szW,
+        Text(
+          LocaleKeys.orderDetailDeliver.tr(),
+          style: const TextStyle().setWhite.s14.semiBold.road(road),
+        ),
+      ],
+    ),
+  ).onClick(onTap: onDeliver);
+
+  static Color _clear(Color c) => c.withAlpha(0);
 }

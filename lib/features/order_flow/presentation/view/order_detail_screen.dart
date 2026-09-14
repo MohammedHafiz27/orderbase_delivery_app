@@ -86,6 +86,32 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     super.dispose();
   }
 
+  /// The bottom slot: the tab bar, wrapped by [_PinnedFooter] while the order
+  /// is open so «تم التسليم» can pin above it — on one white surface that runs
+  /// behind the floating bar — once the inline outcome row scrolls off the top.
+  Widget _bottomSlot(
+    BuildContext context,
+    OrderFlowController controller,
+    FlowOrder o,
+    bool isCod,
+    bool isOpen,
+  ) {
+    final nav = BottomNav(
+      active: NavTab.orders,
+      notificationsBadge: true,
+      onTap: widget.onSelectTab,
+    );
+    if (!isOpen) return nav;
+    return ValueListenableBuilder<bool>(
+      valueListenable: _outcomePassed,
+      builder: (_, passed, _) => _PinnedFooter(
+        shown: passed,
+        navBar: nav,
+        onDeliver: () => controller.deliver(context, cod: isCod, due: o.codDue),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final o = widget.order ?? sampleFlowOrders.first;
@@ -111,25 +137,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         // still sits in the one bottom slot so the body's own MediaQuery
         // reports its measured height back to [BottomNav.reservedHeight].
         extendBody: true,
-        bottomNavigationBar: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (isOpen)
-              ValueListenableBuilder<bool>(
-                valueListenable: _outcomePassed,
-                builder: (_, passed, _) => _PinnedDeliverBar(
-                  shown: passed,
-                  onDeliver: () =>
-                      controller.deliver(context, cod: isCod, due: o.codDue),
-                ),
-              ),
-            BottomNav(
-              active: NavTab.orders,
-              notificationsBadge: true,
-              onTap: widget.onSelectTab,
-            ),
-          ],
-        ),
+        bottomNavigationBar: _bottomSlot(context, controller, o, isCod, isOpen),
         body: SafeArea(
           bottom: false,
           child: Column(
