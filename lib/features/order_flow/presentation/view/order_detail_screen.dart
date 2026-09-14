@@ -92,9 +92,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isOpen)
-              _DeliverBar(
+              _OutcomeBar(
                 onDeliver: () =>
                     controller.deliver(context, cod: isCod, due: o.codDue),
+                onFail: () => controller.fail(context, order: o),
               ),
             BottomNav(
               active: NavTab.orders,
@@ -138,12 +139,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             ],
                             if (isCod) ...[
                               _PaymentCard(amount: o.amount ?? ''),
-                              16.szH,
-                            ],
-                            if (isOpen) ...[
-                              _FailButton(
-                                onTap: () => controller.fail(context, order: o),
-                              ),
                               16.szH,
                             ],
                             _Timeline(

@@ -23,6 +23,12 @@ Future<void> main() async {
   await LiquidGlass.load();
   // The header's scroll-edge fade rides the same engine path as the bar.
   await HeaderBlur.load();
+  // Glass is the bar's one material now — the courier's pick, so the dev row
+  // that used to cycle the tiers is gone. Pinning it (rather than leaving the
+  // tier on `auto`) also pins out the frame governor's step down to blur; the
+  // tier still falls back to blur wherever the shader cannot run at all — the
+  // web, and any device without Impeller.
+  NavBarController.instance.material = NavMaterial.glass;
   NavBarController.instance.armGovernor();
   runApp(
     ModularApp(

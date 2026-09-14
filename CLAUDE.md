@@ -62,10 +62,17 @@ Shared widgets (`lib/widgets/bottom_nav`, `home_indicator`, `map_view`, `status_
 were also converted in place (same public APIs, Flutter_Base internals).
 
 **The Order Flow is now navigable end-to-end** and payment-/outcome-aware (see
-`OrderFlowController`). In `OrderDetailScreen`: the sticky "delivered" bar opens the **handoff**
-sheet (proof photo enforced) → for COD orders, the **COD 2a** collection flow
-(`showCodCollectionSheet`) → *delivered* result showing the real collected cash + any wallet
-change; prepaid skips cash. The "لم يتم التسليم" button opens the **standalone Failure States
+`OrderFlowController`). In `OrderDetailScreen` the two outcomes are **one segmented control** in
+the sticky footer (`_OutcomeBar`, `order_detail_deliver_bar.dart`) — they are the two answers to a
+single question, so they stopped living a screen apart (13 Sep 2026: «لم يتم التسليم» used to be
+an outlined button buried mid-scroll, above the timeline). One 56pt silhouette, one r15 radius,
+`CrossAxisAlignment.stretch` so both halves fill it: «تم التسليم» black and `Expanded` at the
+reading start, «لم يتم التسليم» white, red-outlined and sized to its own label at the far end,
+its border on the shared edge acting as the rule between them. The deliver label was shortened to
+«تم التسليم» to fit (it was «تم تسليم الطلب للعميل»; Home keeps its own `home_deliver` key). The
+black half opens the **handoff** sheet (proof photo enforced) → for COD orders, the **COD 2a**
+collection flow (`showCodCollectionSheet`) → *delivered* result showing the real collected cash +
+any wallet change; prepaid skips cash. The red half opens the **standalone Failure States
 flow** (`showFailureFlow` — reason → per-reason step → return-to-branch → logged), mapped onto the
 Order Flow outcomes: *returned-to-branch* → *failed* result; *postpone* hands off to the
 **postpone** sheet → *postponed* result (back arrow reopens the failure flow); *retry now/later*
@@ -238,7 +245,16 @@ the full flow (`showReturnsHandoverSheet`, failure_states) for anyone who needs 
 
 Every input field sits at **exactly 46px** (the courier's pin, a deliberate break from the 4px
 grid — `AppSize.sH46` carries the note): the auth `_AuthField` (was 52) and the Orders search
-field (was 48). The OTP code boxes (56) and buttons are not inputs and keep their heights.
+field (was 48). The OTP code boxes (56) and buttons are not inputs and keep their heights. The
+free-text note fields (failure `_NoteField`, the corrected-address field) grow with their content
+off a 56 floor instead — they are the exception, because a note has no fixed length.
+
+**A 46pt field is a tight budget for a placeholder**, and the Orders search hint proved it: the
+courier asked it to say what can be typed, and «ابحث برقم الطلب أو اسم العميل» overran the box
+and lost its alef off the right edge. It ships as **«رقم الطلب أو اسم العميل»** — the magnifier
+glyph already carries the verb, so the words are spent on the two fields the courier reaches for.
+(`QueueViewController.matchLabel` also matches area and street; the hint names examples, not the
+whole list.) Measure a new hint on the simulator before believing it fits.
 
 ## Profile photo — upload + review (`core/session/profile_photo.dart`)
 
@@ -487,8 +503,11 @@ outcome mark at the far end, then name · area · pieces, then the trip facts ea
 filter keeps its rich cards; `_MerchantThumb` survives only there.
 
 `PickupScreen` (`/pickup`, DevGallery) is the standalone "carry everything waiting" page; the
-dispatch sheet (`showPickupDispatchSheet(batch:, branch:)`) names the batch and offers «عرض
-التشغيلة في الطلبات» / «لاحقًا».
+dispatch sheet (`showPickupDispatchSheet(batch:, branch:)`) names the batch and closes on one
+**«تمام»** — it informs, it does not route. (13 Sep 2026 it lost the «لاحقًا» link and its «عرض
+التشغيلة في الطلبات» button: two ways out of a sheet that only announces was one too many, and
+the Orders badge plus Home's collect row already point at the waiting batch. It returns
+`Future<void>` now, so nothing downstream reads an outcome from it.)
 
 ## Settlement (`features/settlement/`)
 
@@ -547,10 +566,18 @@ bar (Files on the iOS 26.5 iPhone 17 Pro simulator, pixel-scanned) and the user'
   (`nav_glass.dart`) paints the shader's *lighting* onto it: the hairline along the lit edge, the
   soft rim band, the shade on the far side, on both the bar and the lens, from the same
   `GlassStyle` numbers. What the blur tier still cannot do is bend the page at the rim; *opaque* =
-  solid pill, forced by high-contrast and Road mode. The
-  Account tab's dev row «مادة شريط التبويب (Dev)» pins a tier. Outside debug builds a frame
-  governor (`SchedulerBinding.addTimingsCallback`) degrades glass → blur for the session after
-  12 slow raster frames in 60 (90 warm-up frames ignored).
+  solid pill, forced by high-contrast and Road mode.
+  **The app ships glass and only glass** (13 Sep 2026, the courier's pick): `main.dart` pins
+  `NavBarController.instance.material = NavMaterial.glass` after `LiquidGlass.load()`, and the
+  Account tab's dev row «مادة شريط التبويب (Dev)» that used to cycle the tiers is **deleted**
+  (`profile_nav_material_row.dart` and the five `nav_material_*` / `profile_nav_material` keys
+  with it). The package keeps all four tiers — it is generic and published — and a pinned *glass*
+  still resolves to blur wherever the shader cannot run at all (the web, anything without
+  Impeller). What pinning costs is the step-down: outside debug builds a frame
+  governor (`SchedulerBinding.addTimingsCallback`) degrades **auto** → blur for the session after
+  12 slow raster frames in 60 (90 warm-up frames ignored), and a pinned glass ignores it. Put the
+  tier back on `NavMaterial.auto` if a courier's phone ever stutters on the bar. `NavBarLab` is
+  the only place the other tiers are still reachable, and it restores glass on dispose.
 - **Fold on scroll**: `AppShell` wraps its `IndexedStack` in a `NotificationListener` feeding
   `NavBarController.handleScroll` — 12pt of travel down folds the bar into a 76 × 56 pill holding
   the selected glyph at the leading edge, 12pt up (or reaching the top, or switching tabs) opens

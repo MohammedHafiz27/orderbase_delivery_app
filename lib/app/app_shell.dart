@@ -123,18 +123,17 @@ class _AppShellState extends State<AppShell> {
   void _onShiftChanged() => _announceDispatch();
 
   /// A batch has just been dispatched: raise the mid-flight sheet exactly once.
-  /// It is informative, not a gate — «عرض التشغيلة» jumps to the Orders tab,
-  /// «لاحقًا» leaves the batch waiting (the header chip keeps pointing at it).
+  /// It is informative, not a gate — «تمام» closes it and leaves the batch
+  /// waiting; the Orders badge and Home's collect row keep pointing at it.
   Future<void> _announceDispatch() async {
     if (!mounted) return;
     final batch = ShiftController.instance.takeAnnouncement();
     if (batch == null) return;
-    final view = await showPickupDispatchSheet(
+    await showPickupDispatchSheet(
       context,
       batch: batch,
       branch: ShiftController.instance.branchName,
     );
-    if (view == true && mounted) _openPendingBatch();
   }
 
   void _select(NavTab t) {

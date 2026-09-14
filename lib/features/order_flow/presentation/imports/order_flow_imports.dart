@@ -37,7 +37,6 @@ part '../widgets/order_detail_address_section.dart';
 part '../widgets/order_detail_items_section.dart';
 part '../widgets/order_detail_notes_card.dart';
 part '../widgets/order_detail_payment_card.dart';
-part '../widgets/order_detail_fail_button.dart';
 part '../widgets/order_detail_timeline.dart';
 part '../widgets/order_detail_deliver_bar.dart';
 part '../widgets/order_detail_shared.dart';

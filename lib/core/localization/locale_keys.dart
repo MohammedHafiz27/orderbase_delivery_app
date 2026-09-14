@@ -201,7 +201,6 @@ abstract final class LocaleKeys {
   static const String pickupDispatchBanner = 'pickup_dispatch_banner';
   static const String pickupDispatchBody = 'pickup_dispatch_body';
   static const String pickupDispatchCarry = 'pickup_dispatch_carry';
-  static const String pickupDispatchLater = 'pickup_dispatch_later';
   static const String pickupDispatchSeen = 'pickup_dispatch_seen';
 
   // ── order_flow ──
@@ -587,7 +586,7 @@ abstract final class LocaleKeys {
   static const String homeNewBatchWaiting = 'home_new_batch_waiting';
   static const String homeStartNewDay = 'home_start_new_day';
   static const String pickupDispatchMeta = 'pickup_dispatch_meta';
-  static const String pickupDispatchView = 'pickup_dispatch_view';
+  static const String pickupDispatchOk = 'pickup_dispatch_ok';
   static const String queueBatchMetaPending = 'queue_batch_meta_pending';
   static const String queueBatchMetaComplete = 'queue_batch_meta_complete';
   static const String queueBatchMetaCarried = 'queue_batch_meta_carried';
@@ -630,9 +629,4 @@ abstract final class LocaleKeys {
   static const String queueFilterExceptions = 'queue_filter_exceptions';
 
   // Tab bar material (Account tab dev row)
-  static const String profileNavMaterial = 'profile_nav_material';
-  static const String navMaterialAuto = 'nav_material_auto';
-  static const String navMaterialGlass = 'nav_material_glass';
-  static const String navMaterialBlur = 'nav_material_blur';
-  static const String navMaterialOpaque = 'nav_material_opaque';
 }

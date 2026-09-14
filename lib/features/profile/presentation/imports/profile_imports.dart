@@ -15,11 +15,9 @@ import '../../../auth/presentation/imports/auth_imports.dart';
 import '../../../../widgets/app_header.dart';
 import '../../../../widgets/bottom_nav.dart';
 import '../../../../widgets/profile_identity_card.dart';
-import '../../../../widgets/nav_bar_controller.dart';
 
 // View (public route entry point)
 part '../view/profile_screen.dart';
 
 // Widgets (private to the feature)
 part '../widgets/profile_row.dart';
-part '../widgets/profile_nav_material_row.dart';

@@ -42,8 +42,9 @@ class _NavBarLabState extends State<NavBarLab> {
   void dispose() {
     _timer?.cancel();
     _scroll.dispose();
-    // Leave the app on the tier the device would pick for itself.
-    NavBarController.instance.material = NavMaterial.auto;
+    // Leave the app on its one shipped tier — the lab is the only place the
+    // other two are still reachable.
+    NavBarController.instance.material = NavMaterial.glass;
     super.dispose();
   }
 
@@ -54,7 +55,7 @@ class _NavBarLabState extends State<NavBarLab> {
     switch (_step % 8) {
       case 0:
         if (widget.cycleMaterials && _step > 0) {
-          const tiers = [NavMaterial.auto, NavMaterial.blur, NavMaterial.opaque];
+          const tiers = [NavMaterial.glass, NavMaterial.blur, NavMaterial.opaque];
           NavBarController.instance.material =
               tiers[(_step ~/ 8) % tiers.length];
         }

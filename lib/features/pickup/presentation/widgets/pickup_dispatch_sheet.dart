@@ -2,11 +2,13 @@ part of '../imports/pickup_imports.dart';
 
 /// Announce a freshly dispatched batch *without forcing the courier to act on
 /// it*. Raised mid-flight by the shell the moment the branch dispatches: it
-/// names the batch, sizes it up (orders · cash · km), lists the waiting orders
-/// as compact rows, and offers to jump to it on the Orders tab. Fully
-/// dismissible (scrim tap / drag down / «لاحقًا») so the courier can finish
-/// the order in hand first. Resolves to `true` only if they chose to view it.
-Future<bool?> showPickupDispatchSheet(
+/// names the batch, sizes it up (orders · cash · km) and lists the waiting
+/// orders as compact rows. It closes on one «تمام» — the announcement is the
+/// whole point, and the batch is not going anywhere: the Orders badge and
+/// Home's collect row keep pointing at it. (It used to offer «عرض التشغيلة
+/// في الطلبات» over a «لاحقًا» link; two ways out of a sheet that only
+/// informs was one too many.) Still dismissible by scrim tap and drag.
+Future<void> showPickupDispatchSheet(
   BuildContext context, {
   required OrderBatch batch,
   required String branch,
@@ -14,7 +16,7 @@ Future<bool?> showPickupDispatchSheet(
   // The knock lands with the sheet: this is the one event in the day the
   // courier did not cause, so it must be felt and heard, not only seen.
   AppHaptics.attention();
-  return showAppSheet<bool>(
+  return showAppSheet<void>(
     context,
     child: _PickupDispatchSheet(batch: batch, branch: branch),
   );
@@ -86,19 +88,10 @@ class _PickupDispatchSheet extends StatelessWidget {
             ),
             // The label alone — the design frame's button carries no glyph.
             child: Text(
-              LocaleKeys.pickupDispatchView.tr(),
+              LocaleKeys.pickupDispatchOk.tr(),
               style: const TextStyle().setWhite.s14.semiBold,
             ),
-          ).onClick(onTap: () => Navigator.of(context).pop(true)),
-          8.szH,
-          Container(
-            height: AppSize.sH52,
-            alignment: Alignment.center,
-            child: Text(
-              LocaleKeys.pickupDispatchLater.tr(),
-              style: const TextStyle().setSecondaryColor.s14.semiBold,
-            ),
-          ).onClick(onTap: () => Navigator.of(context).pop(false)),
+          ).onClick(onTap: () => Navigator.of(context).pop()),
         ],
       ),
     );
