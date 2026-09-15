@@ -931,19 +931,17 @@ shell (and the *Tab bar lab*). **Add a gallery entry for each new screen.**
 
 - **Flutter SDK:** `~/development/flutter` (stable). Add to PATH:
   `export PATH="$HOME/development/flutter/bin:$PATH"`.
-- **iOS Simulator — headless-only builds WORK (preferred verification path).** As of 13 Sep 2026
-  the `/Applications/Xcode.app` on this Mac is an **incomplete Xcode 27.0 beta** (3.6 GB of ~18 —
-  an interrupted `.xip` extraction that replaced the full 26.6): the toolchain and platform SDKs
-  are there, so `flutter build ios --simulator` and every `xcrun simctl` verb work, but
-  **`Simulator.app` does not exist anywhere on the disk** (no `Contents/Developer/Applications/`)
-  (`DeviceHub.app` in `Contents/Applications` is Xcode 27's devices window). **The only
-  runtime is iOS 27.0 now** — 26.5 was deleted on Ahmed's ask (freed ~8 GB); the daily device is
-  the freshly created **iPhone 17 Pro on iOS 27, UDID `683D4CD5-46F3-4C6F-ABC9-99BA89CBFEAF`**.
-  The desktop app's simulator panel: `attach` + `tap` + `text` **work** (taps land accurately now
-  — the old warning about wrong tab-bar tap coordinates no longer applies), but the panel's video
-  streamer still crash-loops, so `control screenshot` fails and the user sees a blank panel —
-  screenshot with `xcrun simctl io booted screenshot` instead. If attach says "no booted
-  simulator" while simctl disagrees, `pkill -f claude-ios-sim` respawns the helper and fixes it.
+- **iOS Simulator — FULLY WORKING again (preferred verification path).** As of 15 Sep 2026 the Mac
+  carries a working **Xcode 26.6** (17F113) with `Simulator.app` present; the 27.0-beta fragment
+  that broke the panel for two days is gone. **The runtime is iOS 26.5** (23F77) — the iOS 27
+  runtime and its `683D4CD5-…` device are gone with the beta. The daily device is
+  **iPhone 17 Pro, UDID `928F04A2-CDFA-48EC-8483-9993A28D1095`** (17 Pro Max / 17e / Air / 17 and
+  the iPads are there too). The desktop app's simulator panel is healthy: `attach`, `launch`,
+  `tap`, `text` **and `screenshot`** all work — the streamer no longer crash-loops, so there is no
+  need to fall back to `xcrun simctl io booted screenshot` (it still works if you want a file on
+  disk). `control inspect` is the one verb the panel does not offer here; read the screen from a
+  screenshot. If attach says "no booted simulator" while simctl disagrees, `pkill -f claude-ios-sim`
+  respawns the helper and fixes it.
   - **No CocoaPods needed.** The only iOS plugin is `path_provider_foundation` (transitive via
     `google_fonts`, `native_build: false`) — Flutter builds without a Podfile. Don't chase
     CocoaPods install unless a future plugin with native code forces it.
@@ -998,12 +996,14 @@ shell (and the *Tab bar lab*). **Add a gallery entry for each new screen.**
   equal height).
 - **`Cannot provide both a color and a decoration`**: a `Container` can't set `color:` and
   `decoration:` together — put the color inside the `BoxDecoration`.
-- **The desktop app's simulator panel streamer crash-loops on this machine** («restarting after a
-  crash» → «stopped retrying»), so its `screenshot` dies — but its `launch`, `swipe` and
-  `touch_path` still work (a `touch_path` with a dwell at the end scrolls a page and leaves it
-  there, no fling). Its `tap` x-coordinates did **not** land where claimed on the tab bar (a tap
-  at the Account slot lit Home), so don't trust it for anything narrower than a sheet button in
-  the centre. Screenshot with `xcrun simctl io booted screenshot`; to capture a gesture, start
+- **The desktop app's simulator panel is healthy again** (15 Sep 2026, Xcode 26.6): `attach`,
+  `launch`, `screenshot`, `tap`, `text`, `swipe` and `touch_path` all work, and tab-bar taps land
+  where claimed (verified walking رئيسية → طلبات → تسوية). A `touch_path` with a dwell at the end
+  scrolls a page and leaves it there, no fling. The panel's coordinate space is **402×874**, while
+  a returned screenshot is 918×1990 — scale by `874/1990` before you tap what you just saw. Its
+  one missing verb is `inspect`; read the screen from a screenshot.
+  `xcrun simctl io booted screenshot` still works when you want the PNG on disk; to capture a
+  gesture, start
   `xcrun simctl io booted recordVideo --codec h264 --force out.mov` in the background, run the
   gesture, `pkill -INT` it, and pull frames with an AVAssetImageGenerator script (no ffmpeg here —
   the recorder only writes changed frames, so the timestamps are nominal). To reach a state that
