@@ -642,8 +642,14 @@ Orders badge from `ShiftController` and `forceOpaque` from `RoadMode`; `nav_bar_
 keeps `NavBarController.instance` (= `LiquidTabBarController.shared`) and `typedef NavMaterial`.
 `nav_glass.dart` is gone (`main.dart` calls `LiquidGlass.load()`). **Change the bar in the package,
 not the adapter.** `packages/liquid_tab_bar/example/` is a runnable demo (colour bands, a dark card,
-rows, a material picker) for anyone trying the package; it is not published to pub.dev yet — that
-needs Ahmed's account (`flutter pub publish` from the package folder). Verified after the move: the
+rows, a material picker) for anyone trying the package. **It is published**, at
+[pub.dev/packages/liquid_tab_bar](https://pub.dev/packages/liquid_tab_bar) — 0.1.0 first, then
+**1.0.1** on 15 Sep 2026 carrying Yousef's fold-and-unfold lens fixes (PR #4; the version went to
+1.0 because the public surface is settled, not because any of it moved, and 1.0.0 was skipped
+knowingly). Release it with `flutter pub publish` from the package folder after bumping
+`version:` and writing the CHANGELOG entry — the first publish on a machine opens a Google OAuth
+flow in the browser and writes `~/Library/Application Support/dart/pub-credentials.json`; being
+signed in to the pub.dev *website* does not authorize the CLI. Verified after the move: the
 courier app renders pixel-identically and `LiquidGlass.supported` is true on the simulator.
 
 
@@ -668,17 +674,21 @@ bar (Files on the iOS 26.5 iPhone 17 Pro simulator, pixel-scanned) and the user'
   soft rim band, the shade on the far side, on both the bar and the lens, from the same
   `GlassStyle` numbers. What the blur tier still cannot do is bend the page at the rim; *opaque* =
   solid pill, forced by high-contrast and Road mode.
-  **The app ships glass and only glass** (13 Sep 2026, the courier's pick): `main.dart` pins
-  `NavBarController.instance.material = NavMaterial.glass` after `LiquidGlass.load()`, and the
-  Account tab's dev row «مادة شريط التبويب (Dev)» that used to cycle the tiers is **deleted**
+  **The app ships ONE pinned tier, and right now that tier is `blur`** (15 Sep 2026, a trial):
+  `main.dart` pins `NavBarController.instance.material = NavMaterial.blur`. It was `glass` from
+  13 Sep (the courier's pick) and the line is one word away from going back — the shader is still
+  loaded (`LiquidGlass.load()` stays, so flipping back costs nothing). Blur is also exactly what
+  the web has always rendered, so the simulator and GitHub Pages now agree. The Account tab's dev
+  row «مادة شريط التبويب (Dev)» that used to cycle the tiers stays **deleted**
   (`profile_nav_material_row.dart` and the five `nav_material_*` / `profile_nav_material` keys
-  with it). The package keeps all four tiers — it is generic and published — and a pinned *glass*
-  still resolves to blur wherever the shader cannot run at all (the web, anything without
-  Impeller). What pinning costs is the step-down: outside debug builds a frame
-  governor (`SchedulerBinding.addTimingsCallback`) degrades **auto** → blur for the session after
-  12 slow raster frames in 60 (90 warm-up frames ignored), and a pinned glass ignores it. Put the
-  tier back on `NavMaterial.auto` if a courier's phone ever stutters on the bar. `NavBarLab` is
-  the only place the other tiers are still reachable, and it restores glass on dispose.
+  with it). The package keeps all four tiers — `auto`, `glass`, `blur`, `opaque`; it is generic
+  and published — and a pinned *glass* still resolves to blur wherever the shader cannot run at
+  all (the web, anything without Impeller). What pinning costs is the step-down: outside debug
+  builds a frame governor (`SchedulerBinding.addTimingsCallback`) degrades **auto** → blur for the
+  session after 12 slow raster frames in 60 (90 warm-up frames ignored), and a pinned tier ignores
+  it — which costs nothing while blur is pinned, since there is nothing below it to step to. Put
+  the tier on `NavMaterial.auto` if a courier's phone ever stutters on the bar. `NavBarLab` is
+  the only place the other tiers are still reachable, and it restores the app's tier on dispose.
 - **Fold on scroll**: `AppShell` wraps its `IndexedStack` in a `NotificationListener` feeding
   `NavBarController.handleScroll` — 12pt of travel down folds the bar into a 76 × 56 pill holding
   the selected glyph at the leading edge, 12pt up (or reaching the top, or switching tabs) opens

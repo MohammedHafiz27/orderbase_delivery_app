@@ -30,9 +30,16 @@ class _NavBarLabState extends State<NavBarLab> {
   Timer? _timer;
   int _step = 0;
 
+  /// The tier the app was on when the lab opened, put back on the way out.
+  /// Captured rather than named: the lab used to restore `glass` by name, so
+  /// once `main.dart` pinned a different tier a visit here silently changed
+  /// the whole app's bar on the way out.
+  late final NavMaterial _entryMaterial;
+
   @override
   void initState() {
     super.initState();
+    _entryMaterial = NavBarController.instance.material;
     if (widget.autoplay) {
       _timer = Timer.periodic(const Duration(milliseconds: 1500), (_) => _play());
     }
@@ -42,9 +49,9 @@ class _NavBarLabState extends State<NavBarLab> {
   void dispose() {
     _timer?.cancel();
     _scroll.dispose();
-    // Leave the app on its one shipped tier — the lab is the only place the
-    // other two are still reachable.
-    NavBarController.instance.material = NavMaterial.glass;
+    // Leave the app on whatever tier it shipped with — the lab is the only
+    // place the others are still reachable, and looking is not choosing.
+    NavBarController.instance.material = _entryMaterial;
     super.dispose();
   }
 
