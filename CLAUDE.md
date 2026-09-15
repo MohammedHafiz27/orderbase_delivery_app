@@ -674,11 +674,15 @@ bar (Files on the iOS 26.5 iPhone 17 Pro simulator, pixel-scanned) and the user'
   soft rim band, the shade on the far side, on both the bar and the lens, from the same
   `GlassStyle` numbers. What the blur tier still cannot do is bend the page at the rim; *opaque* =
   solid pill, forced by high-contrast and Road mode.
-  **The app ships ONE pinned tier, and right now that tier is `blur`** (15 Sep 2026, a trial):
-  `main.dart` pins `NavBarController.instance.material = NavMaterial.blur`. It was `glass` from
-  13 Sep (the courier's pick) and the line is one word away from going back — the shader is still
-  loaded (`LiquidGlass.load()` stays, so flipping back costs nothing). Blur is also exactly what
-  the web has always rendered, so the simulator and GitHub Pages now agree. The Account tab's dev
+  **The app ships ONE pinned tier, and that tier is `glass`** — the courier's pick on 13 Sep 2026,
+  tried on `blur` for an afternoon on 15 Sep and put back the same day: `main.dart` pins
+  `NavBarController.instance.material = NavMaterial.glass`. **The milk was thinned to pay for it**
+  — `AppColors.navGlassTint` went white @ .52 → **@ .44** (`0x85` → `0x70`), because the
+  refraction only exists in the page showing through, so every point of white taken out is more
+  glass. Measured after: over the app's darkest surface (the near-black cash card) the composite
+  lands ≈ 4.5:1 against `textPrimary`, which is AA for the 12px labels with nothing to spare — so
+  **treat .44 as the floor**. Thinning further needs the labels re-measured over dark content, not
+  just a look at the lists. The Account tab's dev
   row «مادة شريط التبويب (Dev)» that used to cycle the tiers stays **deleted**
   (`profile_nav_material_row.dart` and the five `nav_material_*` / `profile_nav_material` keys
   with it). The package keeps all four tiers — `auto`, `glass`, `blur`, `opaque`; it is generic

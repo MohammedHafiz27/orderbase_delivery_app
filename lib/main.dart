@@ -30,19 +30,15 @@ Future<void> main() async {
   await LiquidGlass.load();
   // The header's scroll-edge fade rides the same engine path as the bar.
   await HeaderBlur.load();
-  // Blur is the bar's material for now (15 Sep 2026) — a trial, in place of
-  // the glass the courier picked on 13 Sep. It is the same tier the web has
-  // always fallen back to, so this is what GitHub Pages already shows: a
-  // backdrop blur with `GlassLightPainter` painting the shader's *lighting*
-  // (the hairline on the lit edge, the rim band, the shade opposite) onto it.
-  // What it cannot do is bend the page at the rim — no refraction, and the
-  // lens's soap-bubble dispersion goes with it.
+  // Glass is the bar's material — the courier's pick on 13 Sep 2026, briefly
+  // tried on blur, and back here since. Pinning it (rather than leaving the
+  // tier on `auto`) also pins out the frame governor's step down to blur; the
+  // tier still falls back to blur wherever the shader cannot run at all — the
+  // web, and any device without Impeller.
   //
-  // Pinning any tier (rather than leaving it on `auto`) pins out the frame
-  // governor's step down; on blur there is nothing below to step to, so that
-  // costs nothing here. Put this back to `NavMaterial.glass` to restore the
-  // shader, or `NavMaterial.auto` to let the device choose.
-  NavBarController.instance.material = NavMaterial.blur;
+  // The refraction only reads where the page shows through it, so the milk of
+  // the glass is thin: see `AppColors.navGlassTint`.
+  NavBarController.instance.material = NavMaterial.glass;
   NavBarController.instance.armGovernor();
   runApp(
     ModularApp(

@@ -105,7 +105,9 @@ abstract final class AppColors {
   // replaces that rim on the opaque twin. [navLensTint] is the selection lens:
   // iOS 26's is a neutral 7% shade with no colour of its own — the tint comes
   // from the glyph sitting on it.
-  static const navGlassTint = Color(0x85FFFFFF); // white @ .52
+  // Thinned .52 → .44 on 15 Sep 2026: the refraction is only visible in the
+  // page showing through it, so every point of milk taken out is more glass.
+  static const navGlassTint = Color(0x70FFFFFF); // white @ .44
   static const navGlassSheenTop = Color(0x40FFFFFF); // white @ .25
   static const navGlassSheenBottom = Color(0x00FFFFFF); // white @ 0
   static const navGlassEdge = Color(0x99FFFFFF); // white @ .60
