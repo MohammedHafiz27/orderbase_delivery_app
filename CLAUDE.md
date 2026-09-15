@@ -698,6 +698,14 @@ bar (Files on the iOS 26.5 iPhone 17 Pro simulator, pixel-scanned) and the user'
   the selected glyph at the leading edge, 12pt up (or reaching the top, or switching tabs) opens
   it; pages that can't scroll 120pt never fold; tapping the pill opens it. A page with
   `active: null` never folds.
+- **A pressed lens is a grab** (15 Sep 2026, rebuilt from the courier's reference recording of a
+  forked build): touch-down springs the lens 24pt taller than the bar (lifted 6 so the growth reads
+  upward, a tenth wider) while the glass **magnifies** the tab it holds — `GlassStyle.zoom`, ×1.18
+  grabbed, the channels zooming slightly apart so the magnified glyph fringes at its own edges —
+  and the dispersion opens to 0.85. One press spring drives all of it, home on release. To
+  overflow, the lens lives **outside the bar's ClipRRect** now (outer stack); at rest and through
+  the fold it still sizes itself inside the bar. `LiquidTabBarTheme(pressLens: false)` restores
+  the old instant 6% swell exactly; the blur tier swells but cannot magnify (no shader).
 - **The lens is a soap bubble while it moves.** `GlassStyle.dispersion` is the shader's chromatic
   spread (red bent less than blue, `off·(1∓uDisp)`), a whisper at rest (0.12) and opened with the
   lens's speed — `BottomNav._fringeMoving` (0.95) at `_fringeFullSpeed` (3 slots/s), 0.5 under a
